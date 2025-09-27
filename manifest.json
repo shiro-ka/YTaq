@@ -1,0 +1,39 @@
+{
+  "manifest_version": 3,
+  "name": "YTFrozen",
+  "version": "1.0.0",
+  "description": "YTFrozen",
+  "icons": {
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "permissions": [
+    "storage",
+    "tabs",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://www.youtube.com/*"
+  ],
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.youtube.com/*"],
+      "js": ["ytfrozen-overlay.js", "ytfrozen-thumbnail-replacer.js", "ytfrozen-playbackrate-manager.js"]
+    }
+  ],
+  "action": {
+    "default_icon": {
+      "48": "icons/icon48.png"
+    },
+    "default_title": "YTFrozen"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["popup.html", "popup.js", "icons/*", "ytfrozen-iframe-api.js"],
+      "matches": ["https://www.youtube.com/*"]
+    }
+  ]
+}
