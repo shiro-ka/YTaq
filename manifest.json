@@ -21,7 +21,16 @@
   "content_scripts": [
     {
       "matches": ["https://www.youtube.com/*"],
-      "js": ["ytfrozen-overlay.js", "ytfrozen-thumbnail-replacer.js", "ytfrozen-playbackrate-manager.js"]
+      "js": [
+  "ytfrozen-overlay.js", "ytfrozen-thumbnail-replacer.js", "ytfrozen-playbackrate-manager.js", "content.js", "ytfrozen-list-manager.js", "ytfrozen-channel-actions.js"],
+    "css": [
+  "css/ytfrozen-variables.css",
+  "css/ytfrozen-style.css",
+  "css/ytfrozen-home.css",
+  "css/ytfrozen-subs.css",
+  "css/ytfrozen-results.css",
+  "css/ytfrozen-channel.css"
+    ]
     }
   ],
   "action": {
@@ -35,5 +44,9 @@
       "resources": ["popup.html", "popup.js", "icons/*", "ytfrozen-iframe-api.js"],
       "matches": ["https://www.youtube.com/*"]
     }
-  ]
+  ],
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  }
 }

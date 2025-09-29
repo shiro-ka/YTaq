@@ -1,0 +1,34 @@
+/* * * 登録チャンネル画面 * * */
+
+/*
+	動画モーダルのデザイン
+*/
+
+ytd-two-column-browse-results-renderer ytd-item-section-renderer {
+	background: var(--ytfrozen-fg, #3b4252) !important;
+	margin-top: 2rem;
+	padding: 0 2rem;
+	border: 1px solid var(--ytfrozen-border, rgba(255,255,255,0.2));
+	border-radius: 1rem;
+}
+
+/* 
+	リスト表示のとき、管理ボタン・グリッドリスト切り替えボタンが謎の場所に表示されてしまのを修正
+	1番はじめの動画のモーダル内に表示させる仕組みっぽい
+*/
+
+/* 1番はじめの動画の位置をすこし下げて */
+ytd-two-column-browse-results-renderer:not(.grid-disabled) ytd-item-section-renderer:first-of-type {
+	margin-top: 6rem;
+}
+/* 空いたスペースにボタンを絶対位置で移動 */
+/* 管理ボタン */
+ytd-two-column-browse-results-renderer:not(.grid-disabled) #subscribe-button.style-scope.ytd-shelf-renderer {
+	position: relative;
+	bottom: 6.5rem;
+}
+/* グリッドリスト切り替えボタン */
+ytd-two-column-browse-results-renderer:not(.grid-disabled) ytd-menu-renderer.style-scope.ytd-shelf-renderer {
+	position: relative;
+	bottom: 6.5rem;
+}

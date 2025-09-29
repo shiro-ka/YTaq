@@ -1,0 +1,17 @@
+/* * * ホーム画面 * * */
+
+
+ytd-app {
+  background: var(--ytfrozen-bg, #434c5e) !important;
+}
+
+ytd-masthead {
+  background: var(--ytfrozen-bgsub, #2e3440) !important;
+}
+
+
+/* サイドバー */
+tp-yt-app-drawer {
+  background: var(--ytfrozen-sd, #434c5e) !important;
+}
+

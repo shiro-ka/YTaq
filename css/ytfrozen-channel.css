@@ -1,0 +1,13 @@
+/* * * チャンネル個別ページ * * */
+
+/*
+  メインバナーの背景色
+*/
+#page-header-container.ytd-tabbed-page-header, #page-header.ytd-tabbed-page-header, #tabs-container.ytd-tabbed-page-header, #tabs-inner-container.ytd-tabbed-page-header {
+  background: var(--ytfrozen-fg, #3b4252) !important;
+}
+
+
+ytd-feed-filter-chip-bar-renderer #chips-wrapper.ytd-feed-filter-chip-bar-renderer {
+  background: transparent !important;
+}

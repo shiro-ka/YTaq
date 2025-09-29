@@ -3,6 +3,28 @@
 // --- 直接postMessageでYouTube埋め込みを制御 + チャンネルごと再生速度記憶 ---
 console.log('YTFrozen overlay script loaded');
 
+// --- サイドバーの「登録チャンネル」リンクを書き換え（/feed/subscriptions#ytfrozen へ） ---
+function patchSubscriptionsGuideLink_OverlaySide() {
+	try {
+		let a = document.querySelector('#items ytd-guide-entry-renderer a[title="登録チャンネル"]');
+		if (!a) a = document.querySelector('#items ytd-guide-entry-renderer a[href="/feed/subscriptions"]');
+		if (!a) return;
+		if (a.classList.contains('ytfrozen-patched')) return;
+		const targetHref = '/feed/subscriptions#ytfrozen';
+		a.href = targetHref;
+		const handler = (e) => {
+			try { e.preventDefault(); e.stopPropagation(); } catch {}
+			window.location.assign(targetHref);
+		};
+		a.addEventListener('click', handler, true);
+		a.classList.add('ytfrozen-patched');
+		console.log('[YTFrozen] (overlay) 登録チャンネルリンクをパッチしました');
+	} catch (e) {
+		console.warn('[YTFrozen] (overlay) パッチ中にエラー', e);
+	}
+}
+setInterval(patchSubscriptionsGuideLink_OverlaySide, 1500);
+
 // YouTube iframe postMessage helper
 function createYTController(iframe, playerId) {
 	const ORIGIN = 'https://www.youtube.com';
@@ -95,8 +117,10 @@ function openOverlayForVideo(videoId, clickedElement) {
 	// ダイアログ本体
 	const dialog = document.createElement('div');
 	dialog.style.background = '#222';
-	dialog.style.borderRadius = '16px';
-	dialog.style.boxShadow = '0 4px 32px #0008';
+	dialog.style.borderRadius = '18px';
+	dialog.style.boxShadow = '0 8px 40px 0 #000a, 0 0 0 2.5px rgba(180,220,255,0.18)';
+	dialog.style.border = '1.5px solid rgba(180,220,255,0.22)';
+	dialog.style.backgroundClip = 'padding-box';
 	dialog.style.width = '80vw';
 	dialog.style.maxWidth = '80vw';
 	dialog.style.height = '80vh';
@@ -183,32 +207,22 @@ function openOverlayForVideo(videoId, clickedElement) {
 			ctrl.init();
 		});
 
-		// 速度UI
-		const speedUI = document.createElement('div');
-		speedUI.style.marginTop = '12px';
-		speedUI.innerHTML = '<label style="margin-right:8px;">再生速度:</label>' +
-			[0.25,0.5,0.75,1,1.25,1.5,2].map(r=>`<button data-rate="${r}" style="margin-right:4px;">${r}x</button>`).join('');
-		speedUI.querySelectorAll('button').forEach(btn => {
-			btn.onclick = () => {
-				const v = parseFloat(btn.dataset.rate);
-				ctrl.postCommand('setPlaybackRate', [v]);
-				if (channel) setStoredRate(channel, v);
-			};
-		});
-		info.appendChild(speedUI);
+				// 速度UI削除
 
-		// タイトル・チャンネル名表示
-		try {
-			const oembedUrl = `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`;
-			const res = await fetch(oembedUrl);
-			if (res.ok) {
-				const data = await res.json();
-				info.innerHTML = `<div style="font-size:1.2em;font-weight:bold;">${data.title}</div><div style="font-size:0.95em;opacity:0.8;margin-bottom:8px;">${data.author_name}</div>`;
-				info.appendChild(speedUI);
-			}
-		} catch (e) {
-			console.warn('oEmbed fetch failed', e);
-		}
+				// タイトル・チャンネル名表示（大きく・マージン追加）
+				try {
+					const oembedUrl = `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`;
+					const res = await fetch(oembedUrl);
+					if (res.ok) {
+						const data = await res.json();
+						info.innerHTML = `
+							<div style="font-size:2em;font-weight:bold;margin-bottom:0.5em;line-height:1.2;">${data.title}</div>
+							<div style="font-size:1.3em;opacity:0.85;margin-bottom:0.5em;line-height:1.2;">${data.author_name}</div>
+						`;
+					}
+				} catch (e) {
+					console.warn('oEmbed fetch failed', e);
+				}
 
 		// クリーンアップ
 		overlay.addEventListener('remove', () => { if (cleanupMsg) cleanupMsg(); }, { once: true });
