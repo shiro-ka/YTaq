@@ -4,8 +4,8 @@
   "version": "1.0.0",
   "description": "YTFrozen",
   "icons": {
-    "48": "icons/icon48.png",
-    "128": "icons/icon128.png"
+    "48": "icon/icon48.png",
+    "128": "icon/icon128.png"
   },
   "permissions": [
     "storage",
@@ -22,15 +22,22 @@
     {
       "matches": ["https://www.youtube.com/*"],
       "js": [
-  "ytfrozen-overlay.js", "ytfrozen-thumbnail-replacer.js", "ytfrozen-playbackrate-manager.js", "content.js", "ytfrozen-list-manager.js", "ytfrozen-channel-actions.js"],
-    "css": [
-  "css/ytfrozen-variables.css",
-  "css/ytfrozen-style.css",
-  "css/ytfrozen-home.css",
-  "css/ytfrozen-subs.css",
-  "css/ytfrozen-results.css",
-  "css/ytfrozen-channel.css"
-    ]
+        "ytfrozen-overlay.js",
+        "ytfrozen-thumbnail-replacer.js",
+        "ytfrozen-playbackrate-manager.js",
+        "content.js",
+        "ytfrozen-list-manager.js",
+        "ytfrozen-channel-actions.js",
+        "ytfrozen-td.js"
+      ],
+      "css": [
+        "css/ytfrozen-variables.css",
+        "css/ytfrozen-style.css",
+        "css/ytfrozen-home.css",
+        "css/ytfrozen-subs.css",
+        "css/ytfrozen-results.css",
+        "css/ytfrozen-channel.css"
+      ]
     }
   ],
   "action": {
