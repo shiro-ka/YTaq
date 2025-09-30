@@ -1,49 +1,81 @@
-/* * * 登録チャンネル画面 * * */
+/* * *
+	登録チャンネル画面
+	ytd-two-column-browse-results-rendererが本来あるコンテナ。
+	subs-container.jsによってytd-two-column-browse-results-rendererの外側にytfrozen-subs-containerが生成され、
+	そこにリストのカラムが追加される。
+* * */
 
+/* - -
+	全体のコンテナ
+	subs-container.jsによって生成されるコンテナ
+- - */
 
+.ytfrozen-subs-container {
+	display: flex;
+	width: calc(100dvw - var(--app-drawer-width,256px));
+	padding-top: 2rem;
+	overflow-x: auto;
+}
 
+/* - -
+	登録チャンネルカラム
+	本来のやつを魔改造
+- - */
 
+/* カラムのスタイル */
+ytd-two-column-browse-results-renderer[page-subtype="subscriptions"] {
 
-/*
-	動画モーダルのデザイン
-*/
+	display: none;
 
-ytd-two-column-browse-results-renderer ytd-item-section-renderer {
+  max-width: 720px !important;
+	background: var(--ytfrozen-fg, #3b4252) !important;
+	margin-left: 2rem;
+	padding: 0 2rem;
+	border-radius: 1rem;
+}
+
+/* 動画モーダルのスタイル */
+ytd-two-column-browse-results-renderer[page-subtype="subscriptions"] ytd-item-section-renderer {
 	margin-top: 2rem;
 	padding: 0 2rem;
 	border: 1px solid var(--ytfrozen-border, rgba(255,255,255,0.2));
 	border-radius: 1rem;
 }
 
-
-/* - - 登録チャンネルカラム - - */
-
-
-ytd-two-column-browse-results-renderer[page-subtype="subscriptions"] {
-  max-width: 720px !important;
-		background: var(--ytfrozen-fg, #3b4252) !important;
-	margin-top: 2rem;
-	padding: 0 2rem;
-	border-radius: 1rem;
+/* 動画モーダル内のテキスト部分のpaddingを削除 */
+ytd-two-column-browse-results-renderer[page-subtype="subscriptions"] ytd-video-renderer {
+	padding-right: 0 !important;
 }
 
 /* 
 	リスト表示のとき、管理ボタン・グリッドリスト切り替えボタンが謎の場所に表示されてしまうのを修正
 	1番はじめの動画のモーダル内に表示させる仕組みっぽい
 */
-
 /* 1番はじめの動画の位置をすこし下げて */
-ytd-two-column-browse-results-renderer:not(.grid-disabled) ytd-item-section-renderer:first-of-type {
+ytd-two-column-browse-results-renderer[page-subtype="subscriptions"]:not(.grid-disabled) ytd-item-section-renderer:first-of-type {
 	margin-top: 6rem;
 }
 /* 空いたスペースにボタンを絶対位置で移動 */
 /* 管理ボタン */
-ytd-two-column-browse-results-renderer:not(.grid-disabled) #subscribe-button.style-scope.ytd-shelf-renderer {
+ytd-two-column-browse-results-renderer[page-subtype="subscriptions"]:not(.grid-disabled) #subscribe-button {
 	position: relative;
 	bottom: 6.5rem;
 }
 /* グリッドリスト切り替えボタン */
-ytd-two-column-browse-results-renderer:not(.grid-disabled) ytd-menu-renderer.style-scope.ytd-shelf-renderer {
+ytd-two-column-browse-results-renderer[page-subtype="subscriptions"]:not(.grid-disabled) ytd-menu-renderer {
 	position: relative;
 	bottom: 6.5rem;
+}
+
+
+/* YTFrozen: ユーザーリストのカラム */
+.ytfrozen-list-column {
+	margin-left: 2rem;
+	background: var(--ytfrozen-fg, #3b4252);
+	color: #fff;
+	padding: 12px 16px;
+	border-radius: 10px;
+	width: 760px;
+	box-shadow: 0 2px 12px #0003;
+	font-weight: bold;
 }

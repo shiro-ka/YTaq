@@ -4,8 +4,8 @@
   "version": "1.0.0",
   "description": "YTFrozen",
   "icons": {
-    "48": "icon/icon48.png",
-    "128": "icon/icon128.png"
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
   },
   "permissions": [
     "storage",
@@ -28,7 +28,9 @@
         "content.js",
         "ytfrozen-list-manager.js",
         "ytfrozen-channel-actions.js",
-        "ytfrozen-td.js"
+        "ytfrozen-td.js",
+        "ytfrozen-subs-container.js",
+        "ytfrozen-list-movie.js"
       ],
       "css": [
         "css/ytfrozen-variables.css",
