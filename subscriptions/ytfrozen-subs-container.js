@@ -63,7 +63,7 @@
       
       // カラムヘッダー
       const subHeader = document.createElement('div');
-      subHeader.textContent = 'sub-channels';
+      subHeader.textContent = '登録チャンネル';
       subHeader.style.cssText = 'font-weight: bold; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.2);';
       subCol.appendChild(subHeader);
       
