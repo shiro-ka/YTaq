@@ -26,7 +26,7 @@
         "ytfrozen-playbackrate-manager.js",
         "content.js",
         "ytfrozen-list-manager.js",
-        "ytfrozen-channel-actions.js",
+        "pokke/ytfrozen-channel-actions.js",
         "ytfrozen-td.js",
         "subscriptions/ytfrozen-subs-container.js",
         "subscriptions/ytfrozen-subs-movie.js",

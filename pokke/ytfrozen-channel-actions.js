@@ -116,11 +116,14 @@
           cb.checked = !!(channelId && list.channels.includes(channelId));
           cb.addEventListener('change', async () => {
             if (!window.YTFrozenListManager) return;
+            if (!channelId) return;
             if (cb.checked) {
               await window.YTFrozenListManager.addChannelToList(list.name, channelId);
             } else {
               await window.YTFrozenListManager.removeChannelFromList(list.name, channelId);
             }
+            // 変更後にリストを再描画して状態を正しく反映
+            await renderLists();
           });
           row.appendChild(label);
           row.appendChild(cb);

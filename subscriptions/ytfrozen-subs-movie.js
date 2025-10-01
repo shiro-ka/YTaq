@@ -246,6 +246,23 @@
   let cacheTime = 0;
   const CACHE_DURATION = 5 * 60 * 1000; // 5分
   
+  // リストのデバッグ情報を取得
+  async function getListDebugInfo(listName) {
+    if (!window.YTFrozenListManager) return 'ListManagerなし';
+    
+    try {
+      const lists = await window.YTFrozenListManager.getLists();
+      const list = lists.find(l => l.name === listName);
+      
+      if (!list) return 'リストが存在しません';
+      if (!list.channels || list.channels.length === 0) return 'チャンネル未登録';
+      
+      return `チャンネル${list.channels.length}件: ${list.channels.join(', ')}`;
+    } catch (error) {
+      return `エラー: ${error.message}`;
+    }
+  }
+  
   // sub-channelsカラム用の動画リストを描画
   async function renderSubChannelVideos(container) {
     // 既に描画済みかチェック
@@ -282,7 +299,6 @@
 
         const img = document.createElement('img');
         img.src = video.thumbnail;
-        // サムネイル用クラスはCSSで統一
         videoDiv.appendChild(img);
 
         const infoDiv = document.createElement('div');
@@ -324,17 +340,311 @@
     }
   }
   
+  // リスト内チャンネルの新着動画を取得
+  async function getListChannelVideos(listName) {
+    if (!window.YTFrozenListManager) {
+      console.warn(`[${listName}] YTFrozenListManagerが利用できません`);
+      return [];
+    }
+    
+    try {
+      // リスト情報を取得
+      const lists = await window.YTFrozenListManager.getLists();
+      console.log(`[${listName}] 全リスト:`, lists);
+      
+      const list = lists.find(l => l.name === listName);
+      if (!list) {
+        console.warn(`[${listName}] リストが見つかりません`);
+        return [];
+      }
+      
+      if (!list.channels || list.channels.length === 0) {
+        console.warn(`[${listName}] リストにチャンネルが登録されていません:`, list);
+        return [];
+      }
+      
+      console.log(`[${listName}] チャンネル数: ${list.channels.length}`, list.channels);
+      
+      const allVideos = [];
+      
+      // 各チャンネルの動画を取得
+      for (const channelEntry of list.channels) {
+        try {
+          // 旧形式（文字列）と新形式（オブジェクト）の両方をサポート
+          const channelId = typeof channelEntry === 'string' ? channelEntry : channelEntry.id;
+          const channelName = typeof channelEntry === 'string' ? null : channelEntry.name;
+          
+          console.log(`[${channelId}] 動画取得開始`, channelName ? `(表示名: ${channelName})` : '');
+          const channelVideos = await getChannelRecentVideos(channelId, channelName);
+          if (channelVideos.length > 0) {
+            console.log(`[${channelId}] ${channelVideos.length}件の動画を取得`);
+            allVideos.push(...channelVideos);
+          } else {
+            console.warn(`[${channelId}] 動画が見つかりませんでした`);
+          }
+        } catch (error) {
+          console.warn(`[${channelEntry}] 動画取得エラー:`, error);
+        }
+      }
+      
+      // 投稿日時でソート（新しい順）
+      allVideos.sort((a, b) => b.publishedDate - a.publishedDate);
+      
+      console.log(`[${listName}] 合計 ${allVideos.length}件の動画`);
+      return allVideos.slice(0, 50); // 最大50件
+      
+    } catch (error) {
+      console.error(`[${listName}] リスト動画取得エラー:`, error);
+      return [];
+    }
+  }
+  
+  // 指定チャンネルの最近の動画を取得
+  async function getChannelRecentVideos(channelId, channelName = null) {
+    try {
+      // チャンネルページのURLを生成
+      let channelUrl;
+      if (channelId.startsWith('@')) {
+        channelUrl = `https://www.youtube.com/${channelId}/videos`;
+      } else {
+        channelUrl = `https://www.youtube.com/channel/${channelId}/videos`;
+      }
+      
+      // 新しいタブでチャンネルページを一時的に開いて動画情報を取得
+      // （実際のYouTube APIが使えない制約のため、DOM解析で取得）
+      
+      // より実用的なアプローチ: YouTube検索を利用
+      return await getVideosFromChannelSearch(channelId, channelName);
+      
+    } catch (error) {
+      console.warn(`チャンネル[${channelId}]の動画取得に失敗:`, error);
+      return [];
+    }
+  }
+  
+  // YouTube検索を使ってチャンネル動画を取得
+  async function getVideosFromChannelSearch(channelId, channelName = null) {
+    try {
+      console.log(`[${channelId}] 動画検索開始`);
+      
+      // まず登録チャンネル動画から検索
+      const now = Date.now();
+      let allSubscriptionVideos;
+      
+      if (videoCache && (now - cacheTime) < CACHE_DURATION) {
+        allSubscriptionVideos = videoCache;
+      } else {
+        allSubscriptionVideos = await getSubscriptionVideos();
+      }
+      
+      console.log(`[${channelId}] 登録チャンネル動画総数: ${allSubscriptionVideos.length}`);
+      
+      // デバッグ: 最初の5件の動画データを確認
+      console.log(`[${channelId}] 動画データサンプル:`, allSubscriptionVideos.slice(0, 5).map(v => ({
+        title: v.title,
+        channel: v.channel,
+        url: v.url
+      })));
+      
+      // チャンネルIDに基づいてフィルタリング
+      let channelVideos = [];
+      
+      if (channelId.startsWith('@')) {
+        const channelName = channelId.substring(1);
+        console.log(`[${channelId}] @形式チャンネル名で検索: ${channelName}`);
+        
+        channelVideos = allSubscriptionVideos.filter(video => {
+          if (!video.channel) return false;
+          
+          const videoChannelLower = video.channel.toLowerCase();
+          const channelNameLower = channelName.toLowerCase();
+          
+          const match = (
+            videoChannelLower.includes(channelNameLower) ||
+            video.url.includes(channelId) ||
+            video.url.includes(`/@${channelName}`) ||
+            // 正規化した名前での比較も追加
+            video.channel.replace(/[^\w]/g, '').toLowerCase().includes(channelName.replace(/[^\w]/g, '').toLowerCase())
+          );
+          
+          if (match) {
+            console.log(`[${channelId}] 一致した動画:`, { title: video.title, channel: video.channel, url: video.url });
+          }
+          
+          // デバッグ: STUDIO CHOOMを含むチャンネルを特別に確認
+          if (videoChannelLower.includes('studio') && videoChannelLower.includes('choom')) {
+            console.log(`[${channelId}] STUDIO CHOOM候補:`, { 
+              channel: video.channel, 
+              searchName: channelName,
+              match: match
+            });
+          }
+          
+          return match;
+        });
+      } else {
+        console.log(`[${channelId}] UC形式チャンネルIDで検索`);
+        
+        channelVideos = allSubscriptionVideos.filter(video => {
+          const match = video.url.includes(`/channel/${channelId}`);
+          if (match) {
+            console.log(`[${channelId}] 一致した動画:`, { title: video.title, channel: video.channel, url: video.url });
+          }
+          return match;
+        });
+      }
+      
+      console.log(`[${channelId}] フィルタリング結果: ${channelVideos.length}件`);
+      
+        // 登録チャンネルに見つからない場合は、より柔軟な検索を試す
+        if (channelVideos.length === 0) {
+          console.log(`[${channelId}] 登録チャンネルに見つからないため、柔軟検索を実行`);
+          
+          // チャンネル名での部分一致検索（より柔軟に）
+          if (channelId.startsWith('@')) {
+            const searchName = channelId.substring(1).toLowerCase();
+            
+            // 保存されたチャンネル名も検索に使用
+            const searchNames = [searchName];
+            if (channelName) {
+              searchNames.push(channelName.toLowerCase());
+            }
+            
+            channelVideos = allSubscriptionVideos.filter(video => {
+              if (!video.channel) return false;
+              
+              const videoChannelLower = video.channel.toLowerCase();
+              const videoChannelNormalized = videoChannelLower.replace(/[^\w]/g, ''); // 英数字のみ
+              
+              for (const name of searchNames) {
+                // 複数のパターンで検索
+                const patterns = [
+                  name,                                 // そのまま
+                  name.replace(/\s+/g, ''),            // スペースを除去
+                  name.replace(/[^\w]/g, ''),          // 英数字のみ
+                ];
+                
+                for (const pattern of patterns) {
+                  const patternNormalized = pattern.replace(/[^\w]/g, '');
+                  
+                  // 両方向で部分一致をチェック
+                  if (videoChannelLower.includes(pattern) || 
+                      pattern.includes(videoChannelLower) ||
+                      videoChannelNormalized.includes(patternNormalized) ||
+                      patternNormalized.includes(videoChannelNormalized)) {
+                    console.log(`[${channelId}] パターン "${pattern}" で一致: ${video.channel}`);
+                    return true;
+                  }
+                  
+                  // 特別ケース: STUDIOCHOOMとSTUDIO CHOOMのような場合
+                  if (patternNormalized.length > 3 && videoChannelNormalized.includes(patternNormalized)) {
+                    console.log(`[${channelId}] 正規化パターン "${patternNormalized}" で一致: ${video.channel}`);
+                    return true;
+                  }
+                }
+              }
+              
+              return false;
+            });
+          }
+          
+          console.log(`[${channelId}] 柔軟検索結果: ${channelVideos.length}件`);
+          
+          // それでも見つからない場合、全チャンネル名をログ出力
+          if (channelVideos.length === 0) {
+            const uniqueChannels = [...new Set(allSubscriptionVideos.map(v => v.channel))];
+            console.log(`[${channelId}] 利用可能なチャンネル名一覧:`, uniqueChannels);
+          }
+        }      return channelVideos.slice(0, 10); // チャンネルあたり最大10件
+      
+    } catch (error) {
+      console.warn(`チャンネル検索取得エラー[${channelId}]:`, error);
+      return [];
+    }
+  }
+  
+  // リスト用の動画リストを描画
+  async function renderListChannelVideos(listName, container) {
+    console.log(`[${listName}] リスト動画描画開始`);
+    
+    // 既に描画済みかチェック
+    if (container.children.length > 0 && !container.innerHTML.includes('取得中')) {
+      console.log(`[${listName}] 既に描画済み、スキップ`);
+      return;
+    }
+    
+    // ローディング表示
+    container.innerHTML = '<div style="padding: 12px; color: #ccc;">リスト動画を取得中...</div>';
+    
+    try {
+      const videos = await getListChannelVideos(listName);
+      
+      container.innerHTML = ''; // クリア
+      
+      if (videos.length === 0) {
+        const debugInfo = await getListDebugInfo(listName);
+        container.innerHTML = `
+          <div style="padding: 12px; color: #ccc;">
+            [${listName}] に動画がないか、チャンネルが登録されていません<br/>
+            <small style="color: #888;">デバッグ情報: ${debugInfo}</small>
+          </div>`;
+        return;
+      }
+      
+      videos.forEach(video => {
+        const videoDiv = document.createElement('div');
+        videoDiv.className = 'ytfrozen-video-item';
+
+        const img = document.createElement('img');
+        img.src = video.thumbnail;
+        videoDiv.appendChild(img);
+
+        const infoDiv = document.createElement('div');
+        infoDiv.style.flex = '1';
+        infoDiv.style.minWidth = '0';
+
+        const titleDiv = document.createElement('div');
+        titleDiv.className = 'ytfrozen-video-title';
+        titleDiv.textContent = video.title;
+        infoDiv.appendChild(titleDiv);
+
+        const channelDiv = document.createElement('div');
+        channelDiv.className = 'ytfrozen-video-channel';
+        channelDiv.textContent = video.channel;
+        infoDiv.appendChild(channelDiv);
+
+        const dateDiv = document.createElement('div');
+        dateDiv.className = 'ytfrozen-video-date';
+        dateDiv.textContent = video.publishedText;
+        infoDiv.appendChild(dateDiv);
+
+        videoDiv.appendChild(infoDiv);
+
+        // クリック時にポップアップで動画を表示
+        videoDiv.addEventListener('click', () => {
+          if (video.videoId && window.YTFrozenSubsPopup) {
+            window.YTFrozenSubsPopup.showVideoPopup(video.videoId, video.title);
+          } else if (video.url) {
+            window.open(video.url, '_blank');
+          }
+        });
+
+        container.appendChild(videoDiv);
+      });
+      
+    } catch (error) {
+      console.error(`[${listName}] 動画リスト描画エラー:`, error);
+      container.innerHTML = `<div style="padding: 12px; color: #f88;">[${listName}] の動画取得に失敗しました</div>`;
+    }
+  }
+
   // 指定リストの動画を取得してカラムに描画する関数
   async function renderListMovies(listName, container) {
     if (listName === 'sub-channels') {
       await renderSubChannelVideos(container);
     } else {
-      // 他のリスト用の実装（今後追加予定）
-      const placeholder = document.createElement('div');
-      placeholder.textContent = `[${listName}] の動画リスト（実装予定）`;
-      placeholder.style.padding = '8px 0';
-      placeholder.style.color = '#ccc';
-      container.appendChild(placeholder);
+      // リスト用の動画描画
+      await renderListChannelVideos(listName, container);
     }
   }
 

@@ -40,15 +40,28 @@
 
     // カラム生成（リストごと）
     if (!window.YTFrozenListManager) return;
-    const lists = await window.YTFrozenListManager.getLists();
-    const listHash = JSON.stringify(lists.map(l => l.name));
+  const lists = await window.YTFrozenListManager.getLists();
     
     // すでに同じ構成のカラムが存在するかチェック
     const existingColumns = wrapper.querySelectorAll('.ytfrozen-list-column');
     const expectedCount = lists.length + 1; // sub-channels + リスト数
-    
-    if (existingColumns.length === expectedCount && wrapper.dataset.listHash === listHash) {
-      return; // 既に正しい構成なら何もしない
+    // 既存カラムのdata-list-hashがリスト名のみかどうかチェック
+    let columnsValid = true;
+    if (existingColumns.length === expectedCount) {
+      // sub-channelsカラム
+      if (!existingColumns[0].dataset.listHash || existingColumns[0].dataset.listHash !== 'sub-channels') {
+        columnsValid = false;
+      }
+      // 各リストカラム
+      for (let i = 0; i < lists.length; i++) {
+        if (!existingColumns[i+1].dataset.listHash || existingColumns[i+1].dataset.listHash !== lists[i].name) {
+          columnsValid = false;
+          break;
+        }
+      }
+      if (columnsValid) {
+        return; // 既に正しい構成なら何もしない
+      }
     }
 
     try {
@@ -60,37 +73,30 @@
       const subCol = document.createElement('div');
       subCol.className = 'ytfrozen-list-column';
       subCol.dataset.listHash = 'sub-channels';
-      
       // カラムヘッダー
       const subHeader = document.createElement('div');
       subHeader.textContent = '登録チャンネル';
       subHeader.style.cssText = 'font-weight: bold; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.2);';
       subCol.appendChild(subHeader);
-      
       // 動画リストコンテナ
       const subContent = document.createElement('div');
       subContent.className = 'ytfrozen-list-content';
       subCol.appendChild(subContent);
-      
       frag.appendChild(subCol);
-      
       // 各リストカラムを続けて追加
       lists.forEach(list => {
         const col = document.createElement('div');
         col.className = 'ytfrozen-list-column';
-        col.dataset.listHash = listHash;
-        
+        col.dataset.listHash = list.name;
         // リストヘッダー
         const header = document.createElement('div');
         header.textContent = list.name;
         header.style.cssText = 'font-weight: bold; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.2);';
         col.appendChild(header);
-        
         // リストコンテンツ
         const content = document.createElement('div');
         content.className = 'ytfrozen-list-content';
         col.appendChild(content);
-        
         frag.appendChild(col);
       });
       // カラムをrendererの直後（子要素の一番最後）に配置
@@ -99,9 +105,7 @@
       } else {
         wrapper.appendChild(frag);
       }
-      
-      // ハッシュを設定
-      wrapper.dataset.listHash = listHash;
+      // wrapper自体にはdata-list-hashを付与しない
       
       // 動画リストを各カラムに描画（一度だけ）
       setTimeout(() => {
@@ -115,7 +119,7 @@
           
           // 各リストカラムにも対応（今後拡張予定）
           lists.forEach(list => {
-            const listContent = wrapper.querySelector(`.ytfrozen-list-column[data-list-hash="${listHash}"] .ytfrozen-list-content`);
+            const listContent = wrapper.querySelector(`.ytfrozen-list-column[data-list-hash="${list.name}"] .ytfrozen-list-content`);
             if (listContent && !listContent.dataset.rendered) {
               listContent.dataset.rendered = 'true';
               window.YTFrozenListMovie.renderListMovies(list.name, listContent);
