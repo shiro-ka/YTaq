@@ -1,0 +1,162 @@
+/* * *
+	登録チャンネル画面
+	ytd-two-column-browse-results-rendererが本来あるコンテナ。
+	subs-container.jsによってytd-two-column-browse-results-rendererの外側にytfrozen-subs-containerが生成され、
+	そこにリストのカラムが追加される。
+* * */
+
+/* - -
+	全体のコンテナ
+	subs-container.jsによって生成されるコンテナ
+- - */
+
+.ytfrozen-subs-container {
+	display: flex;
+	width: calc(100dvw - var(--app-drawer-width,256px));
+	padding-top: 2rem;
+	overflow-x: auto;
+}
+
+/* - -
+	チャンネルリストカラム
+- - */
+
+/* もともとの登録チャンネルカラムを削除 */
+ytd-two-column-browse-results-renderer[page-subtype="subscriptions"] {
+	display: none;
+}
+
+/* YTFrozen: ユーザーリストのカラム */
+.ytfrozen-list-column {
+	margin-left: 2rem;
+	background: var(--ytfrozen-fg, #3b4252);
+	color: #fff;
+	padding: 12px 0 0 16px;
+	border-radius: 10px;
+	min-width: 720px;
+	max-width: 720px;
+	box-shadow: 0 2px 12px #0003;
+	font-weight: bold;
+}
+
+.ytfrozen-list-content {
+	min-height: calc(100dvh - 14rem);
+	max-height: calc(100dvh - 14rem);
+	overflow-y: auto;
+	padding-right: 16px;
+}
+
+
+
+/* --- 動画リストアイテム --- */
+.ytfrozen-video-item {
+	display: flex;
+	margin-bottom: 8px;
+	padding: 8px;
+	border-radius: 6px;
+	border: 1px solid var(--ytfrozen-bd, rgba(255,255,255,0.2));
+	cursor: pointer;
+	transition: background 0.15s;
+}
+.ytfrozen-video-item:hover {
+	background: rgba(255,255,255,0.12);
+}
+.ytfrozen-video-item img {
+	width: 180px;
+	height: 102px;
+	object-fit: cover;
+	border-radius: 4px;
+	margin-right: 8px;
+}
+.ytfrozen-video-item .ytfrozen-video-title {
+	font-size: 12px;
+	font-weight: 500;
+	color: #fff;
+	line-height: 1.3;
+	margin-bottom: 2px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	line-clamp: 2;
+	-webkit-box-orient: vertical;
+}
+.ytfrozen-video-item .ytfrozen-video-channel {
+	font-size: 11px;
+	color: #aaa;
+	margin-bottom: 1px;
+}
+.ytfrozen-video-item .ytfrozen-video-date {
+	font-size: 10px;
+	color: #888;
+}
+
+/* --- ポップアップオーバーレイ --- */
+#ytfrozen-subs-popup {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.8);
+	z-index: 10000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	backdrop-filter: blur(4px);
+}
+.ytfrozen-subs-popup-content {
+	background: var(--ytfrozen-bg, #2e3440);
+	border-radius: 12px;
+	padding: 20px;
+	max-width: 90vw;
+	max-height: 90vh;
+	overflow: hidden;
+	box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+	position: relative;
+}
+.ytfrozen-subs-popup-close {
+	position: absolute;
+	top: 8px;
+	right: 12px;
+	background: none;
+	border: none;
+	color: #fff;
+	font-size: 24px;
+	cursor: pointer;
+	width: 32px;
+	height: 32px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 50%;
+	transition: background 0.2s;
+}
+.ytfrozen-subs-popup-close:hover {
+	background: rgba(255,255,255,0.1);
+}
+.ytfrozen-subs-popup-title {
+	color: #fff;
+	font-size: 16px;
+	font-weight: bold;
+	margin-bottom: 12px;
+	padding-right: 40px;
+	line-height: 1.4;
+}
+.ytfrozen-subs-popup-iframe-container {
+	width: 80vw;
+	max-width: 1280px;
+	height: 45vw;
+	max-height: 720px;
+	min-height: 360px;
+	position: relative;
+	background: #000;
+	border-radius: 8px;
+	overflow: hidden;
+}
+.ytfrozen-subs-popup-iframe-container iframe {
+	width: 100%;
+	height: 100%;
+	border: none;
+	border-radius: 8px;
+}

@@ -1,4 +1,11 @@
-// YTFrozen: 登録チャンネル画面のytd-two-column-browse-results-rendererをラップ
+/* * *
+  登録チャンネル画面にhtml要素を作成
+  全体のコンテナとしてytfrozen-subs-containerを作成し、その中にリストカラムを作成
+* * */
+
+
+
+
 (function() {
   let isUpdating = false;
   async function wrapSubsRenderer() {
@@ -35,8 +42,13 @@
     if (!window.YTFrozenListManager) return;
     const lists = await window.YTFrozenListManager.getLists();
     const listHash = JSON.stringify(lists.map(l => l.name));
-    if (wrapper.__ytfrozenListSig === listHash) {
-      return; // リストに変化がなければ再描画しない
+    
+    // すでに同じ構成のカラムが存在するかチェック
+    const existingColumns = wrapper.querySelectorAll('.ytfrozen-list-column');
+    const expectedCount = lists.length + 1; // sub-channels + リスト数
+    
+    if (existingColumns.length === expectedCount && wrapper.dataset.listHash === listHash) {
+      return; // 既に正しい構成なら何もしない
     }
 
     try {
@@ -47,23 +59,38 @@
       // 先頭にsub-channelsカラムを追加
       const subCol = document.createElement('div');
       subCol.className = 'ytfrozen-list-column';
-      subCol.textContent = 'sub-channels';
       subCol.dataset.listHash = 'sub-channels';
+      
+      // カラムヘッダー
+      const subHeader = document.createElement('div');
+      subHeader.textContent = 'sub-channels';
+      subHeader.style.cssText = 'font-weight: bold; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.2);';
+      subCol.appendChild(subHeader);
+      
+      // 動画リストコンテナ
+      const subContent = document.createElement('div');
+      subContent.className = 'ytfrozen-list-content';
+      subCol.appendChild(subContent);
+      
       frag.appendChild(subCol);
-      // 直近3日分の登録チャンネル新着を描画
-      try {
-        if (window.YTFrozenListMovie && typeof window.YTFrozenListMovie.renderSubChannels === 'function') {
-          window.YTFrozenListMovie.renderSubChannels(renderer, subCol);
-        }
-      } catch (e) {
-        console.warn('YTFrozen: renderSubChannels failed', e);
-      }
+      
       // 各リストカラムを続けて追加
       lists.forEach(list => {
         const col = document.createElement('div');
         col.className = 'ytfrozen-list-column';
-        col.textContent = list.name;
         col.dataset.listHash = listHash;
+        
+        // リストヘッダー
+        const header = document.createElement('div');
+        header.textContent = list.name;
+        header.style.cssText = 'font-weight: bold; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.2);';
+        col.appendChild(header);
+        
+        // リストコンテンツ
+        const content = document.createElement('div');
+        content.className = 'ytfrozen-list-content';
+        col.appendChild(content);
+        
         frag.appendChild(col);
       });
       // カラムをrendererの直後（子要素の一番最後）に配置
@@ -72,8 +99,31 @@
       } else {
         wrapper.appendChild(frag);
       }
-      // 属性ではなく要素プロパティでシグネチャを保持（MutationObserverを発火させない）
-      wrapper.__ytfrozenListSig = listHash;
+      
+      // ハッシュを設定
+      wrapper.dataset.listHash = listHash;
+      
+      // 動画リストを各カラムに描画（一度だけ）
+      setTimeout(() => {
+        if (window.YTFrozenListMovie) {
+          // sub-channelsカラムに新着動画を表示（まだ描画されていない場合のみ）
+          const subColContent = wrapper.querySelector('.ytfrozen-list-column[data-list-hash="sub-channels"] .ytfrozen-list-content');
+          if (subColContent && !subColContent.dataset.rendered) {
+            subColContent.dataset.rendered = 'true';
+            window.YTFrozenListMovie.renderListMovies('sub-channels', subColContent);
+          }
+          
+          // 各リストカラムにも対応（今後拡張予定）
+          lists.forEach(list => {
+            const listContent = wrapper.querySelector(`.ytfrozen-list-column[data-list-hash="${listHash}"] .ytfrozen-list-content`);
+            if (listContent && !listContent.dataset.rendered) {
+              listContent.dataset.rendered = 'true';
+              window.YTFrozenListMovie.renderListMovies(list.name, listContent);
+            }
+          });
+        }
+      }, 100);
+      
     } finally {
       isUpdating = false;
     }
@@ -87,25 +137,18 @@
 
     let updateTimer = null;
     const scheduleRender = () => {
-      // 直近の変化から一定時間（静穏期間）経過してから1回だけ実行
-      if (updateTimer) clearTimeout(updateTimer);
+      if (updateTimer) return;
       updateTimer = setTimeout(() => {
         updateTimer = null;
         wrapSubsRenderer();
-      }, 600);
+      }, 300); // デバウンス時間を長くしてチラつきを軽減
     };
 
     function startBrowseObserver() {
       const browse = document.querySelector('ytd-browse[page-subtype="subscriptions"]');
       if (!browse) return;
       if (observer) return;
-      observer = new MutationObserver((mutationList) => {
-        // 自分のコンテナ内の変化のみなら無視して過剰再描画を防ぐ
-        const wrapper = browse.querySelector('.ytfrozen-subs-container');
-        if (wrapper && mutationList.length > 0) {
-          const onlyInsideWrapper = mutationList.every(m => wrapper === m.target || wrapper.contains(m.target));
-          if (onlyInsideWrapper) return;
-        }
+      observer = new MutationObserver(() => {
         // 連続変化をデバウンス
         scheduleRender();
       });

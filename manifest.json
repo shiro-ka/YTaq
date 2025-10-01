@@ -23,20 +23,20 @@
       "matches": ["https://www.youtube.com/*"],
       "js": [
         "ytfrozen-overlay.js",
-        "ytfrozen-thumbnail-replacer.js",
         "ytfrozen-playbackrate-manager.js",
         "content.js",
         "ytfrozen-list-manager.js",
         "ytfrozen-channel-actions.js",
         "ytfrozen-td.js",
-        "ytfrozen-subs-container.js",
-        "ytfrozen-list-movie.js"
+        "subscriptions/ytfrozen-subs-container.js",
+        "subscriptions/ytfrozen-subs-movie.js",
+        "subscriptions/ytfrozen-subs-popup.js"
       ],
       "css": [
+        "subscriptions/ytfrozen-subs.css",
         "css/ytfrozen-variables.css",
         "css/ytfrozen-style.css",
         "css/ytfrozen-home.css",
-        "css/ytfrozen-subs.css",
         "css/ytfrozen-results.css",
         "css/ytfrozen-channel.css"
       ]
