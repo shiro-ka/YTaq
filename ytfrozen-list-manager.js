@@ -34,12 +34,22 @@ const YTFrozenListManager = {
   },
 
   async addList(name) {
-    if (!name) return;
+    if (!name) {
+      console.warn('[YTFrozenListManager] addList: 名前が空です');
+      return;
+    }
     const lists = await this.getLists();
-    if (lists.find(l => l.name === name)) return; // 重複防止
+    if (lists.find(l => l.name === name)) {
+      console.warn('[YTFrozenListManager] addList: 同名のリストが既に存在します:', name);
+      return; // 重複防止
+    }
     lists.push({ name, channels: [] });
+    console.log('[YTFrozenListManager] 新しいリストを追加:', name);
     return new Promise(resolve => {
-      chrome.storage.local.set({ [this.STORAGE_KEY]: lists }, () => resolve());
+      chrome.storage.local.set({ [this.STORAGE_KEY]: lists }, () => {
+        console.log('[YTFrozenListManager] リスト保存完了:', lists);
+        resolve();
+      });
     });
   },
 
@@ -86,30 +96,66 @@ const YTFrozenListManager = {
   },
 
   async removeChannelFromList(listName, channelId) {
-    if (!listName || !channelId) return;
+    if (!listName || !channelId) {
+      console.warn('[YTFrozenListManager] removeChannelFromList: 無効なパラメータ', { listName, channelId });
+      return;
+    }
     const lists = await this.getLists();
     const list = lists.find(l => l.name === listName);
-    if (!list) return;
-    list.channels = list.channels.filter(id => id !== channelId);
+    if (!list) {
+      console.warn('[YTFrozenListManager] removeChannelFromList: リストが見つかりません', listName);
+      return;
+    }
+    
+    // 新形式（オブジェクト）と旧形式（文字列）の両方をサポート
+    const beforeCount = list.channels.length;
+    list.channels = list.channels.filter(ch => 
+      (typeof ch === 'string' ? ch : ch.id) !== channelId
+    );
+    const afterCount = list.channels.length;
+    
+    console.log('[YTFrozenListManager] チャンネルをリストから削除:', { 
+      listName, 
+      channelId, 
+      removed: beforeCount > afterCount,
+      beforeCount,
+      afterCount 
+    });
+    
     return new Promise(resolve => {
-      chrome.storage.local.set({ [this.STORAGE_KEY]: lists }, () => resolve());
+      chrome.storage.local.set({ [this.STORAGE_KEY]: lists }, () => {
+        console.log('[YTFrozenListManager] ストレージに保存完了:', lists);
+        resolve();
+      });
     });
   },
 
   // 現在のチャンネルIDを取得（URLから）
   getChannelId() {
-    // /channel/UCxxxx... or /@xxxx 形式に対応
-    const m = location.pathname.match(/\/channel\/([\w-]+)/);
-    if (m) {
-      console.log('[YTFrozenListManager] チャンネルID取得 (UC形式):', m[1]);
-      return m[1];
+    // 複数のURLパターンに対応
+    const patterns = [
+      /\/channel\/([\w-]+)/,           // /channel/UCxxxx...
+      /\/@([\w-]+)/,                   // /@username
+      /\/feed\/subscriptions\/([\w-]+)/, // /feed/subscriptions/UCxxxx...
+      /\/c\/([\w-]+)/,                 // /c/channelname
+      /\/user\/([\w-]+)/               // /user/username
+    ];
+    
+    for (const pattern of patterns) {
+      const match = location.pathname.match(pattern);
+      if (match) {
+        let channelId = match[1];
+        
+        // @形式の場合は@を追加
+        if (pattern.source.includes('@')) {
+          channelId = '@' + channelId;
+        }
+        
+        console.log('[YTFrozenListManager] チャンネルID取得:', channelId, 'from', location.pathname);
+        return channelId;
+      }
     }
-    const m2 = location.pathname.match(/\/@([\w-]+)/);
-    if (m2) {
-      const channelId = '@' + m2[1];
-      console.log('[YTFrozenListManager] チャンネルID取得 (@形式):', channelId);
-      return channelId;
-    }
+    
     console.warn('[YTFrozenListManager] チャンネルIDを取得できませんでした:', location.pathname);
     return null;
   },
@@ -124,15 +170,29 @@ const YTFrozenListManager = {
       '.ytd-c4-tabbed-header-renderer #text',
       'h1.ytd-channel-name',
       '#text.ytd-channel-name',
-      '.ytd-channel-name yt-formatted-string#text'
+      '.ytd-channel-name yt-formatted-string#text',
+      // 追加: より一般的なセレクタ
+      '[id*="channel-name"] yt-formatted-string',
+      'ytd-channel-name yt-formatted-string',
+      'yt-formatted-string[id="text"]'
     ];
     
     for (const selector of selectors) {
       const el = document.querySelector(selector);
       if (el && el.textContent?.trim()) {
         const name = el.textContent.trim();
-        console.log('[YTFrozenListManager] チャンネル名取得:', name);
+        console.log('[YTFrozenListManager] チャンネル名取得:', name, 'from selector:', selector);
         return name;
+      }
+    }
+    
+    // フォールバック: タイトルタグからチャンネル名を推測
+    const title = document.title;
+    if (title && title.includes(' - YouTube')) {
+      const possibleName = title.replace(' - YouTube', '').trim();
+      if (possibleName) {
+        console.log('[YTFrozenListManager] チャンネル名取得 (タイトルから):', possibleName);
+        return possibleName;
       }
     }
     

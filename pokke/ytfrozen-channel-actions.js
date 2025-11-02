@@ -75,7 +75,8 @@
         if (!window.YTFrozenListManager) return;
         await window.YTFrozenListManager.addList(name);
         input.value = '';
-        // 今後: リスト表示を更新
+        // リスト表示を更新
+        await renderLists();
       });
       inputWrap.appendChild(input);
       inputWrap.appendChild(addBtn);
@@ -113,7 +114,12 @@
           const cb = document.createElement('input');
           cb.type = 'checkbox';
           cb.style.marginLeft = '12px';
-          cb.checked = !!(channelId && list.channels.includes(channelId));
+          // 新形式（オブジェクト）と旧形式（文字列）の両方をサポート
+          const isChannelInList = channelId && list.channels.some(ch => 
+            (typeof ch === 'string' ? ch : ch.id) === channelId
+          );
+          cb.checked = !!isChannelInList;
+          
           cb.addEventListener('change', async () => {
             if (!window.YTFrozenListManager) return;
             if (!channelId) return;

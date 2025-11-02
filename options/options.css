@@ -1,0 +1,138 @@
+/* YTFrozen 設定画面スタイル */
+
+body {
+  font-family: system-ui, sans-serif;
+  background: #181c20;
+  color: #fff;
+  margin: 0;
+  padding: 0;
+}
+
+h1 {
+  text-align: center;
+  margin-top: 2em;
+  font-size: 2.2em;
+  letter-spacing: 0.05em;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2em;
+}
+
+.section {
+  background: #2e3440;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.section h2 {
+  margin-top: 0;
+  font-size: 1.4em;
+  border-bottom: 2px solid #4c566a;
+  padding-bottom: 12px;
+  margin-bottom: 20px;
+}
+
+.color-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: #3b4252;
+  border-radius: 8px;
+}
+
+.color-item label {
+  flex: 1;
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+}
+
+.color-item .var-name {
+  font-weight: bold;
+  margin-bottom: 4px;
+  color: #88c0d0;
+}
+
+.color-item .var-desc {
+  font-size: 12px;
+  color: #aaa;
+}
+
+.color-item input[type="color"] {
+  width: 60px;
+  height: 40px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-right: 12px;
+}
+
+.color-item input[type="text"] {
+  width: 100px;
+  padding: 6px 10px;
+  background: #2e3440;
+  border: 1px solid #4c566a;
+  border-radius: 6px;
+  color: #fff;
+  font-family: monospace;
+  font-size: 13px;
+}
+
+.button-group {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+button {
+  padding: 12px 24px;
+  font-size: 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+#save-btn {
+  background: #88c0d0;
+  color: #2e3440;
+}
+
+#save-btn:hover {
+  background: #8fbcbb;
+  transform: translateY(-1px);
+}
+
+#reset-btn {
+  background: #bf616a;
+  color: #fff;
+}
+
+#reset-btn:hover {
+  background: #d08770;
+}
+
+.message {
+  text-align: center;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 16px;
+  display: none;
+}
+
+.message.success {
+  background: #a3be8c;
+  color: #2e3440;
+}
+
+.message.error {
+  background: #bf616a;
+  color: #fff;
+}

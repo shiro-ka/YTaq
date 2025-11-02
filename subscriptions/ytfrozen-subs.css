@@ -1,13 +1,19 @@
 /* * *
 	登録チャンネル画面
-	ytd-two-column-browse-results-rendererが本来あるコンテナ。
-	subs-container.jsによってytd-two-column-browse-results-rendererの外側にytfrozen-subs-containerが生成され、
-	そこにリストのカラムが追加される。
+	ytd-browse[page-subtype="subscriptions"]の子要素として.ytfrozen-subs-containerを生成
 * * */
 
-/* もともとの登録チャンネルカラムは削除 */
-ytd-two-column-browse-results-renderer[page-subtype="subscriptions"] {
-	display: none;
+/* YouTubeデフォルトのチャンネル登録欄を魔改造 */
+ytd-browse[page-subtype="subscriptions"] > ytd-two-column-browse-results-renderer {
+	visibility: hidden;
+	position: absolute;
+	pointer-events: none;
+}
+
+/* YouTubeのホバー時プレビュー再生を無効化 */
+ytd-browse[page-subtype="subscriptions"] ytd-moving-thumbnail-renderer,
+ytd-browse[page-subtype="subscriptions"] ytd-video-preview {
+	display: none !important;
 }
 
 /* - -

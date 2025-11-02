@@ -160,6 +160,11 @@
       const publishedText = timeEl ? timeEl.textContent.trim() : '';
       const url = titleEl.href || '';
       
+      // ライブ・プレミア公開の検出（リスト用のみで使用）
+      const isLive = videoElement.querySelector('.badge-style-type-live, [aria-label*="ライブ"], [aria-label*="LIVE"]');
+      const isPremiere = videoElement.querySelector('.badge-style-type-premiere, [aria-label*="プレミア"], [aria-label*="PREMIERE"]');
+      const isUpcoming = publishedText.includes('予定') || publishedText.includes('プレミア公開') || publishedText.includes('ライブ配信予定');
+      
       // サムネイルは動画IDから中間サムネイルURLを生成
       const videoId = extractVideoId(url);
       // mq2.jpg: 動画の中間サムネイル（ytfrozen-thumbnail-replacer.js参照）
@@ -172,7 +177,10 @@
         publishedText,
         publishedDate: parsePublishedDate(publishedText),
         url,
-        videoId
+        videoId,
+        isLive: !!isLive,
+        isPremiere: !!isPremiere,
+        isUpcoming
       };
     } catch (error) {
       console.error('動画データ抽出エラー:', error, videoElement);
@@ -265,33 +273,42 @@
   
   // sub-channelsカラム用の動画リストを描画
   async function renderSubChannelVideos(container) {
+    console.log('[YTFrozen Movie] renderSubChannelVideos called', container);
+
     // 既に描画済みかチェック
     if (container.children.length > 0 && !container.innerHTML.includes('取得中')) {
+      console.log('[YTFrozen Movie] Already rendered, skipping');
       return;
     }
-    
+
     // ローディング表示
     container.innerHTML = '<div style="padding: 12px; color: #ccc;">新着動画を取得中...</div>';
-    
+
     try {
       // キャッシュチェック
       const now = Date.now();
       let videos;
-      
+
       if (videoCache && (now - cacheTime) < CACHE_DURATION) {
+        console.log('[YTFrozen Movie] Using cached videos:', videoCache.length);
         videos = videoCache;
       } else {
+        console.log('[YTFrozen Movie] Fetching new videos...');
         videos = await getSubscriptionVideos();
         videoCache = videos;
         cacheTime = now;
+        console.log('[YTFrozen Movie] Fetched videos:', videos.length);
       }
-      
+
       container.innerHTML = ''; // クリア
-      
+
       if (videos.length === 0) {
+        console.log('[YTFrozen Movie] No videos found');
         container.innerHTML = '<div style="padding: 12px; color: #ccc;">新着動画がありません</div>';
         return;
       }
+
+      console.log('[YTFrozen Movie] Rendering', videos.length, 'videos');
       
       videos.forEach(video => {
         const videoDiv = document.createElement('div');
@@ -376,11 +393,21 @@
           
           console.log(`[${channelId}] 動画取得開始`, channelName ? `(表示名: ${channelName})` : '');
           const channelVideos = await getChannelRecentVideos(channelId, channelName);
-          if (channelVideos.length > 0) {
-            console.log(`[${channelId}] ${channelVideos.length}件の動画を取得`);
-            allVideos.push(...channelVideos);
+          
+          // リスト用ではライブ・プレミア・予定動画を除外
+          const filteredVideos = channelVideos.filter(video => {
+            const shouldExclude = video.isLive || video.isPremiere || video.isUpcoming;
+            if (shouldExclude) {
+              console.log(`[${channelId}] [除外] ライブ/プレミア/予定動画: ${video.title}`);
+            }
+            return !shouldExclude;
+          });
+          
+          if (filteredVideos.length > 0) {
+            console.log(`[${channelId}] ${filteredVideos.length}件の動画を取得 (除外後)`);
+            allVideos.push(...filteredVideos);
           } else {
-            console.warn(`[${channelId}] 動画が見つかりませんでした`);
+            console.warn(`[${channelId}] 動画が見つかりませんでした (除外後)`);
           }
         } catch (error) {
           console.warn(`[${channelEntry}] 動画取得エラー:`, error);
@@ -642,6 +669,7 @@
   async function renderListMovies(listName, container) {
     if (listName === 'sub-channels') {
       await renderSubChannelVideos(container);
+
     } else {
       // リスト用の動画描画
       await renderListChannelVideos(listName, container);

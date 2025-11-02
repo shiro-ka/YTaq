@@ -1,5 +1,5 @@
 {
-  "manifest_version": 3,
+  "manifest_version": 2,
   "name": "YTFrozen",
   "version": "1.0.0",
   "description": "YTFrozen",
@@ -10,9 +10,6 @@
   "permissions": [
     "storage",
     "tabs",
-    "scripting"
-  ],
-  "host_permissions": [
     "https://www.youtube.com/*"
   ],
   "background": {
@@ -22,40 +19,29 @@
     {
       "matches": ["https://www.youtube.com/*"],
       "js": [
-        "ytfrozen-overlay.js",
-        "ytfrozen-playbackrate-manager.js",
         "content.js",
         "ytfrozen-list-manager.js",
-        "pokke/ytfrozen-channel-actions.js",
-        "ytfrozen-td.js",
+        "options/apply-options.js",
         "subscriptions/ytfrozen-subs-container.js",
         "subscriptions/ytfrozen-subs-movie.js",
         "subscriptions/ytfrozen-subs-popup.js"
       ],
       "css": [
-        "subscriptions/ytfrozen-subs.css",
-        "css/ytfrozen-variables.css",
-        "css/ytfrozen-style.css",
-        "css/ytfrozen-home.css",
-        "css/ytfrozen-results.css",
-        "css/ytfrozen-channel.css"
+        "ytfrozen-variables.css",
+        "ytfrozen-style.css",
+        "subscriptions/ytfrozen-subs.css"
       ]
     }
   ],
-  "action": {
+  "browser_action": {
     "default_icon": {
       "48": "icons/icon48.png"
     },
     "default_title": "YTFrozen"
   },
-  "web_accessible_resources": [
-    {
-      "resources": ["popup.html", "popup.js", "icons/*", "ytfrozen-iframe-api.js"],
-      "matches": ["https://www.youtube.com/*"]
-    }
-  ],
+  "web_accessible_resources": ["popup.html", "popup.js", "icons/*", "ytfrozen-iframe-api.js"],
   "options_ui": {
-    "page": "options.html",
+    "page": "options/options.html",
     "open_in_tab": true
   }
 }
