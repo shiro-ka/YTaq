@@ -68,8 +68,8 @@
       subCol.dataset.listHash = 'sub-channels';
 
       const subHeader = document.createElement('div');
+      subHeader.className = 'ytfrozen-header';
       subHeader.textContent = '登録チャンネル';
-      subHeader.style.cssText = 'font-weight: bold; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.2);';
       subCol.appendChild(subHeader);
 
       const subContent = document.createElement('div');
@@ -85,8 +85,8 @@
         col.dataset.listHash = list.name;
 
         const header = document.createElement('div');
+        header.className = 'ytfrozen-header';
         header.textContent = list.name;
-        header.style.cssText = 'font-weight: bold; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.2);';
         col.appendChild(header);
 
         const content = document.createElement('div');

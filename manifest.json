@@ -10,7 +10,9 @@
   "permissions": [
     "storage",
     "tabs",
-    "https://www.youtube.com/*"
+    "webRequest",
+    "webRequestBlocking",
+    "<all_urls>"
   ],
   "background": {
     "scripts": ["background.js"]
@@ -39,7 +41,14 @@
     },
     "default_title": "YTFrozen"
   },
-  "web_accessible_resources": ["popup.html", "popup.js", "icons/*", "ytfrozen-iframe-api.js"],
+  "web_accessible_resources": [
+    "youtube-player-wrapper.html",
+    "youtube-player-wrapper.js",
+    "popup.html",
+    "popup.js",
+    "icons/*",
+    "ytfrozen-iframe-api.js"
+  ],
   "options_ui": {
     "page": "options/options.html",
     "open_in_tab": true

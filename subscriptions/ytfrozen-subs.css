@@ -3,7 +3,11 @@
 	ytd-browse[page-subtype="subscriptions"]の子要素として.ytfrozen-subs-containerを生成
 * * */
 
-/* YouTubeデフォルトのチャンネル登録欄を魔改造 */
+/* - -
+	Youtubeデフォルトのチャンネル登録欄を魔改造
+- - */
+
+/* YouTubeデフォルトの */
 ytd-browse[page-subtype="subscriptions"] > ytd-two-column-browse-results-renderer {
 	visibility: hidden;
 	position: absolute;
@@ -44,6 +48,14 @@ ytd-browse[page-subtype="subscriptions"] ytd-video-preview {
 	max-width: 640px;
 	box-shadow: 0 2px 12px #0003;
 	font-weight: bold;
+}
+
+/* カラムヘッダー */
+.ytfrozen-header {
+	font-size: 18px;
+	margin-bottom: 8px;
+	padding-bottom: 4px;
+	border-bottom: 1px solid rgba(255,255,255,0.2);
 }
 
 .ytfrozen-list-content {

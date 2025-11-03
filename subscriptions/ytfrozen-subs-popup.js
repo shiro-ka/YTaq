@@ -1,85 +1,85 @@
 // YTFrozen: リスト内動画のポップアップ表示機能
-// content.jsとytfrozen-iframe-api.jsを参考にした動画ポップアップ
+// iframe埋め込みでオーバーレイ表示
 
 (function() {
-  let popupContainer = null;
-  let currentIframe = null;
-  
   // ポップアップを表示
   function showVideoPopup(videoId, videoTitle) {
     if (!videoId) return;
-    
+
+    console.log('[YTFrozen Popup] Opening video:', videoId);
+
     // 既存のポップアップがあれば削除
-    hideVideoPopup();
-    
-    // ポップアップコンテナを作成
-    popupContainer = document.createElement('div');
-    popupContainer.id = 'ytfrozen-subs-popup';
-    
-    // ポップアップ内容
-    const popupContent = document.createElement('div');
-    popupContent.className = 'ytfrozen-subs-popup-content';
-    
+    const existingPopup = document.getElementById('ytfrozen-subs-popup');
+    if (existingPopup) existingPopup.remove();
+
+    // オーバーレイ作成
+    const popup = document.createElement('div');
+    popup.id = 'ytfrozen-subs-popup';
+
+    // コンテンツコンテナ
+    const content = document.createElement('div');
+    content.className = 'ytfrozen-subs-popup-content';
+
     // 閉じるボタン
-    const closeButton = document.createElement('button');
-    closeButton.innerHTML = '✕';
-    closeButton.className = 'ytfrozen-subs-popup-close';
-    closeButton.addEventListener('click', hideVideoPopup);
-    
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'ytfrozen-subs-popup-close';
+    closeBtn.textContent = '×';
+    closeBtn.addEventListener('click', hideVideoPopup);
+
     // タイトル
-    const titleElement = document.createElement('div');
-    titleElement.textContent = videoTitle || '動画';
-    titleElement.className = 'ytfrozen-subs-popup-title';
-    
+    const title = document.createElement('div');
+    title.className = 'ytfrozen-subs-popup-title';
+    title.textContent = videoTitle || '動画を読み込み中...';
+
     // iframeコンテナ
     const iframeContainer = document.createElement('div');
     iframeContainer.className = 'ytfrozen-subs-popup-iframe-container';
-    
-    // iframe作成
-    currentIframe = document.createElement('iframe');
-    currentIframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`;
-    // スタイルはCSSクラスで統一
-    currentIframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
-    currentIframe.allowFullscreen = true;
-    
+
+    // iframe作成: 通常のYouTubeページを直接表示
+    // embed APIではなく、watch?v= の通常ページを使用することで
+    // すべての制限を回避し、YouTube本来の機能をフルに使える
+    const iframe = document.createElement('iframe');
+    iframe.src = `https://www.youtube.com/watch?v=${videoId}&autoplay=1`;
+    iframe.allowFullscreen = true;
+
+    console.log('[YTFrozen Popup] Loading YouTube page:', iframe.src);
+
     // 要素を組み立て
-    iframeContainer.appendChild(currentIframe);
-    popupContent.appendChild(closeButton);
-    popupContent.appendChild(titleElement);
-    popupContent.appendChild(iframeContainer);
-    popupContainer.appendChild(popupContent);
-    
-    // DOMに追加
-    document.body.appendChild(popupContainer);
-    
-    // ESCキーで閉じる
-    document.addEventListener('keydown', handleKeydown);
-    
-    // 背景クリックで閉じる
-    popupContainer.addEventListener('click', (e) => {
-      if (e.target === popupContainer) {
-        hideVideoPopup();
-      }
+    iframeContainer.appendChild(iframe);
+    content.appendChild(closeBtn);
+    content.appendChild(title);
+    content.appendChild(iframeContainer);
+    popup.appendChild(content);
+
+    // オーバーレイクリックで閉じる
+    popup.addEventListener('click', (e) => {
+      if (e.target === popup) hideVideoPopup();
     });
+
+    // ESCキーで閉じる
+    const handleKeydown = (e) => {
+      if (e.key === 'Escape') {
+        hideVideoPopup();
+        document.removeEventListener('keydown', handleKeydown);
+      }
+    };
+    document.addEventListener('keydown', handleKeydown);
+
+    // DOMに追加
+    document.body.appendChild(popup);
+
+    console.log('[YTFrozen Popup] Popup displayed with iframe');
   }
-  
+
   // ポップアップを非表示
   function hideVideoPopup() {
-    if (popupContainer) {
-      document.removeEventListener('keydown', handleKeydown);
-      popupContainer.remove();
-      popupContainer = null;
-      currentIframe = null;
+    const popup = document.getElementById('ytfrozen-subs-popup');
+    if (popup) {
+      popup.remove();
+      console.log('[YTFrozen Popup] Popup closed');
     }
   }
-  
-  // キーボードイベント処理
-  function handleKeydown(e) {
-    if (e.key === 'Escape') {
-      hideVideoPopup();
-    }
-  }
-  
+
   // グローバル公開
   window.YTFrozenSubsPopup = {
     showVideoPopup,
