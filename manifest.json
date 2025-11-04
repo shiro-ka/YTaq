@@ -27,13 +27,15 @@
         "subscriptions/ytfrozen-subs-container.js",
         "subscriptions/ytfrozen-subs-movie.js",
         "popup/ytfrozen-popup.js",
-        "popup/ytfrozen-popup-cleaner.js"
+        "popup/ytfrozen-popup-cleaner.js",
+        "home/ytfrozen-home.js"
       ],
       "css": [
         "ytfrozen-variables.css",
         "ytfrozen-style.css",
-        "subscriptions/ytfrozen-subs.css",
-        "popup/ytfrozen-popup.css"
+        "popup/ytfrozen-popup.css",
+        "home/ytfrozen-home.css",
+        "subscriptions/ytfrozen-subs.css"
       ],
       "all_frames": true,
       "run_at": "document_start"
