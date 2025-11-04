@@ -26,13 +26,17 @@
         "options/apply-options.js",
         "subscriptions/ytfrozen-subs-container.js",
         "subscriptions/ytfrozen-subs-movie.js",
-        "subscriptions/ytfrozen-subs-popup.js"
+        "popup/ytfrozen-popup.js",
+        "popup/ytfrozen-popup-cleaner.js"
       ],
       "css": [
         "ytfrozen-variables.css",
         "ytfrozen-style.css",
-        "subscriptions/ytfrozen-subs.css"
-      ]
+        "subscriptions/ytfrozen-subs.css",
+        "popup/ytfrozen-popup.css"
+      ],
+      "all_frames": true,
+      "run_at": "document_start"
     }
   ],
   "browser_action": {

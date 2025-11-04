@@ -341,8 +341,8 @@
 
         // クリック時にポップアップで動画を表示
         videoDiv.addEventListener('click', () => {
-          if (video.videoId && window.YTFrozenSubsPopup) {
-            window.YTFrozenSubsPopup.showVideoPopup(video.videoId, video.title);
+          if (video.videoId && window.YTFrozenPopup) {
+            window.YTFrozenPopup.showVideoPopup(video.videoId, video.title);
           } else if (video.url) {
             window.open(video.url, '_blank');
           }
@@ -649,8 +649,8 @@
 
         // クリック時にポップアップで動画を表示
         videoDiv.addEventListener('click', () => {
-          if (video.videoId && window.YTFrozenSubsPopup) {
-            window.YTFrozenSubsPopup.showVideoPopup(video.videoId, video.title);
+          if (video.videoId && window.YTFrozenPopup) {
+            window.YTFrozenPopup.showVideoPopup(video.videoId, video.title);
           } else if (video.url) {
             window.open(video.url, '_blank');
           }
