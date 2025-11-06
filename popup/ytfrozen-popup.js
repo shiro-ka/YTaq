@@ -3,13 +3,13 @@
 
 (function() {
   // ポップアップを表示
-  function showVideoPopup(videoId, videoTitle) {
+  function showVideoPopup(videoId, videoTitle, isShorts = false) {
     if (!videoId) {
       console.error('[YTFrozen Popup] No videoId provided!');
       return;
     }
 
-    console.log('[YTFrozen Popup] Opening video:', videoId, 'Title:', videoTitle);
+    console.log('[YTFrozen Popup] Opening video:', videoId, 'Title:', videoTitle, 'isShorts:', isShorts);
 
     // 既存のポップアップがあれば削除
     const existingPopup = document.getElementById('ytfrozen-popup');
@@ -22,6 +22,11 @@
     // コンテンツコンテナ
     const content = document.createElement('div');
     content.className = 'ytfrozen-popup-content';
+
+    // Shortsの場合は縦長クラスを追加
+    if (isShorts) {
+      content.classList.add('ytfrozen-popup-shorts');
+    }
 
     // 閉じるボタン
     const closeBtn = document.createElement('button');
@@ -37,6 +42,11 @@
     // iframeコンテナ
     const iframeContainer = document.createElement('div');
     iframeContainer.className = 'ytfrozen-popup-iframe-container';
+
+    // Shortsの場合は縦長クラスを追加
+    if (isShorts) {
+      iframeContainer.classList.add('ytfrozen-popup-shorts');
+    }
 
     // iframe作成: YouTube全体ページを読み込む（UI最小化）
     // 注意: 埋め込みプレイヤーは拡張機能からのアクセスをYouTubeが完全にブロックしているため、

@@ -67,3 +67,18 @@
 	border: none;
 	border-radius: 8px;
 }
+
+/* --- Shorts用の縦長レイアウト --- */
+.ytfrozen-popup-iframe-container.ytfrozen-popup-shorts {
+	width: 50vh;           /* 高さの50% = 9:16比率に近い */
+	max-width: 500px;      /* 最大幅を制限 */
+	height: 90vh;          /* 高さは画面の90% */
+	max-height: none;      /* 最大高さ制限を解除 */
+	min-height: 600px;     /* 最小高さを設定 */
+}
+
+/* Shorts用のコンテンツコンテナ調整 */
+.ytfrozen-popup-content.ytfrozen-popup-shorts {
+	max-width: 540px;      /* iframe + padding */
+	max-height: 95vh;
+}

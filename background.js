@@ -72,3 +72,36 @@ browser.webRequest.onHeadersReceived.addListener(
 );
 
 console.log('[YTFrozen] webRequest listener registered successfully');
+
+// YouTubeサムネイルを先頭フレーム（hq1.jpg）にリダイレクト
+console.log('[YTFrozen] Registering thumbnail redirect listener...');
+
+browser.webRequest.onBeforeRequest.addListener(
+	(details) => {
+		// YouTubeサムネイルURLをパターンマッチ
+		// 例: https://i.ytimg.com/vi/VIDEO_ID/hqdefault.jpg
+		//     https://i9.ytimg.com/vi_webp/VIDEO_ID/sddefault.webp
+		const match = details.url.match(/^https:\/\/i9?\.ytimg\.com\/(vi|vi_webp)\/([\w-]+)\/(default|hqdefault|mqdefault|sddefault|maxresdefault|hq720)(_custom_\d+)?\.(jpg|webp)/);
+
+		if (match) {
+			const videoId = match[2];
+			const extension = match[5]; // jpg or webp
+
+			// hq1.jpg（先頭フレーム）にリダイレクト
+			const redirectUrl = `https://i.ytimg.com/vi/${videoId}/hq1.${extension}`;
+
+			console.log('[YTFrozen Thumbnail] Redirecting:', details.url, '→', redirectUrl);
+
+			return { redirectUrl: redirectUrl };
+		}
+	},
+	{
+		urls: [
+			"*://i.ytimg.com/*",
+			"*://i9.ytimg.com/*"
+		]
+	},
+	['blocking']
+);
+
+console.log('[YTFrozen] Thumbnail redirect listener registered successfully');
