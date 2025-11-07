@@ -9,14 +9,6 @@
     const btn = document.createElement('button');
     btn.textContent = 'YTFrozenボタン';
     btn.className = 'ytfrozen-channel-action-btn';
-    btn.style.margin = '0 8px';
-    btn.style.padding = '6px 16px';
-    btn.style.background = '#88c0d0';
-    btn.style.color = '#fff';
-    btn.style.border = 'none';
-    btn.style.borderRadius = '6px';
-    btn.style.cursor = 'pointer';
-    btn.style.fontSize = '14px';
 
     // モーダル生成関数
     function openYTFrozenModal() {
@@ -26,49 +18,21 @@
       // オーバーレイ
       const overlay = document.createElement('div');
       overlay.id = 'ytfrozen-channel-modal';
-      overlay.style.position = 'fixed';
-      overlay.style.top = '0';
-      overlay.style.left = '0';
-      overlay.style.width = '100vw';
-      overlay.style.height = '100vh';
-      overlay.style.background = 'rgba(0,0,0,0.45)';
-      overlay.style.zIndex = '99999';
-      overlay.style.display = 'flex';
-      overlay.style.alignItems = 'center';
-      overlay.style.justifyContent = 'center';
+
       // モーダル本体
       const modal = document.createElement('div');
-      modal.style.background = '#2e3440';
-      modal.style.color = '#fff';
-      modal.style.borderRadius = '12px';
-      modal.style.boxShadow = '0 4px 32px #0008';
-      modal.style.padding = '32px 40px';
-      modal.style.minWidth = '240px';
-      modal.style.fontSize = '1.2em';
-      modal.style.position = 'relative';
+      modal.className = 'ytfrozen-folder-modal';
+
       // 入力欄＋追加ボタン
       const inputWrap = document.createElement('div');
-      inputWrap.style.display = 'flex';
-      inputWrap.style.alignItems = 'center';
-      inputWrap.style.marginBottom = '16px';
+      inputWrap.className = 'ytfrozen-folder-input-wrap';
+
       const input = document.createElement('input');
       input.type = 'text';
       input.placeholder = '新しいリスト名';
-      input.style.flex = '1';
-      input.style.padding = '6px 10px';
-      input.style.borderRadius = '6px';
-      input.style.border = '1px solid #888';
-      input.style.marginRight = '8px';
-      input.style.fontSize = '1em';
+
       const addBtn = document.createElement('button');
       addBtn.textContent = '+';
-      addBtn.style.padding = '6px 16px';
-      addBtn.style.background = '#88c0d0';
-      addBtn.style.color = '#fff';
-      addBtn.style.border = 'none';
-      addBtn.style.borderRadius = '6px';
-      addBtn.style.cursor = 'pointer';
-      addBtn.style.fontSize = '1.1em';
       addBtn.addEventListener('click', async () => {
         const name = input.value.trim();
         if (!name) return;
@@ -84,17 +48,13 @@
 
       // タイトル
       const title = document.createElement('div');
+      title.className = 'ytfrozen-folder-title';
       title.textContent = 'リストに追加/削除';
-      title.style.fontWeight = 'bold';
-      title.style.fontSize = '1.2em';
-      title.style.marginBottom = '12px';
       modal.appendChild(title);
 
       // リスト一覧＋チェックボックス
       const listWrap = document.createElement('div');
-      listWrap.style.marginTop = '10px';
-      listWrap.style.display = 'flex';
-      listWrap.style.flexDirection = 'column';
+      listWrap.className = 'ytfrozen-folder-list-wrap';
       modal.appendChild(listWrap);
 
       async function renderLists() {
@@ -104,16 +64,13 @@
         const channelId = window.YTFrozenListManager.getChannelId();
         lists.forEach(list => {
           const row = document.createElement('div');
-          row.style.display = 'flex';
-          row.style.alignItems = 'center';
-          row.style.marginBottom = '6px';
+          row.className = 'ytfrozen-folder-list-row';
+
           const label = document.createElement('label');
-          label.style.flex = '1';
-          label.style.cursor = 'pointer';
           label.textContent = list.name;
+
           const cb = document.createElement('input');
           cb.type = 'checkbox';
-          cb.style.marginLeft = '12px';
           // 新形式（オブジェクト）と旧形式（文字列）の両方をサポート
           const isChannelInList = channelId && list.channels.some(ch => 
             (typeof ch === 'string' ? ch : ch.id) === channelId
@@ -143,15 +100,8 @@
       renderLists();
       // 閉じるボタン
       const closeBtn = document.createElement('button');
+      closeBtn.className = 'ytfrozen-folder-close-btn';
       closeBtn.textContent = '×';
-      closeBtn.style.position = 'absolute';
-      closeBtn.style.top = '8px';
-      closeBtn.style.right = '12px';
-      closeBtn.style.background = 'none';
-      closeBtn.style.border = 'none';
-      closeBtn.style.color = '#fff';
-      closeBtn.style.fontSize = '1.3em';
-      closeBtn.style.cursor = 'pointer';
       closeBtn.addEventListener('click', () => overlay.remove());
       modal.appendChild(closeBtn);
       overlay.appendChild(modal);

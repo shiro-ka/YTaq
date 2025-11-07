@@ -48,22 +48,15 @@
       iframeContainer.classList.add('ytfrozen-popup-shorts');
     }
 
-    // iframe作成: YouTube全体ページを読み込む（UI最小化）
-    // 注意: 埋め込みプレイヤーは拡張機能からのアクセスをYouTubeが完全にブロックしているため、
-    // 通常のYouTubeページを使用しつつ、パラメータで余計なUIを非表示にする
+    // iframe作成: YouTube全体ページを読み込む（シアターモード＆CSS無効化で軽量化）
     const iframe = document.createElement('iframe');
 
-    // URLパラメータで余計なUIを最小化
+    // URLパラメータでシアターモード＆自動再生
     const params = new URLSearchParams({
       v: videoId,
       autoplay: '1',
-      // 以下のパラメータでUI要素を制御
-      modestbranding: '1',  // YouTubeロゴを最小化
-      rel: '0',             // 関連動画を減らす
-      fs: '1',              // フルスクリーンボタンを表示
-      iv_load_policy: '3',  // アノテーションを非表示
-      // カスタムパラメータ: Content Scriptで検出用
-      ytfrozen_popup: '1',  // ポップアップ用のフラグ
+      // シアターモード強制
+      theater: '1'
     });
 
     iframe.src = `https://www.youtube.com/watch?${params}`;
@@ -71,7 +64,7 @@
     iframe.allowFullscreen = true;
     iframe.setAttribute('frameborder', '0');
 
-    console.log('[YTFrozen Popup] Loading YouTube page (minimal UI):', iframe.src);
+    console.log('[YTFrozen Popup] Loading YouTube (Theater Mode):', iframe.src);
 
     // 要素を組み立て
     iframeContainer.appendChild(iframe);

@@ -135,18 +135,20 @@
         if (channelEl && channelEl.textContent?.trim()) break;
       }
       
-      // 公開日時取得
-      const timeSelectors = [
-        '#metadata-line span:last-child',
-        'ytd-video-meta-block #metadata-line span:last-child',
-        '.ytd-video-meta-block span:last-child',
-        '[aria-label*="前"]'
-      ];
-      
-      let timeEl = null;
-      for (const selector of timeSelectors) {
-        timeEl = videoElement.querySelector(selector);
-        if (timeEl && timeEl.textContent?.trim()) break;
+      // 公開日時取得（メタデータから直接取得）
+      const metadataBlock = videoElement.querySelector('ytd-video-meta-block');
+      let publishedText = '';
+
+      if (metadataBlock) {
+        // #metadata-line内の最後のspanを取得（公開日時が入っている）
+        const metadataLine = metadataBlock.querySelector('#metadata-line');
+        if (metadataLine) {
+          const spans = metadataLine.querySelectorAll('span.inline-metadata-item');
+          if (spans.length > 0) {
+            // 最後のspanが公開日時
+            publishedText = spans[spans.length - 1].textContent?.trim() || '';
+          }
+        }
       }
       
       // 最低限のデータが取得できない場合はnull
@@ -157,20 +159,94 @@
       
       const title = titleEl.textContent.trim();
       const channel = channelEl ? channelEl.textContent.trim() : '不明なチャンネル';
-      const publishedText = timeEl ? timeEl.textContent.trim() : '';
       const url = titleEl.href || '';
       
-      // ライブ・プレミア公開の検出（リスト用のみで使用）
-      const isLive = videoElement.querySelector('.badge-style-type-live, [aria-label*="ライブ"], [aria-label*="LIVE"]');
-      const isPremiere = videoElement.querySelector('.badge-style-type-premiere, [aria-label*="プレミア"], [aria-label*="PREMIERE"]');
-      const isUpcoming = publishedText.includes('予定') || publishedText.includes('プレミア公開') || publishedText.includes('ライブ配信予定');
+      // ライブ・プレミア公開の検出（より厳格に）
+      let hasLiveBadge = false;
+      let hasPremiereBadge = false;
+      let hasUpcomingBadge = false;
+
+      // バッジ要素を全て取得（ytd-badge-supported-rendererのみ）
+      const allBadges = videoElement.querySelectorAll('ytd-badge-supported-renderer');
+
+      // デバッグ: バッジの詳細情報を出力
+      const badgeDebugInfo = [];
+
+      for (const badge of allBadges) {
+        // Shadow DOMからバッジラベルを取得
+        let badgeLabel = '';
+
+        // #label要素を探す（Shadow DOM内）
+        const labelEl = badge.querySelector('#label');
+        if (labelEl) {
+          badgeLabel = labelEl.textContent?.trim() || '';
+        }
+
+        // aria-labelも確認
+        const ariaLabel = badge.getAttribute('aria-label')?.toLowerCase() || '';
+        const badgeText = badgeLabel.toLowerCase();
+
+        // デバッグ情報を収集
+        badgeDebugInfo.push({
+          label: badgeLabel,
+          ariaLabel: ariaLabel,
+          tagName: badge.tagName
+        });
+
+        // 予定（Upcoming）のバッジを優先的にチェック
+        if (ariaLabel.includes('予定') || ariaLabel.includes('scheduled') ||
+            ariaLabel.includes('upcoming') ||
+            badgeText.includes('予定') || badgeText.includes('scheduled') ||
+            badgeText.includes('upcoming')) {
+          hasUpcomingBadge = true;
+          continue; // 予定の場合は次のバッジへ
+        }
+
+        // ライブ配信中（進行中）のバッジ
+        if (badgeText === 'live' || badgeText === 'ライブ' || badgeText === 'live now' ||
+            ariaLabel.includes('live now') || ariaLabel.includes('ライブ配信中') ||
+            badgeText.includes('ライブ配信中')) {
+          hasLiveBadge = true;
+        }
+
+        // プレミア公開のバッジ（予定でない場合）
+        if (badgeText.includes('premiere') || badgeText.includes('プレミア') ||
+            badgeText.includes('プレミア公開') || ariaLabel.includes('premiere') ||
+            ariaLabel.includes('プレミア')) {
+          hasPremiereBadge = true;
+        }
+      }
+
+      // 公開日時テキストからの判定（より厳格に）
+      const publishedLower = publishedText.toLowerCase();
+      const hasScheduledText = publishedText.includes('予定') ||
+                              publishedText.includes('プレミア公開') ||
+                              publishedText.includes('ライブ配信予定') ||
+                              publishedText.includes('公開予定') ||
+                              publishedLower.includes('scheduled') ||
+                              publishedLower.includes('premieres') ||
+                              publishedLower.includes('waiting') ||
+                              publishedLower.includes('starts') ||
+                              /\d{1,2}月\d{1,2}日/.test(publishedText) || // 日付形式（例: 12月25日）
+                              /\d{1,2}\/\d{1,2}/.test(publishedText) || // 日付形式（例: 12/25）
+                              /\d{4}\/\d{1,2}\/\d{1,2}/.test(publishedText); // 日付形式（例: 2025/12/25）
+
+      // 公開済み動画は必ず「○○前」という形式になる
+      const isPublished = publishedText.includes('前') || publishedText.includes('ago');
+
+      // 予定動画の判定：公開済みでない かつ (予定テキストがある または 予定バッジがある)
+      const isUpcoming = !isPublished && (hasScheduledText || hasUpcomingBadge);
+
+      // ライブ・プレミアは予定でない場合のみtrue
+      const isLive = hasLiveBadge && !isUpcoming;
+      const isPremiere = hasPremiereBadge && !isUpcoming;
       
       // サムネイルは動画IDから中間サムネイルURLを生成
       const videoId = extractVideoId(url);
       // mq2.jpg: 動画の中間サムネイル（ytfrozen-thumbnail-replacer.js参照）
       const thumbnail = videoId ? `https://i.ytimg.com/vi/${videoId}/mq2.jpg` : '';
       
-      return {
+      const videoData = {
         title,
         channel,
         thumbnail,
@@ -178,10 +254,30 @@
         publishedDate: parsePublishedDate(publishedText),
         url,
         videoId,
-        isLive: !!isLive,
-        isPremiere: !!isPremiere,
+        isLive,
+        isPremiere,
         isUpcoming
       };
+
+      // デバッグ: 予定動画またはライブ・プレミア検出時にログ出力
+      if (isUpcoming || isLive || isPremiere || allBadges.length > 0) {
+        console.log('[YTFrozen Movie] 動画分析:', {
+          title: title.substring(0, 40) + '...',
+          publishedText,
+          'バッジ数': allBadges.length,
+          'バッジ詳細': badgeDebugInfo,
+          isPublished,
+          hasScheduledText,
+          hasUpcomingBadge,
+          hasLiveBadge,
+          hasPremiereBadge,
+          '→ isUpcoming': isUpcoming,
+          '→ isLive': isLive,
+          '→ isPremiere': isPremiere
+        });
+      }
+
+      return videoData;
     } catch (error) {
       console.error('動画データ抽出エラー:', error, videoElement);
       return null;
@@ -309,48 +405,104 @@
       }
 
       console.log('[YTFrozen Movie] Rendering', videos.length, 'videos');
-      
-      videos.forEach(video => {
-        const videoDiv = document.createElement('div');
-        videoDiv.className = 'ytfrozen-video-item';
 
-        const img = document.createElement('img');
-        img.src = video.thumbnail;
-        videoDiv.appendChild(img);
+      // 予定動画と公開済み動画を分離
+      const upcomingVideos = videos.filter(v => v.isUpcoming || v.isPremiere || v.isLive);
+      const publishedVideos = videos.filter(v => !v.isUpcoming && !v.isPremiere && !v.isLive);
 
-        const infoDiv = document.createElement('div');
-        infoDiv.style.flex = '1';
-        infoDiv.style.minWidth = '0';
+      // 予定動画セクション
+      if (upcomingVideos.length > 0) {
+        const upcomingSection = document.createElement('div');
+        upcomingSection.className = 'ytfrozen-upcoming-section';
+        upcomingSection.textContent = `予定 (${upcomingVideos.length})`;
+        container.appendChild(upcomingSection);
 
-        const titleDiv = document.createElement('div');
-        titleDiv.className = 'ytfrozen-video-title';
-        titleDiv.textContent = video.title;
-        infoDiv.appendChild(titleDiv);
+        upcomingVideos.forEach(video => {
+          const videoDiv = document.createElement('div');
+          videoDiv.className = 'ytfrozen-upcoming-item';
 
-        const channelDiv = document.createElement('div');
-        channelDiv.className = 'ytfrozen-video-channel';
-        channelDiv.textContent = video.channel;
-        infoDiv.appendChild(channelDiv);
+          const titleDiv = document.createElement('div');
+          titleDiv.className = 'ytfrozen-video-title';
+          titleDiv.textContent = video.title;
+          videoDiv.appendChild(titleDiv);
 
-        const dateDiv = document.createElement('div');
-        dateDiv.className = 'ytfrozen-video-date';
-        dateDiv.textContent = video.publishedText;
-        infoDiv.appendChild(dateDiv);
+          const metaDiv = document.createElement('div');
+          metaDiv.className = 'ytfrozen-video-meta';
 
-        videoDiv.appendChild(infoDiv);
+          const channelDiv = document.createElement('div');
+          channelDiv.className = 'ytfrozen-video-channel';
+          channelDiv.textContent = video.channel;
+          metaDiv.appendChild(channelDiv);
 
-        // クリック時にポップアップで動画を表示
-        videoDiv.addEventListener('click', () => {
-          if (video.videoId && window.YTFrozenPopup) {
-            window.YTFrozenPopup.showVideoPopup(video.videoId, video.title);
-          } else if (video.url) {
-            window.open(video.url, '_blank');
-          }
+          const dateDiv = document.createElement('div');
+          dateDiv.className = 'ytfrozen-video-date';
+          dateDiv.textContent = video.publishedText;
+          metaDiv.appendChild(dateDiv);
+
+          videoDiv.appendChild(metaDiv);
+
+          // クリック時にポップアップで動画を表示
+          videoDiv.addEventListener('click', () => {
+            if (video.videoId && window.YTFrozenPopup) {
+              window.YTFrozenPopup.showVideoPopup(video.videoId, video.title);
+            } else if (video.url) {
+              window.open(video.url, '_blank');
+            }
+          });
+
+          container.appendChild(videoDiv);
         });
+      }
 
-        container.appendChild(videoDiv);
-      });
-      
+      // 公開済み動画セクション
+      if (publishedVideos.length > 0) {
+        const publishedSection = document.createElement('div');
+        publishedSection.className = 'ytfrozen-published-section';
+        publishedSection.textContent = `公開済み (${publishedVideos.length})`;
+        container.appendChild(publishedSection);
+
+        publishedVideos.forEach(video => {
+          const videoDiv = document.createElement('div');
+          videoDiv.className = 'ytfrozen-video-item';
+
+          const img = document.createElement('img');
+          img.src = video.thumbnail;
+          videoDiv.appendChild(img);
+
+          const infoDiv = document.createElement('div');
+          infoDiv.style.flex = '1';
+          infoDiv.style.minWidth = '0';
+
+          const titleDiv = document.createElement('div');
+          titleDiv.className = 'ytfrozen-video-title';
+          titleDiv.textContent = video.title;
+          infoDiv.appendChild(titleDiv);
+
+          const channelDiv = document.createElement('div');
+          channelDiv.className = 'ytfrozen-video-channel';
+          channelDiv.textContent = video.channel;
+          infoDiv.appendChild(channelDiv);
+
+          const dateDiv = document.createElement('div');
+          dateDiv.className = 'ytfrozen-video-date';
+          dateDiv.textContent = video.publishedText;
+          infoDiv.appendChild(dateDiv);
+
+          videoDiv.appendChild(infoDiv);
+
+          // クリック時にポップアップで動画を表示
+          videoDiv.addEventListener('click', () => {
+            if (video.videoId && window.YTFrozenPopup) {
+              window.YTFrozenPopup.showVideoPopup(video.videoId, video.title);
+            } else if (video.url) {
+              window.open(video.url, '_blank');
+            }
+          });
+
+          container.appendChild(videoDiv);
+        });
+      }
+
     } catch (error) {
       console.error('動画リスト描画エラー:', error);
       container.innerHTML = '<div style="padding: 12px; color: #f88;">動画の取得に失敗しました</div>';
@@ -393,21 +545,13 @@
           
           console.log(`[${channelId}] 動画取得開始`, channelName ? `(表示名: ${channelName})` : '');
           const channelVideos = await getChannelRecentVideos(channelId, channelName);
-          
-          // リスト用ではライブ・プレミア・予定動画を除外
-          const filteredVideos = channelVideos.filter(video => {
-            const shouldExclude = video.isLive || video.isPremiere || video.isUpcoming;
-            if (shouldExclude) {
-              console.log(`[${channelId}] [除外] ライブ/プレミア/予定動画: ${video.title}`);
-            }
-            return !shouldExclude;
-          });
-          
-          if (filteredVideos.length > 0) {
-            console.log(`[${channelId}] ${filteredVideos.length}件の動画を取得 (除外後)`);
-            allVideos.push(...filteredVideos);
+
+          // 全動画を追加（予定動画も含める）
+          if (channelVideos.length > 0) {
+            console.log(`[${channelId}] ${channelVideos.length}件の動画を取得`);
+            allVideos.push(...channelVideos);
           } else {
-            console.warn(`[${channelId}] 動画が見つかりませんでした (除外後)`);
+            console.warn(`[${channelId}] 動画が見つかりませんでした`);
           }
         } catch (error) {
           console.warn(`[${channelEntry}] 動画取得エラー:`, error);
@@ -426,188 +570,109 @@
     }
   }
   
-  // 指定チャンネルの最近の動画を取得
+  // 指定チャンネルの最近の動画を取得（RSS Feed使用）
   async function getChannelRecentVideos(channelId, channelName = null) {
     try {
-      // チャンネルページのURLを生成
-      let channelUrl;
+      console.log(`[${channelId}] RSS Feedから動画取得開始`);
+
+      // @形式のチャンネルIDはRSS Feedで使えないため、スキップ
       if (channelId.startsWith('@')) {
-        channelUrl = `https://www.youtube.com/${channelId}/videos`;
-      } else {
-        channelUrl = `https://www.youtube.com/channel/${channelId}/videos`;
+        console.warn(`[${channelId}] @形式のチャンネルIDはRSS Feedで使用できません。UC形式のIDが必要です。`);
+        return [];
       }
-      
-      // 新しいタブでチャンネルページを一時的に開いて動画情報を取得
-      // （実際のYouTube APIが使えない制約のため、DOM解析で取得）
-      
-      // より実用的なアプローチ: YouTube検索を利用
-      return await getVideosFromChannelSearch(channelId, channelName);
-      
+
+      // YouTube RSS FeedのURL
+      const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
+
+      // RSSをfetch
+      const response = await fetch(rssUrl);
+      if (!response.ok) {
+        console.warn(`[${channelId}] RSS Fetch失敗: ${response.status}`);
+        return [];
+      }
+
+      const xmlText = await response.text();
+
+      // XMLをパース
+      const parser = new DOMParser();
+      const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
+
+      // エラーチェック
+      const parserError = xmlDoc.querySelector('parsererror');
+      if (parserError) {
+        console.error(`[${channelId}] XML解析エラー:`, parserError.textContent);
+        return [];
+      }
+
+      // <entry>要素から動画情報を抽出
+      const entries = xmlDoc.querySelectorAll('entry');
+      const videos = [];
+
+      for (const entry of entries) {
+        try {
+          const videoId = entry.querySelector('yt\\:videoId, videoId')?.textContent;
+          const title = entry.querySelector('title')?.textContent;
+          const published = entry.querySelector('published')?.textContent;
+          const author = entry.querySelector('author name')?.textContent || channelName || 'Unknown';
+
+          if (!videoId) continue;
+
+          videos.push({
+            videoId: videoId,
+            title: title || 'Untitled',
+            url: `https://www.youtube.com/watch?v=${videoId}`,
+            thumbnail: `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
+            channel: author,
+            publishedDate: published ? new Date(published) : new Date(),
+            publishedText: published ? formatDate(new Date(published)) : '不明',
+            isLive: false,
+            isPremiere: false,
+            isUpcoming: false
+          });
+        } catch (error) {
+          console.warn(`[${channelId}] 動画エントリ解析エラー:`, error);
+        }
+      }
+
+      console.log(`[${channelId}] RSS Feedから ${videos.length}件の動画を取得`);
+      return videos;
+
     } catch (error) {
-      console.warn(`チャンネル[${channelId}]の動画取得に失敗:`, error);
+      console.error(`[${channelId}] RSS取得エラー:`, error);
       return [];
     }
   }
-  
-  // YouTube検索を使ってチャンネル動画を取得
-  async function getVideosFromChannelSearch(channelId, channelName = null) {
-    try {
-      console.log(`[${channelId}] 動画検索開始`);
-      
-      // まず登録チャンネル動画から検索
-      const now = Date.now();
-      let allSubscriptionVideos;
-      
-      if (videoCache && (now - cacheTime) < CACHE_DURATION) {
-        allSubscriptionVideos = videoCache;
-      } else {
-        allSubscriptionVideos = await getSubscriptionVideos();
-      }
-      
-      console.log(`[${channelId}] 登録チャンネル動画総数: ${allSubscriptionVideos.length}`);
-      
-      // デバッグ: 最初の5件の動画データを確認
-      console.log(`[${channelId}] 動画データサンプル:`, allSubscriptionVideos.slice(0, 5).map(v => ({
-        title: v.title,
-        channel: v.channel,
-        url: v.url
-      })));
-      
-      // チャンネルIDに基づいてフィルタリング
-      let channelVideos = [];
-      
-      if (channelId.startsWith('@')) {
-        const channelName = channelId.substring(1);
-        console.log(`[${channelId}] @形式チャンネル名で検索: ${channelName}`);
-        
-        channelVideos = allSubscriptionVideos.filter(video => {
-          if (!video.channel) return false;
-          
-          const videoChannelLower = video.channel.toLowerCase();
-          const channelNameLower = channelName.toLowerCase();
-          
-          const match = (
-            videoChannelLower.includes(channelNameLower) ||
-            video.url.includes(channelId) ||
-            video.url.includes(`/@${channelName}`) ||
-            // 正規化した名前での比較も追加
-            video.channel.replace(/[^\w]/g, '').toLowerCase().includes(channelName.replace(/[^\w]/g, '').toLowerCase())
-          );
-          
-          if (match) {
-            console.log(`[${channelId}] 一致した動画:`, { title: video.title, channel: video.channel, url: video.url });
-          }
-          
-          // デバッグ: STUDIO CHOOMを含むチャンネルを特別に確認
-          if (videoChannelLower.includes('studio') && videoChannelLower.includes('choom')) {
-            console.log(`[${channelId}] STUDIO CHOOM候補:`, { 
-              channel: video.channel, 
-              searchName: channelName,
-              match: match
-            });
-          }
-          
-          return match;
-        });
-      } else {
-        console.log(`[${channelId}] UC形式チャンネルIDで検索`);
-        
-        channelVideos = allSubscriptionVideos.filter(video => {
-          const match = video.url.includes(`/channel/${channelId}`);
-          if (match) {
-            console.log(`[${channelId}] 一致した動画:`, { title: video.title, channel: video.channel, url: video.url });
-          }
-          return match;
-        });
-      }
-      
-      console.log(`[${channelId}] フィルタリング結果: ${channelVideos.length}件`);
-      
-        // 登録チャンネルに見つからない場合は、より柔軟な検索を試す
-        if (channelVideos.length === 0) {
-          console.log(`[${channelId}] 登録チャンネルに見つからないため、柔軟検索を実行`);
-          
-          // チャンネル名での部分一致検索（より柔軟に）
-          if (channelId.startsWith('@')) {
-            const searchName = channelId.substring(1).toLowerCase();
-            
-            // 保存されたチャンネル名も検索に使用
-            const searchNames = [searchName];
-            if (channelName) {
-              searchNames.push(channelName.toLowerCase());
-            }
-            
-            channelVideos = allSubscriptionVideos.filter(video => {
-              if (!video.channel) return false;
-              
-              const videoChannelLower = video.channel.toLowerCase();
-              const videoChannelNormalized = videoChannelLower.replace(/[^\w]/g, ''); // 英数字のみ
-              
-              for (const name of searchNames) {
-                // 複数のパターンで検索
-                const patterns = [
-                  name,                                 // そのまま
-                  name.replace(/\s+/g, ''),            // スペースを除去
-                  name.replace(/[^\w]/g, ''),          // 英数字のみ
-                ];
-                
-                for (const pattern of patterns) {
-                  const patternNormalized = pattern.replace(/[^\w]/g, '');
-                  
-                  // 両方向で部分一致をチェック
-                  if (videoChannelLower.includes(pattern) || 
-                      pattern.includes(videoChannelLower) ||
-                      videoChannelNormalized.includes(patternNormalized) ||
-                      patternNormalized.includes(videoChannelNormalized)) {
-                    console.log(`[${channelId}] パターン "${pattern}" で一致: ${video.channel}`);
-                    return true;
-                  }
-                  
-                  // 特別ケース: STUDIOCHOOMとSTUDIO CHOOMのような場合
-                  if (patternNormalized.length > 3 && videoChannelNormalized.includes(patternNormalized)) {
-                    console.log(`[${channelId}] 正規化パターン "${patternNormalized}" で一致: ${video.channel}`);
-                    return true;
-                  }
-                }
-              }
-              
-              return false;
-            });
-          }
-          
-          console.log(`[${channelId}] 柔軟検索結果: ${channelVideos.length}件`);
-          
-          // それでも見つからない場合、全チャンネル名をログ出力
-          if (channelVideos.length === 0) {
-            const uniqueChannels = [...new Set(allSubscriptionVideos.map(v => v.channel))];
-            console.log(`[${channelId}] 利用可能なチャンネル名一覧:`, uniqueChannels);
-          }
-        }      return channelVideos.slice(0, 10); // チャンネルあたり最大10件
-      
-    } catch (error) {
-      console.warn(`チャンネル検索取得エラー[${channelId}]:`, error);
-      return [];
-    }
+
+  // 日付フォーマット関数
+  function formatDate(date) {
+    const now = new Date();
+    const diff = now - date;
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const days = Math.floor(hours / 24);
+
+    if (days > 0) return `${days}日前`;
+    if (hours > 0) return `${hours}時間前`;
+    return '1時間以内';
   }
   
   // リスト用の動画リストを描画
   async function renderListChannelVideos(listName, container) {
     console.log(`[${listName}] リスト動画描画開始`);
-    
+
     // 既に描画済みかチェック
     if (container.children.length > 0 && !container.innerHTML.includes('取得中')) {
       console.log(`[${listName}] 既に描画済み、スキップ`);
       return;
     }
-    
+
     // ローディング表示
     container.innerHTML = '<div style="padding: 12px; color: #ccc;">リスト動画を取得中...</div>';
-    
+
     try {
       const videos = await getListChannelVideos(listName);
-      
+
       container.innerHTML = ''; // クリア
-      
+
       if (videos.length === 0) {
         const debugInfo = await getListDebugInfo(listName);
         container.innerHTML = `
@@ -617,48 +682,104 @@
           </div>`;
         return;
       }
-      
-      videos.forEach(video => {
-        const videoDiv = document.createElement('div');
-        videoDiv.className = 'ytfrozen-video-item';
 
-        const img = document.createElement('img');
-        img.src = video.thumbnail;
-        videoDiv.appendChild(img);
+      // 予定動画と公開済み動画を分離
+      const upcomingVideos = videos.filter(v => v.isUpcoming || v.isPremiere || v.isLive);
+      const publishedVideos = videos.filter(v => !v.isUpcoming && !v.isPremiere && !v.isLive);
 
-        const infoDiv = document.createElement('div');
-        infoDiv.style.flex = '1';
-        infoDiv.style.minWidth = '0';
+      // 予定動画セクション
+      if (upcomingVideos.length > 0) {
+        const upcomingSection = document.createElement('div');
+        upcomingSection.className = 'ytfrozen-upcoming-section';
+        upcomingSection.textContent = `予定 (${upcomingVideos.length})`;
+        container.appendChild(upcomingSection);
 
-        const titleDiv = document.createElement('div');
-        titleDiv.className = 'ytfrozen-video-title';
-        titleDiv.textContent = video.title;
-        infoDiv.appendChild(titleDiv);
+        upcomingVideos.forEach(video => {
+          const videoDiv = document.createElement('div');
+          videoDiv.className = 'ytfrozen-upcoming-item';
 
-        const channelDiv = document.createElement('div');
-        channelDiv.className = 'ytfrozen-video-channel';
-        channelDiv.textContent = video.channel;
-        infoDiv.appendChild(channelDiv);
+          const titleDiv = document.createElement('div');
+          titleDiv.className = 'ytfrozen-video-title';
+          titleDiv.textContent = video.title;
+          videoDiv.appendChild(titleDiv);
 
-        const dateDiv = document.createElement('div');
-        dateDiv.className = 'ytfrozen-video-date';
-        dateDiv.textContent = video.publishedText;
-        infoDiv.appendChild(dateDiv);
+          const metaDiv = document.createElement('div');
+          metaDiv.className = 'ytfrozen-video-meta';
 
-        videoDiv.appendChild(infoDiv);
+          const channelDiv = document.createElement('div');
+          channelDiv.className = 'ytfrozen-video-channel';
+          channelDiv.textContent = video.channel;
+          metaDiv.appendChild(channelDiv);
 
-        // クリック時にポップアップで動画を表示
-        videoDiv.addEventListener('click', () => {
-          if (video.videoId && window.YTFrozenPopup) {
-            window.YTFrozenPopup.showVideoPopup(video.videoId, video.title);
-          } else if (video.url) {
-            window.open(video.url, '_blank');
-          }
+          const dateDiv = document.createElement('div');
+          dateDiv.className = 'ytfrozen-video-date';
+          dateDiv.textContent = video.publishedText;
+          metaDiv.appendChild(dateDiv);
+
+          videoDiv.appendChild(metaDiv);
+
+          // クリック時にポップアップで動画を表示
+          videoDiv.addEventListener('click', () => {
+            if (video.videoId && window.YTFrozenPopup) {
+              window.YTFrozenPopup.showVideoPopup(video.videoId, video.title);
+            } else if (video.url) {
+              window.open(video.url, '_blank');
+            }
+          });
+
+          container.appendChild(videoDiv);
         });
+      }
 
-        container.appendChild(videoDiv);
-      });
-      
+      // 公開済み動画セクション
+      if (publishedVideos.length > 0) {
+        const publishedSection = document.createElement('div');
+        publishedSection.className = 'ytfrozen-published-section';
+        publishedSection.textContent = `公開済み (${publishedVideos.length})`;
+        container.appendChild(publishedSection);
+
+        publishedVideos.forEach(video => {
+          const videoDiv = document.createElement('div');
+          videoDiv.className = 'ytfrozen-video-item';
+
+          const img = document.createElement('img');
+          img.src = video.thumbnail;
+          videoDiv.appendChild(img);
+
+          const infoDiv = document.createElement('div');
+          infoDiv.style.flex = '1';
+          infoDiv.style.minWidth = '0';
+
+          const titleDiv = document.createElement('div');
+          titleDiv.className = 'ytfrozen-video-title';
+          titleDiv.textContent = video.title;
+          infoDiv.appendChild(titleDiv);
+
+          const channelDiv = document.createElement('div');
+          channelDiv.className = 'ytfrozen-video-channel';
+          channelDiv.textContent = video.channel;
+          infoDiv.appendChild(channelDiv);
+
+          const dateDiv = document.createElement('div');
+          dateDiv.className = 'ytfrozen-video-date';
+          dateDiv.textContent = video.publishedText;
+          infoDiv.appendChild(dateDiv);
+
+          videoDiv.appendChild(infoDiv);
+
+          // クリック時にポップアップで動画を表示
+          videoDiv.addEventListener('click', () => {
+            if (video.videoId && window.YTFrozenPopup) {
+              window.YTFrozenPopup.showVideoPopup(video.videoId, video.title);
+            } else if (video.url) {
+              window.open(video.url, '_blank');
+            }
+          });
+
+          container.appendChild(videoDiv);
+        });
+      }
+
     } catch (error) {
       console.error(`[${listName}] 動画リスト描画エラー:`, error);
       container.innerHTML = `<div style="padding: 12px; color: #f88;">[${listName}] の動画取得に失敗しました</div>`;

@@ -6,64 +6,89 @@
   <link rel="stylesheet" href="options.css">
 </head>
 <body>
-  <h1>YTFrozen Setting</h1>
+  <!-- ヘッダー -->
+  <header class="ytfrozen-header">
+    <h1>YTFrozen setting</h1>
+  </header>
 
-  <div class="container">
-    <div class="section">
-      <h2>カラーテーマ設定</h2>
+  <div class="ytfrozen-layout">
+    <!-- サイドバー -->
+    <aside class="ytfrozen-sidebar">
+      <nav>
+        <ul>
+          <li><a href="#" class="nav-item active" data-section="home">ホーム</a></li>
+          <li><a href="#" class="nav-item" data-section="theme">テーマ</a></li>
+        </ul>
+      </nav>
+    </aside>
 
-      <div class="color-item">
-        <input type="color" id="color-bg" />
-        <label for="color-bg">
-          <span class="var-name">--ytfrozen-bg</span>
-          <span class="var-desc">背景色（メイン）</span>
-        </label>
-        <input type="text" id="text-bg" maxlength="20" />
+    <!-- メインコンテンツ -->
+    <main class="ytfrozen-main">
+      <!-- ホームセクション -->
+      <div id="section-home" class="content-section active">
+        <h2>ホーム</h2>
+        <p>YTFrozen設定画面へようこそ！</p>
+        <p>左側のメニューから設定項目を選択してください。</p>
+        <p style="margin-top: 20px; color: #888;">[Debug] Home section is working correctly.</p>
       </div>
 
-      <div class="color-item">
-        <input type="color" id="color-sd" />
-        <label for="color-sd">
-          <span class="var-name">--ytfrozen-sd</span>
-          <span class="var-desc">サイドバー色</span>
-        </label>
-        <input type="text" id="text-sd" maxlength="20" />
-      </div>
+      <!-- テーマセクション -->
+      <div id="section-theme" class="content-section">
+        <h2>テーマ設定</h2>
 
-      <div class="color-item">
-        <input type="color" id="color-fg" />
-        <label for="color-fg">
-          <span class="var-name">--ytfrozen-fg</span>
-          <span class="var-desc">前景色（カラム背景）</span>
-        </label>
-        <input type="text" id="text-fg" maxlength="20" />
-      </div>
+        <div class="color-item">
+          <input type="color" id="color-bg" />
+          <label for="color-bg">
+            <span class="var-name">--ytfrozen-bg</span>
+            <span class="var-desc">背景色（メイン）</span>
+          </label>
+          <input type="text" id="text-bg" maxlength="20" />
+        </div>
 
-      <div class="color-item">
-        <input type="color" id="color-ub" />
-        <label for="color-ub">
-          <span class="var-name">--ytfrozen-ub</span>
-          <span class="var-desc">アッパーバー色</span>
-        </label>
-        <input type="text" id="text-ub" maxlength="20" />
-      </div>
+        <div class="color-item">
+          <input type="color" id="color-sd" />
+          <label for="color-sd">
+            <span class="var-name">--ytfrozen-sd</span>
+            <span class="var-desc">サイドバー色</span>
+          </label>
+          <input type="text" id="text-sd" maxlength="20" />
+        </div>
 
-      <div class="color-item">
-        <input type="color" id="color-bd" />
-        <label for="color-bd">
-          <span class="var-name">--ytfrozen-bd</span>
-          <span class="var-desc">境界線色</span>
-        </label>
-        <input type="text" id="text-bd" maxlength="30" />
-      </div>
+        <div class="color-item">
+          <input type="color" id="color-fg" />
+          <label for="color-fg">
+            <span class="var-name">--ytfrozen-fg</span>
+            <span class="var-desc">前景色（カラム背景）</span>
+          </label>
+          <input type="text" id="text-fg" maxlength="20" />
+        </div>
 
-      <div class="button-group">
-        <button id="save-btn">保存</button>
-        <button id="reset-btn">デフォルトに戻す</button>
-      </div>
+        <div class="color-item">
+          <input type="color" id="color-ub" />
+          <label for="color-ub">
+            <span class="var-name">--ytfrozen-ub</span>
+            <span class="var-desc">アッパーバー色</span>
+          </label>
+          <input type="text" id="text-ub" maxlength="20" />
+        </div>
 
-      <div class="message" id="message"></div>
-    </div>
+        <div class="color-item">
+          <input type="color" id="color-bd" />
+          <label for="color-bd">
+            <span class="var-name">--ytfrozen-bd</span>
+            <span class="var-desc">境界線色</span>
+          </label>
+          <input type="text" id="text-bd" maxlength="30" />
+        </div>
+
+        <div class="button-group">
+          <button id="save-btn">保存</button>
+          <button id="reset-btn">デフォルトに戻す</button>
+        </div>
+
+        <div class="message" id="message"></div>
+      </div>
+    </main>
   </div>
 
   <script src="options.js"></script>

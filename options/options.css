@@ -1,47 +1,113 @@
 /* YTFrozen 設定画面スタイル */
 
 body {
+  margin: 0;
+  padding: 0;
   font-family: system-ui, sans-serif;
   background: #181c20;
   color: #fff;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ヘッダー */
+.ytfrozen-header {
+  background: #2e3440;
+  padding: 16px 24px;
+  border-bottom: 1px solid #4c566a;
+}
+
+.ytfrozen-header h1 {
+  margin: 0;
+  font-size: 1.5em;
+  color: #88c0d0;
+  letter-spacing: 0.05em;
+}
+
+/* レイアウト */
+.ytfrozen-layout {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* サイドバー */
+.ytfrozen-sidebar {
+  width: 200px;
+  background: #2e3440;
+  border-right: 1px solid #4c566a;
+  overflow-y: auto;
+}
+
+.ytfrozen-sidebar nav ul {
+  list-style: none;
   margin: 0;
   padding: 0;
 }
 
-h1 {
-  text-align: center;
-  margin-top: 2em;
-  font-size: 2.2em;
-  letter-spacing: 0.05em;
+.ytfrozen-sidebar nav li {
+  margin: 0;
 }
 
-.container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 2em;
+.ytfrozen-sidebar .nav-item {
+  display: block;
+  padding: 14px 20px;
+  color: #d8dee9;
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s;
+  border-left: 3px solid transparent;
 }
 
-.section {
-  background: #2e3440;
-  border-radius: 12px;
-  padding: 24px;
-  margin-bottom: 24px;
+.ytfrozen-sidebar .nav-item:hover {
+  background: rgba(136, 192, 208, 0.1);
+  color: #88c0d0;
 }
 
-.section h2 {
+.ytfrozen-sidebar .nav-item.active {
+  background: rgba(136, 192, 208, 0.15);
+  color: #88c0d0;
+  border-left-color: #88c0d0;
+}
+
+/* メインコンテンツ */
+.ytfrozen-main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 30px 40px;
+  background: #181c20;
+}
+
+.content-section {
+  display: none;
+}
+
+.content-section.active {
+  display: block;
+}
+
+.content-section h2 {
   margin-top: 0;
+  margin-bottom: 20px;
+  color: #88c0d0;
   font-size: 1.4em;
   border-bottom: 2px solid #4c566a;
   padding-bottom: 12px;
-  margin-bottom: 20px;
 }
 
+/* ホームセクション */
+#section-home p {
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+
+/* テーマセクション */
 .color-item {
   display: flex;
   align-items: center;
   margin-bottom: 16px;
   padding: 12px;
-  background: #3b4252;
+  background: #2e3440;
   border-radius: 8px;
 }
 
@@ -75,7 +141,7 @@ h1 {
 .color-item input[type="text"] {
   width: 100px;
   padding: 6px 10px;
-  background: #2e3440;
+  background: #3b4252;
   border: 1px solid #4c566a;
   border-radius: 6px;
   color: #fff;

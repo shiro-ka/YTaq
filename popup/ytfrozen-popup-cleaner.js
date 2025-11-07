@@ -1,20 +1,6 @@
 // YTFrozen: ポップアップ内のYouTubeページを改変して余計なUIを削除
 
 (function() {
-  // ポップアップ内のiframeかどうか判定
-  function isInPopupIframe() {
-    try {
-      // iframe内かつ、親ウィンドウに ytfrozen-subs-popup が存在するか確認
-      if (window.self !== window.top) {
-        // 親ウィンドウのDOMにアクセスできないが、URLで判定
-        return document.referrer.includes('youtube.com');
-      }
-    } catch (e) {
-      // クロスオリジンエラーは無視
-    }
-    return false;
-  }
-
   // YouTubeページの余計なUI要素を非表示にする
   function cleanYouTubeUI() {
     // スタイルが既に注入されていたらスキップ
@@ -128,14 +114,25 @@
     setTimeout(cleanYouTubeUI, 500);
   }
 
+  // iframe内であることを示すクラスを<html>に追加
+  function markAsPopupIframe() {
+    if (document.documentElement) {
+      document.documentElement.classList.add('ytfrozen-popup-iframe');
+      console.log('[YTFrozen Popup Cleaner] Marked as popup iframe');
+    }
+  }
+
   // 実行
   if (window.location.href.includes('youtube.com/watch')) {
-    // ポップアップ用かどうかを判定
-    // URLにカスタムパラメータを追加して判定
-    const url = new URL(window.location.href);
-    if (url.searchParams.get('ytfrozen_popup') === '1') {
-      console.log('[YTFrozen Popup Cleaner] Detected popup iframe, cleaning UI...');
-      waitAndClean();
+    // iframe内かどうかを判定
+    if (window.self !== window.top) {
+      console.log('[YTFrozen Popup Cleaner] Detected popup iframe');
+
+      // htmlにクラスを追加（本体CSSの除外用）
+      markAsPopupIframe();
+
+      // UI要素のクリーニングは無効化（シアターモード使用のため）
+      // waitAndClean();
     }
   }
 })();

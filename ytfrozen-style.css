@@ -1,16 +1,16 @@
-/* * * 全体css * * */
+/* * * 全体css（iframe内では適用しない） * * */
 
-ytd-app {
+html:not(.ytfrozen-popup-iframe) ytd-app {
   background: var(--ytfrozen-bg, #434c5e) !important;
 }
 
-ytd-masthead {
+html:not(.ytfrozen-popup-iframe) ytd-masthead {
   background: var(--ytfrozen-bgsub, #2e3440) !important;
 }
 
 
-/* サイドバー */
-tp-yt-app-drawer {
+/* サイドバー（iframe内では適用しない） */
+html:not(.ytfrozen-popup-iframe) tp-yt-app-drawer {
   background: var(--ytfrozen-sd, #434c5e) !important;
 }
 
