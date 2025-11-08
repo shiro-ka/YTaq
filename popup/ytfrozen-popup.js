@@ -2,14 +2,35 @@
 // iframe埋め込みでオーバーレイ表示
 
 (function() {
-  // ポップアップを表示
+  // iframe内（モーダル内）かどうかを判定
+  function isInsideIframe() {
+    try {
+      return window.self !== window.top;
+    } catch (e) {
+      return true;
+    }
+  }
+
+  // ポップアップを表示（iframe内の場合は通常のページ遷移）
   function showVideoPopup(videoId, videoTitle, isShorts = false) {
     if (!videoId) {
       console.error('[YTFrozen Popup] No videoId provided!');
       return;
     }
 
-    console.log('[YTFrozen Popup] Opening video:', videoId, 'Title:', videoTitle, 'isShorts:', isShorts);
+    // iframe内（モーダル内）の場合は通常のページ遷移
+    if (isInsideIframe()) {
+      console.log('[YTFrozen Popup] Inside iframe, navigating to:', videoId);
+      const params = new URLSearchParams({
+        v: videoId,
+        autoplay: '1',
+        theater: '1'
+      });
+      window.location.href = `https://www.youtube.com/watch?${params}`;
+      return;
+    }
+
+    console.log('[YTFrozen Popup] Opening video popup:', videoId, 'Title:', videoTitle, 'isShorts:', isShorts);
 
     // 既存のポップアップがあれば削除
     const existingPopup = document.getElementById('ytfrozen-popup');

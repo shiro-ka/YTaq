@@ -22,14 +22,12 @@
       "matches": ["https://www.youtube.com/*"],
       "js": [
         "content.js",
-        "ytfrozen-list-manager.js",
         "options/apply-options.js",
-        "subscriptions/ytfrozen-subs-container.js",
-        "subscriptions/ytfrozen-subs-movie.js",
+        "folder/ytfrozen-folder.js",
+        "subscriptions/ytfrozen-subs-folder.js",
         "popup/ytfrozen-popup.js",
         "popup/ytfrozen-popup-cleaner.js",
-        "home/ytfrozen-home.js",
-        "folder/ytfrozen-folder.js"
+        "home/ytfrozen-home.js"
       ],
       "css": [
         "ytfrozen-variables.css",

@@ -1,17 +1,53 @@
 /* * *
   登録チャンネルの新着動画を取得して表示
+
+  YouTubeネイティブUIをCSS魔改造する方針に変更したため、
+  sub-channels（登録チャンネル）関連の機能は無効化。
+  コードは参考用に残す。
+
+  リスト（フォルダ）機能は ytfrozen-subs-folder.js に移動。
  * * */
 
+/*
 (function() {
-  
-  // 登録チャンネルの新着動画を取得（直近3日分）
+
+  // 無限スクロール用の状態管理
+  let allVideos = [];           // 取得した全動画
+  let renderedCount = 0;        // 現在表示している動画数
+  let isLoadingMore = false;    // 重複ロード防止フラグ
+  const BATCH_SIZE = 50;        // 1回あたりの表示件数
+
+  // YouTubeの動画が読み込まれるまで待機
+  async function waitForVideosToLoad() {
+    const maxAttempts = 10; // 最大10回（5秒）待機
+    const delay = 500; // 500ms間隔でチェック
+
+    for (let i = 0; i < maxAttempts; i++) {
+      const videoCount = document.querySelectorAll('ytd-browse[page-subtype="subscriptions"] ytd-video-renderer').length;
+
+      if (videoCount >= 20) {
+        // 20件以上読み込まれたらOK
+        console.log(`[YTFrozen] Videos loaded: ${videoCount} (attempt ${i + 1})`);
+        return;
+      }
+
+      console.log(`[YTFrozen] Waiting for videos... (${videoCount} found, attempt ${i + 1}/${maxAttempts})`);
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+
+    // タイムアウトしても続行
+    const finalCount = document.querySelectorAll('ytd-browse[page-subtype="subscriptions"] ytd-video-renderer').length;
+    console.log(`[YTFrozen] Timeout reached. Final count: ${finalCount}`);
+  }
+
+  // 登録チャンネルの新着動画を取得（直近7日分）
   async function getSubscriptionVideos() {
     const videos = [];
-    
+
     try {
-      // まず追加の動画を読み込むためにスクロール
-      await loadMoreVideos();
-      
+      // YouTubeのDOM読み込みを待つ（初期表示分が読み込まれるまで）
+      await waitForVideosToLoad();
+
       // 複数のセレクタパターンで動画要素を取得
       const selectors = [
         'ytd-browse[page-subtype="subscriptions"] ytd-video-renderer',
@@ -43,7 +79,7 @@
             if (videoData) {
               // 日付フィルタリング（エラーがあっても続行）
               try {
-                if (isWithinDays(videoData.publishedDate, 3)) {
+                if (isWithinDays(videoData.publishedDate, 7)) { // 7日分に拡張
                   videos.push(videoData);
                 }
               } catch (dateError) {
@@ -64,43 +100,14 @@
       }
       
       console.log(`Processed ${videos.length} videos`);
-      
+
     } catch (error) {
       console.error('登録チャンネル動画の取得に失敗:', error);
     }
-    
-    return videos.slice(0, 50); // 最大50件に制限
+
+    return videos; // 全動画を返す（無限スクロール対応）
   }
-  
-  // 追加の動画を読み込むためにスクロール
-  async function loadMoreVideos() {
-    const maxScrolls = 5; // 最大5回スクロール
-    const scrollDelay = 800; // 各スクロール間の待機時間
-    
-    for (let i = 0; i < maxScrolls; i++) {
-      const beforeCount = document.querySelectorAll('ytd-browse[page-subtype="subscriptions"] ytd-video-renderer').length;
-      
-      // ページの下部にスクロール
-      window.scrollTo(0, document.body.scrollHeight);
-      
-      // 読み込み待機
-      await new Promise(resolve => setTimeout(resolve, scrollDelay));
-      
-      const afterCount = document.querySelectorAll('ytd-browse[page-subtype="subscriptions"] ytd-video-renderer').length;
-      
-      console.log(`Scroll ${i + 1}: ${beforeCount} -> ${afterCount} videos`);
-      
-      // 新しい動画が読み込まれなかった場合は終了
-      if (afterCount === beforeCount) {
-        console.log('No more videos loaded, stopping scroll');
-        break;
-      }
-    }
-    
-    // スクロール位置を元に戻す
-    window.scrollTo(0, 0);
-  }
-  
+
   // 動画要素からデータを抽出
   function extractVideoData(videoElement) {
     try {
@@ -367,6 +374,102 @@
     }
   }
   
+  // 動画要素を作成してコンテナに追加（共通処理）
+  function appendVideoElement(container, video) {
+    if (video.isUpcoming || video.isPremiere || video.isLive) {
+      // 予定動画（コンパクト表示）
+      const videoDiv = document.createElement('div');
+      videoDiv.className = 'ytfrozen-upcoming-item';
+
+      const titleDiv = document.createElement('div');
+      titleDiv.className = 'ytfrozen-video-title';
+      titleDiv.textContent = video.title;
+      videoDiv.appendChild(titleDiv);
+
+      const metaDiv = document.createElement('div');
+      metaDiv.className = 'ytfrozen-video-meta';
+
+      const channelDiv = document.createElement('div');
+      channelDiv.className = 'ytfrozen-video-channel';
+      channelDiv.textContent = video.channel;
+      metaDiv.appendChild(channelDiv);
+
+      const dateDiv = document.createElement('div');
+      dateDiv.className = 'ytfrozen-video-date';
+      dateDiv.textContent = video.publishedText;
+      metaDiv.appendChild(dateDiv);
+
+      videoDiv.appendChild(metaDiv);
+
+      videoDiv.addEventListener('click', () => {
+        if (video.videoId && window.YTFrozenPopup) {
+          window.YTFrozenPopup.showVideoPopup(video.videoId, video.title);
+        } else if (video.url) {
+          window.open(video.url, '_blank');
+        }
+      });
+
+      container.appendChild(videoDiv);
+    } else {
+      // 公開済み動画（サムネイル付き）
+      const videoDiv = document.createElement('div');
+      videoDiv.className = 'ytfrozen-video-item';
+
+      const img = document.createElement('img');
+      img.src = video.thumbnail;
+      videoDiv.appendChild(img);
+
+      const infoDiv = document.createElement('div');
+      infoDiv.style.flex = '1';
+      infoDiv.style.minWidth = '0';
+
+      const titleDiv = document.createElement('div');
+      titleDiv.className = 'ytfrozen-video-title';
+      titleDiv.textContent = video.title;
+      infoDiv.appendChild(titleDiv);
+
+      const channelDiv = document.createElement('div');
+      channelDiv.className = 'ytfrozen-video-channel';
+      channelDiv.textContent = video.channel;
+      infoDiv.appendChild(channelDiv);
+
+      const dateDiv = document.createElement('div');
+      dateDiv.className = 'ytfrozen-video-date';
+      dateDiv.textContent = video.publishedText;
+      infoDiv.appendChild(dateDiv);
+
+      videoDiv.appendChild(infoDiv);
+
+      videoDiv.addEventListener('click', () => {
+        if (video.videoId && window.YTFrozenPopup) {
+          window.YTFrozenPopup.showVideoPopup(video.videoId, video.title);
+        } else if (video.url) {
+          window.open(video.url, '_blank');
+        }
+      });
+
+      container.appendChild(videoDiv);
+    }
+  }
+
+  // 次のバッチをレンダリング（無限スクロール用）
+  function renderNextBatch(container) {
+    if (isLoadingMore || renderedCount >= allVideos.length) {
+      return; // ロード中または全動画表示済み
+    }
+
+    isLoadingMore = true;
+    console.log(`[YTFrozen Movie] Loading next batch: ${renderedCount} -> ${Math.min(renderedCount + BATCH_SIZE, allVideos.length)}`);
+
+    const nextBatch = allVideos.slice(renderedCount, renderedCount + BATCH_SIZE);
+    nextBatch.forEach(video => appendVideoElement(container, video));
+
+    renderedCount += nextBatch.length;
+    isLoadingMore = false;
+
+    console.log(`[YTFrozen Movie] Rendered ${renderedCount} / ${allVideos.length} videos`);
+  }
+
   // sub-channelsカラム用の動画リストを描画
   async function renderSubChannelVideos(container) {
     console.log('[YTFrozen Movie] renderSubChannelVideos called', container);
@@ -404,104 +507,46 @@
         return;
       }
 
-      console.log('[YTFrozen Movie] Rendering', videos.length, 'videos');
+      // 無限スクロール用に全動画を保存
+      allVideos = videos;
+      renderedCount = 0;
 
-      // 予定動画と公開済み動画を分離
+      console.log('[YTFrozen Movie] Total videos:', videos.length);
+
+      // 予定動画と公開済み動画を分離してソート
       const upcomingVideos = videos.filter(v => v.isUpcoming || v.isPremiere || v.isLive);
       const publishedVideos = videos.filter(v => !v.isUpcoming && !v.isPremiere && !v.isLive);
 
-      // 予定動画セクション
-      if (upcomingVideos.length > 0) {
-        const upcomingSection = document.createElement('div');
-        upcomingSection.className = 'ytfrozen-upcoming-section';
-        upcomingSection.textContent = `予定 (${upcomingVideos.length})`;
-        container.appendChild(upcomingSection);
+      // 予定動画を先頭に、公開済み動画を続けて配置
+      allVideos = [...upcomingVideos, ...publishedVideos];
 
-        upcomingVideos.forEach(video => {
-          const videoDiv = document.createElement('div');
-          videoDiv.className = 'ytfrozen-upcoming-item';
+      // 最初のバッチをレンダリング
+      renderNextBatch(container);
 
-          const titleDiv = document.createElement('div');
-          titleDiv.className = 'ytfrozen-video-title';
-          titleDiv.textContent = video.title;
-          videoDiv.appendChild(titleDiv);
+      // スクロールイベントリスナーを追加（無限スクロール）
+      container.addEventListener('scroll', () => {
+        const { scrollTop, scrollHeight, clientHeight } = container;
+        const threshold = 200; // 下から200pxでトリガー
+        const distanceFromBottom = scrollHeight - (scrollTop + clientHeight);
 
-          const metaDiv = document.createElement('div');
-          metaDiv.className = 'ytfrozen-video-meta';
-
-          const channelDiv = document.createElement('div');
-          channelDiv.className = 'ytfrozen-video-channel';
-          channelDiv.textContent = video.channel;
-          metaDiv.appendChild(channelDiv);
-
-          const dateDiv = document.createElement('div');
-          dateDiv.className = 'ytfrozen-video-date';
-          dateDiv.textContent = video.publishedText;
-          metaDiv.appendChild(dateDiv);
-
-          videoDiv.appendChild(metaDiv);
-
-          // クリック時にポップアップで動画を表示
-          videoDiv.addEventListener('click', () => {
-            if (video.videoId && window.YTFrozenPopup) {
-              window.YTFrozenPopup.showVideoPopup(video.videoId, video.title);
-            } else if (video.url) {
-              window.open(video.url, '_blank');
-            }
-          });
-
-          container.appendChild(videoDiv);
+        console.log('[YTFrozen Movie] Scroll event:', {
+          scrollTop,
+          scrollHeight,
+          clientHeight,
+          distanceFromBottom,
+          threshold,
+          shouldLoad: distanceFromBottom <= threshold,
+          renderedCount,
+          totalVideos: allVideos.length,
+          isLoadingMore
         });
-      }
 
-      // 公開済み動画セクション
-      if (publishedVideos.length > 0) {
-        const publishedSection = document.createElement('div');
-        publishedSection.className = 'ytfrozen-published-section';
-        publishedSection.textContent = `公開済み (${publishedVideos.length})`;
-        container.appendChild(publishedSection);
+        if (distanceFromBottom <= threshold) {
+          renderNextBatch(container);
+        }
+      });
 
-        publishedVideos.forEach(video => {
-          const videoDiv = document.createElement('div');
-          videoDiv.className = 'ytfrozen-video-item';
-
-          const img = document.createElement('img');
-          img.src = video.thumbnail;
-          videoDiv.appendChild(img);
-
-          const infoDiv = document.createElement('div');
-          infoDiv.style.flex = '1';
-          infoDiv.style.minWidth = '0';
-
-          const titleDiv = document.createElement('div');
-          titleDiv.className = 'ytfrozen-video-title';
-          titleDiv.textContent = video.title;
-          infoDiv.appendChild(titleDiv);
-
-          const channelDiv = document.createElement('div');
-          channelDiv.className = 'ytfrozen-video-channel';
-          channelDiv.textContent = video.channel;
-          infoDiv.appendChild(channelDiv);
-
-          const dateDiv = document.createElement('div');
-          dateDiv.className = 'ytfrozen-video-date';
-          dateDiv.textContent = video.publishedText;
-          infoDiv.appendChild(dateDiv);
-
-          videoDiv.appendChild(infoDiv);
-
-          // クリック時にポップアップで動画を表示
-          videoDiv.addEventListener('click', () => {
-            if (video.videoId && window.YTFrozenPopup) {
-              window.YTFrozenPopup.showVideoPopup(video.videoId, video.title);
-            } else if (video.url) {
-              window.open(video.url, '_blank');
-            }
-          });
-
-          container.appendChild(videoDiv);
-        });
-      }
+      console.log('[YTFrozen Movie] Infinite scroll enabled');
 
     } catch (error) {
       console.error('動画リスト描画エラー:', error);
@@ -560,9 +605,9 @@
       
       // 投稿日時でソート（新しい順）
       allVideos.sort((a, b) => b.publishedDate - a.publishedDate);
-      
+
       console.log(`[${listName}] 合計 ${allVideos.length}件の動画`);
-      return allVideos.slice(0, 50); // 最大50件
+      return allVideos; // 全動画を返す（無限スクロール対応）
       
     } catch (error) {
       console.error(`[${listName}] リスト動画取得エラー:`, error);
@@ -689,11 +734,6 @@
 
       // 予定動画セクション
       if (upcomingVideos.length > 0) {
-        const upcomingSection = document.createElement('div');
-        upcomingSection.className = 'ytfrozen-upcoming-section';
-        upcomingSection.textContent = `予定 (${upcomingVideos.length})`;
-        container.appendChild(upcomingSection);
-
         upcomingVideos.forEach(video => {
           const videoDiv = document.createElement('div');
           videoDiv.className = 'ytfrozen-upcoming-item';
@@ -733,11 +773,6 @@
 
       // 公開済み動画セクション
       if (publishedVideos.length > 0) {
-        const publishedSection = document.createElement('div');
-        publishedSection.className = 'ytfrozen-published-section';
-        publishedSection.textContent = `公開済み (${publishedVideos.length})`;
-        container.appendChild(publishedSection);
-
         publishedVideos.forEach(video => {
           const videoDiv = document.createElement('div');
           videoDiv.className = 'ytfrozen-video-item';
@@ -803,3 +838,4 @@
     getSubscriptionVideos,
   };
 })();
+*/
