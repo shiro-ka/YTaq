@@ -1,4 +1,26 @@
 :root {
+  --aquarium-a : 0.15;
+
+  --aquarium-accent: hsla();
+  --aquarium-text: hsla();
+  --mermaid-accent: hsla();
+  --mermaid-text: hsla();
+  --jellyfish-accent: hsla();
+
+
+  --ytfrozen-bg-page: ;
+  --ytfrozen-bg-fixed: ;
+  --ytfrozen-bg-appbar:          hsl();
+  --ytfrozen-surface-default:    hsl();
+  --ytfrozen-surface-elevated:   hsl();
+  --ytfrozen-surface-hover: ;
+  --ytfrozen-fg-default: ;
+  --ytfrozen-fg-secondary: ;
+  --ytfrozen-fg-item: ;
+  --ytfrozen-primary-default: ;
+  --ytfrozen-primary-subtle: ;
+  --ytfrozen-primary-hover: ;
+
   --ytfrozen-bg: #4c566a;
   --ytfrozen-sd: #434c5e;
   --ytfrozen-fg: #3b4252;

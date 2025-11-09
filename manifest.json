@@ -15,7 +15,10 @@
     "<all_urls>"
   ],
   "background": {
-    "scripts": ["background.js"]
+    "scripts": [
+      "background/ytfrozen-main.js",
+      "background/ytfrozen-thumbnail-replace.js"
+    ]
   },
   "content_scripts": [
     {

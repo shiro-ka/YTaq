@@ -18,6 +18,7 @@
         <ul>
           <li><a href="#" class="nav-item active" data-section="home">ホーム</a></li>
           <li><a href="#" class="nav-item" data-section="theme">テーマ</a></li>
+          <li><a href="#" class="nav-item" data-section="antibite">Antibite</a></li>
         </ul>
       </nav>
     </aside>
@@ -87,6 +88,42 @@
         </div>
 
         <div class="message" id="message"></div>
+      </div>
+
+      <!-- Antibiteセクション -->
+      <div id="section-antibite" class="content-section">
+        <h2>Antibite設定</h2>
+        <p style="color: #888; margin-bottom: 20px;">YouTubeの不要な要素を除去する機能の設定</p>
+
+        <!-- 代替サムネイル設定 -->
+        <div class="setting-group">
+          <h3>代替サムネイル</h3>
+          <p class="setting-description">YouTubeのデフォルトサムネイルを動画の実際のフレームに置き換えます。</p>
+
+          <div class="setting-item">
+            <label class="checkbox-label">
+              <input type="checkbox" id="thumbnail-enabled" />
+              <span>代替サムネイルを使用する</span>
+            </label>
+          </div>
+
+          <div class="setting-item" id="thumbnail-frame-setting">
+            <label for="thumbnail-frame">サムネイルフレーム位置</label>
+            <select id="thumbnail-frame">
+              <option value="hq1">開始時（hq1.jpg）</option>
+              <option value="mq2">中間（mq2.jpg）</option>
+              <option value="hq3">終了時（hq3.jpg）</option>
+            </select>
+            <p class="setting-note">動画のどのフレームをサムネイルとして使用するか選択します。</p>
+          </div>
+        </div>
+
+        <div class="button-group">
+          <button id="antibite-save-btn">保存</button>
+          <button id="antibite-reset-btn">デフォルトに戻す</button>
+        </div>
+
+        <div class="message" id="antibite-message"></div>
       </div>
     </main>
   </div>

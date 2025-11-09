@@ -4,74 +4,61 @@
 	Youtubeデフォルトのチャンネル登録欄を魔改造
 - - */
 
-html:not(.ytfrozen-popup-iframe)
+/* 余計なcssを破壊 */
 ytd-browse[page-subtype="subscriptions"] {
 	align-items: normal;
 }
-
-html:not(.ytfrozen-popup-iframe)
 ytd-two-column-browse-results-renderer[page-subtype="subscriptions"] {
   margin: 0;
 	--ytd-grid-max-width: none;
   --ytd-grid-6-columns-width: auto;
 }
 
-html:not(.ytfrozen-popup-iframe)
+/* カラムを横並びにし、スクロール可能にする */
 #primary.ytd-two-column-browse-results-renderer[page-subtype="subscriptions"] {
 	display: flex;
   padding-bottom: 16px;
 	overflow-y: auto;
 }
 
-html:not(.ytfrozen-popup-iframe)
-ytd-section-list-renderer {
-	max-height: calc(100dvh - 88px);
-	overflow-y: auto;
-	margin-top: 16px;
-	margin-left: 24px;
-	padding-right: 24px;
-	min-width: 640px;
-}
-
-/* YouTubeのホバー時プレビュー再生を無効化（iframe内では適用しない） */
-html:not(.ytfrozen-popup-iframe) ytd-browse[page-subtype="subscriptions"] ytd-moving-thumbnail-renderer,
-html:not(.ytfrozen-popup-iframe) ytd-browse[page-subtype="subscriptions"] ytd-video-preview {
-	display: none !important;
-}
-
-/* 代替サムネイル（ホバー時のアニメーション）を無効化 */
-html:not(.ytfrozen-popup-iframe) ytd-browse[page-subtype="subscriptions"] ytd-thumbnail-overlay-hover-text-renderer {
-	display: none !important;
-}
-
-/* サムネイルのホバーエフェクトを無効化 */
-html:not(.ytfrozen-popup-iframe) ytd-browse[page-subtype="subscriptions"] ytd-thumbnail:hover ytd-moving-thumbnail-renderer,
-html:not(.ytfrozen-popup-iframe) ytd-browse[page-subtype="subscriptions"] ytd-thumbnail:hover ytd-video-preview {
-	display: none !important;
-}
-
-/* サムネイル画像の切り替えを無効化 */
-html:not(.ytfrozen-popup-iframe) ytd-browse[page-subtype="subscriptions"] ytd-thumbnail img {
-	opacity: 1 !important;
-}
-
 /* - -
-	全体のコンテナ
-	subs-container.jsによって生成されるコンテナ
+	登録チャンネルカラム
 - - */
 
-/* 独自コンテナを一旦無効化（YouTubeデフォルトを表示） */
-html:not(.ytfrozen-popup-iframe) .ytfrozen-subs-container {
-	display: none;
-	/* display: flex;
-	width: calc(100dvw - var(--app-drawer-width,256px));
-	height: calc(100dvh - 88px);
-	padding: 16px 0;
-	overflow-x: auto; */
+/* カラムのみため */
+ytd-section-list-renderer[page-subtype="subscriptions"] {
+	max-height: calc(100dvh - 88px);
+	min-width: 640px;
+	max-width: 720px;
+	margin-top: 16px;
+	margin-left: 24px;
+	padding: 0 16px;
+	overflow-y: auto;
+	background: var(--ytfrozen-fg, #3b4252);
+	border-radius: 10px;
+	box-shadow: 0 2px 12px #0003;
 }
 
+/* 動画のみため */
+ytd-item-section-renderer[page-subtype="subscriptions"] {
+	margin-bottom: 8px;
+	padding: 8px;
+	border-radius: 6px;
+	border: 1px solid var(--ytfrozen-bd, rgba(255,255,255,0.2));
+	cursor: pointer;
+	transition: background 0.15s;
+}
+ytd-item-section-renderer[page-subtype="subscriptions"]:hover {
+	background: rgba(255,255,255,0.12);
+}
+ytd-item-section-renderer[page-subtype="subscriptions"] ytd-video-renderer {
+	padding-right: 0 !important;
+	max-width: none;
+}
+
+
 /* - -
-	チャンネルリストカラム
+	フォルダカラム
 - - */
 
 /* カラムコンテナ（iframe内では適用しない） */

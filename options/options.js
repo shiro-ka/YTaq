@@ -1,6 +1,7 @@
 // YTFrozen 設定画面スクリプト
 
 const STORAGE_KEY = 'ytfrozen_colors';
+const ANTIBITE_STORAGE_KEY = 'ytfrozen_antibite';
 
 // デフォルトの色設定
 const DEFAULT_COLORS = {
@@ -9,6 +10,12 @@ const DEFAULT_COLORS = {
   fg: '#3b4252',
   ub: '#2e3440',
   bd: 'rgba(255,255,255,0.2)'
+};
+
+// デフォルトのAntibite設定
+const DEFAULT_ANTIBITE = {
+  thumbnailEnabled: true,
+  thumbnailFrame: 'hq1'
 };
 
 // カラーピッカーとテキスト入力を同期
@@ -103,6 +110,72 @@ function showMessage(text, type = 'success') {
   }, 3000);
 }
 
+// Antibite用のメッセージ表示
+function showAntibiteMessage(text, type = 'success') {
+  const messageEl = document.getElementById('antibite-message');
+  messageEl.textContent = text;
+  messageEl.className = `message ${type}`;
+  messageEl.style.display = 'block';
+
+  setTimeout(() => {
+    messageEl.style.display = 'none';
+  }, 3000);
+}
+
+// Antibite設定を読み込み
+function loadAntibiteSettings() {
+  chrome.storage.local.get([ANTIBITE_STORAGE_KEY], (result) => {
+    const antibite = result[ANTIBITE_STORAGE_KEY] || DEFAULT_ANTIBITE;
+
+    document.getElementById('thumbnail-enabled').checked = antibite.thumbnailEnabled;
+    document.getElementById('thumbnail-frame').value = antibite.thumbnailFrame;
+
+    // チェックボックスの状態に応じてフレーム選択を有効/無効化
+    updateThumbnailFrameSetting();
+  });
+}
+
+// Antibite設定を保存
+function saveAntibiteSettings() {
+  const antibite = {
+    thumbnailEnabled: document.getElementById('thumbnail-enabled').checked,
+    thumbnailFrame: document.getElementById('thumbnail-frame').value
+  };
+
+  chrome.storage.local.set({ [ANTIBITE_STORAGE_KEY]: antibite }, () => {
+    showAntibiteMessage('設定を保存しました！拡張機能を再読み込みしてください。', 'success');
+    console.log('[YTFrozen] Antibite設定を保存:', antibite);
+  });
+}
+
+// Antibite設定をデフォルトに戻す
+function resetAntibiteToDefault() {
+  if (!confirm('Antibite設定をデフォルトに戻しますか？')) {
+    return;
+  }
+
+  chrome.storage.local.set({ [ANTIBITE_STORAGE_KEY]: DEFAULT_ANTIBITE }, () => {
+    loadAntibiteSettings();
+    showAntibiteMessage('デフォルト設定に戻しました。', 'success');
+    console.log('[YTFrozen] Antibite設定をデフォルトに戻しました');
+  });
+}
+
+// サムネイルフレーム設定の有効/無効化
+function updateThumbnailFrameSetting() {
+  const enabled = document.getElementById('thumbnail-enabled').checked;
+  const frameSelect = document.getElementById('thumbnail-frame');
+  const frameSetting = document.getElementById('thumbnail-frame-setting');
+
+  if (enabled) {
+    frameSelect.disabled = false;
+    frameSetting.style.opacity = '1';
+  } else {
+    frameSelect.disabled = true;
+    frameSetting.style.opacity = '0.5';
+  }
+}
+
 // セクション切り替え
 function switchSection(sectionName) {
   // すべてのセクションを非表示
@@ -150,10 +223,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 保存された設定を読み込み
   loadSettings();
+  loadAntibiteSettings();
 
-  // ボタンイベント
+  // テーマセクションのボタンイベント
   document.getElementById('save-btn').addEventListener('click', saveSettings);
   document.getElementById('reset-btn').addEventListener('click', resetToDefault);
+
+  // Antibiteセクションのボタンイベント
+  document.getElementById('antibite-save-btn').addEventListener('click', saveAntibiteSettings);
+  document.getElementById('antibite-reset-btn').addEventListener('click', resetAntibiteToDefault);
+
+  // サムネイル有効/無効チェックボックスの変更イベント
+  document.getElementById('thumbnail-enabled').addEventListener('change', updateThumbnailFrameSetting);
 
   console.log('[YTFrozen] 設定画面を初期化しました');
 });
