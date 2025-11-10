@@ -1,4 +1,5 @@
-// チャンネルごとに再生速度を記憶・自動適用する機能
+// YTFrozen: チャンネルごとに再生速度を記憶・自動適用する機能
+// データ管理のみ（UI制御はytfrozen-rate-ui.jsに分離）
 
 // チャンネル名を取得（YouTube動画ページ用）
 function getChannelName() {
@@ -39,11 +40,12 @@ function observePlaybackRate(video, channel) {
     if (video.playbackRate !== lastRate) {
       lastRate = video.playbackRate;
       setStoredRate(channel, lastRate);
+      console.log('[YTFrozen Rate] 再生速度を保存:', channel, lastRate);
     }
   });
 }
 
-// メイン処理
+// メイン処理: チャンネルごとの再生速度を適用
 function applyPlaybackRatePerChannel() {
   const channel = getChannelName();
   const video = getVideoElement();
@@ -51,6 +53,7 @@ function applyPlaybackRatePerChannel() {
   getStoredRate(channel, rate => {
     if (rate && video.playbackRate !== rate) {
       video.playbackRate = rate;
+      console.log('[YTFrozen Rate] 再生速度を適用:', channel, rate);
     }
     observePlaybackRate(video, channel);
   });

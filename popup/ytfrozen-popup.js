@@ -11,6 +11,20 @@
     }
   }
 
+  // iframe内であることを示すクラスを<html>に追加
+  // 本体CSSの:not(.ytfrozen-popup-iframe)セレクタで除外するため
+  function markAsPopupIframe() {
+    if (isInsideIframe() && window.location.href.includes('youtube.com/watch')) {
+      if (document.documentElement) {
+        document.documentElement.classList.add('ytfrozen-popup-iframe');
+        console.log('[YTFrozen Popup] Marked as popup iframe');
+      }
+    }
+  }
+
+  // ページ読み込み時にマーキング実行
+  markAsPopupIframe();
+
   // ポップアップを表示（iframe内の場合は通常のページ遷移）
   function showVideoPopup(videoId, videoTitle, isShorts = false) {
     if (!videoId) {

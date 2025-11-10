@@ -1,0 +1,6 @@
+/* YTFrozen: 再生速度メニュー項目を非表示 */
+
+/* JavaScriptで.ytfrozen-hide-playback-rateクラスを追加した要素を非表示 */
+.ytp-menuitem.ytfrozen-hide-playback-rate {
+  display: none !important;
+}

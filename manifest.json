@@ -26,10 +26,10 @@
       "js": [
         "content.js",
         "options/apply-options.js",
-        "folder/ytfrozen-folder.js",
+        "folder/ytfrozen-folder-manager.js",
+        "folder/ytfrozen-folder-ui.js",
         "subscriptions/ytfrozen-subs-folder.js",
         "popup/ytfrozen-popup.js",
-        "popup/ytfrozen-popup-cleaner.js",
         "home/ytfrozen-home.js"
       ],
       "css": [
@@ -51,14 +51,7 @@
     "default_title": "YTFrozen"
   },
   "web_accessible_resources": [
-    "player.html",
-    "player.js",
-    "youtube-player-wrapper.html",
-    "youtube-player-wrapper.js",
-    "popup.html",
-    "popup.js",
-    "icons/*",
-    "ytfrozen-iframe-api.js"
+    "icons/*"
   ],
   "options_ui": {
     "page": "options/options.html",

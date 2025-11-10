@@ -1,1 +1,27 @@
 /* YTFrozen: ホーム画面用スタイル */
+
+/* カテゴリ表示欄 (ゲーム、音楽、最近アップロードされた動画とか選ぶやつ) */
+#frosted-glass.with-chipbar.ytd-app {
+  background: var(--ytfrozen-bg, #434c5e) !important;
+  backdrop-filter: none;
+}
+/* バブルデザイン */
+ytd-rich-item-renderer.style-scope.ytd-rich-grid-renderer {
+  background: var(--ytfrozen-fg, #3b4252) !important;
+  margin-top: 2rem;
+  border: 1px solid var(--ytfrozen-border, rgba(255,255,255,0.2));
+  border-radius: 1rem;
+}
+.yt-lockup-view-model--vertical.yt-lockup-view-model--rich-grid-legacy-margin .yt-lockup-view-model__content-image {
+  padding: 0 !important;
+}
+ytd-rich-item-renderer[rendered-from-rich-grid][is-in-first-column] {
+  margin-left: 8px !important;
+}
+yt-lockup-metadata-view-model.yt-lockup-metadata-view-model.yt-lockup-metadata-view-model--vertical.yt-lockup-metadata-view-model--standard.yt-lockup-metadata-view-model--typography-bump.yt-lockup-metadata-view-model--rich-grid-legacy-typography {
+  padding: 1rem 2rem 1rem 1rem;
+}
+.yt-lockup-metadata-view-model__menu-button {
+  top: 6px !important;
+  right: 4px !important;
+}
