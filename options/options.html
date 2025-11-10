@@ -19,6 +19,7 @@
           <li><a href="#" class="nav-item active" data-section="home">ホーム</a></li>
           <li><a href="#" class="nav-item" data-section="theme">テーマ</a></li>
           <li><a href="#" class="nav-item" data-section="antibite">Antibite</a></li>
+          <li><a href="#" class="nav-item" data-section="playbackrate">Playbackrate</a></li>
         </ul>
       </nav>
     </aside>
@@ -125,9 +126,49 @@
 
         <div class="message" id="antibite-message"></div>
       </div>
+
+      <!-- Playbackrateセクション -->
+      <div id="section-playbackrate" class="content-section">
+        <h2>Playbackrate設定</h2>
+        <p style="color: #888; margin-bottom: 20px;">動画プレイヤーの再生速度コントロールの設定</p>
+
+        <!-- 増減量設定 -->
+        <div class="setting-group">
+          <h3>速度変更の増減量</h3>
+          <p class="setting-description">+/-ボタンを押したときの速度変更量を設定します。</p>
+
+          <div class="setting-item">
+            <label for="speed-step">増減量（倍速）</label>
+            <input type="number" id="speed-step" min="0.05" max="1.0" step="0.05" style="width: 100px;" />
+            <p class="setting-note">デフォルト: 0.25（YouTube標準準拠）</p>
+          </div>
+        </div>
+
+        <!-- プリセット速度設定 -->
+        <div class="setting-group">
+          <h3>プリセット速度</h3>
+          <p class="setting-description">速度表示ボタンをクリックしたときに循環する速度のリストです。カンマ区切りで入力してください。</p>
+
+          <div class="setting-item">
+            <label for="speed-presets">プリセット速度（カンマ区切り）</label>
+            <input type="text" id="speed-presets" style="width: 100%;" placeholder="1.0, 1.25, 1.5, 1.75, 2.0, 4.0" />
+            <p class="setting-note">デフォルト: 1.0, 1.25, 1.5, 1.75, 2.0, 4.0（YouTube標準準拠）</p>
+          </div>
+        </div>
+
+        <div class="button-group">
+          <button id="playbackrate-save-btn">保存</button>
+          <button id="playbackrate-reset-btn">デフォルトに戻す</button>
+        </div>
+
+        <div class="message" id="playbackrate-message"></div>
+      </div>
     </main>
   </div>
 
-  <script src="options.js"></script>
+  <script src="options-theme.js"></script>
+  <script src="options-antibite.js"></script>
+  <script src="options-playbackrate.js"></script>
+  <script src="options-main.js"></script>
 </body>
 </html>

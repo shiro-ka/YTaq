@@ -4,3 +4,58 @@
 .ytp-menuitem.ytfrozen-hide-playback-rate {
   display: none !important;
 }
+
+/* 再生速度コントロールボタンのスタイル */
+.ytfrozen-rate-controls {
+  display: inline-flex !important;
+  align-items: center !important;
+  margin-right: 8px !important;
+  gap: 4px !important;
+}
+
+/* ボタン共通スタイル - 文字を中央揃え */
+.ytfrozen-rate-minus,
+.ytfrozen-rate-display,
+.ytfrozen-rate-plus {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #fff !important;
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+  font-family: 'YouTube Sans', 'Roboto', sans-serif !important;
+  line-height: 1 !important;
+  vertical-align: middle !important;
+}
+
+/* マイナスボタン */
+.ytfrozen-rate-minus {
+  width: 30px !important;
+  height: 36px !important;
+  font-size: 18px !important;
+  font-weight: bold !important;
+}
+
+/* 速度表示 */
+.ytfrozen-rate-display {
+  min-width: 50px !important;
+  height: 36px !important;
+  font-size: 13px !important;
+  padding: 0 8px !important;
+}
+
+/* プラスボタン */
+.ytfrozen-rate-plus {
+  width: 30px !important;
+  height: 36px !important;
+  font-size: 18px !important;
+  font-weight: bold !important;
+}
+
+/* ホバー時のスタイル */
+.ytfrozen-rate-minus:hover,
+.ytfrozen-rate-display:hover,
+.ytfrozen-rate-plus:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
