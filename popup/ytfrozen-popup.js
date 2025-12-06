@@ -1,46 +1,49 @@
 // YTFrozen: 汎用動画ポップアップ表示機能
-// iframe埋め込みでオーバーレイ表示
+// フルページiframe + 代替サムネイルローディング
 
-(function() {
-  // iframe内（モーダル内）かどうかを判定
-  function isInsideIframe() {
-    try {
-      return window.self !== window.top;
-    } catch (e) {
-      return true;
+(function () {
+  const ANTIBITE_STORAGE_KEY = 'ytfrozen_antibite';
+  const DEFAULT_ANTIBITE = {
+    thumbnailEnabled: true,
+    thumbnailFrame: 'hq1'
+  };
+
+  // 設定をキャッシュ
+  let thumbnailSettings = DEFAULT_ANTIBITE;
+
+  // 設定を読み込み
+  function loadThumbnailSettings() {
+    if (typeof chrome !== 'undefined' && chrome.storage) {
+      chrome.storage.local.get([ANTIBITE_STORAGE_KEY], (result) => {
+        thumbnailSettings = result[ANTIBITE_STORAGE_KEY] || DEFAULT_ANTIBITE;
+        console.log('[YTFrozen Popup] Thumbnail settings loaded:', thumbnailSettings);
+      });
     }
   }
 
-  // iframe内であることを示すクラスを<html>に追加
-  // 本体CSSの:not(.ytfrozen-popup-iframe)セレクタで除外するため
-  function markAsPopupIframe() {
-    if (isInsideIframe() && window.location.href.includes('youtube.com/watch')) {
-      if (document.documentElement) {
-        document.documentElement.classList.add('ytfrozen-popup-iframe');
-        console.log('[YTFrozen Popup] Marked as popup iframe');
+  // 初回読み込み
+  loadThumbnailSettings();
+
+  // 設定変更を監視
+  if (typeof chrome !== 'undefined' && chrome.storage) {
+    chrome.storage.onChanged.addListener((changes, areaName) => {
+      if (areaName === 'local' && changes[ANTIBITE_STORAGE_KEY]) {
+        thumbnailSettings = changes[ANTIBITE_STORAGE_KEY].newValue || DEFAULT_ANTIBITE;
+        console.log('[YTFrozen Popup] Thumbnail settings updated:', thumbnailSettings);
       }
-    }
+    });
   }
 
-  // ページ読み込み時にマーキング実行
-  markAsPopupIframe();
+  // サムネイルURLを取得
+  function getThumbnailUrl(videoId) {
+    const frame = thumbnailSettings.thumbnailFrame || 'hq1';
+    return `https://i.ytimg.com/vi/${videoId}/${frame}.jpg`;
+  }
 
-  // ポップアップを表示（iframe内の場合は通常のページ遷移）
+  // ポップアップを表示
   function showVideoPopup(videoId, videoTitle, isShorts = false) {
     if (!videoId) {
       console.error('[YTFrozen Popup] No videoId provided!');
-      return;
-    }
-
-    // iframe内（モーダル内）の場合は通常のページ遷移
-    if (isInsideIframe()) {
-      console.log('[YTFrozen Popup] Inside iframe, navigating to:', videoId);
-      const params = new URLSearchParams({
-        v: videoId,
-        autoplay: '1',
-        theater: '1'
-      });
-      window.location.href = `https://www.youtube.com/watch?${params}`;
       return;
     }
 
@@ -48,7 +51,9 @@
 
     // 既存のポップアップがあれば削除
     const existingPopup = document.getElementById('ytfrozen-popup');
-    if (existingPopup) existingPopup.remove();
+    if (existingPopup) {
+      existingPopup.remove();
+    }
 
     // オーバーレイ作成
     const popup = document.createElement('div');
@@ -57,8 +62,6 @@
     // コンテンツコンテナ
     const content = document.createElement('div');
     content.className = 'ytfrozen-popup-content';
-
-    // Shortsの場合は縦長クラスを追加
     if (isShorts) {
       content.classList.add('ytfrozen-popup-shorts');
     }
@@ -77,20 +80,35 @@
     // iframeコンテナ
     const iframeContainer = document.createElement('div');
     iframeContainer.className = 'ytfrozen-popup-iframe-container';
-
-    // Shortsの場合は縦長クラスを追加
     if (isShorts) {
       iframeContainer.classList.add('ytfrozen-popup-shorts');
     }
 
-    // iframe作成: YouTube全体ページを読み込む（シアターモード＆CSS無効化で軽量化）
+    // ローディングスケルトン（サムネイル + スピナー）
+    const loadingSkeleton = document.createElement('div');
+    loadingSkeleton.className = 'ytfrozen-popup-loading-skeleton';
+
+    // 代替サムネイル画像
+    const thumbnailImg = document.createElement('img');
+    thumbnailImg.className = 'ytfrozen-popup-thumbnail';
+    thumbnailImg.src = getThumbnailUrl(videoId);
+    thumbnailImg.alt = videoTitle || 'Loading...';
+
+    // ローディングスピナー
+    const spinner = document.createElement('div');
+    spinner.className = 'ytfrozen-popup-spinner';
+
+    loadingSkeleton.appendChild(thumbnailImg);
+    loadingSkeleton.appendChild(spinner);
+
+    // iframe作成: YouTube全体ページを読み込む（シアターモード）
     const iframe = document.createElement('iframe');
+    iframe.className = 'ytfrozen-popup-iframe';
 
     // URLパラメータでシアターモード＆自動再生
     const params = new URLSearchParams({
       v: videoId,
       autoplay: '1',
-      // シアターモード強制
       theater: '1'
     });
 
@@ -101,19 +119,52 @@
 
     console.log('[YTFrozen Popup] Loading YouTube (Theater Mode):', iframe.src);
 
+    // 描画完了後の処理（スケルトンフェードアウト）
+    let hasShownIframe = false;
+    function showIframe() {
+      if (hasShownIframe) return;
+      hasShownIframe = true;
+
+      console.log('[YTFrozen Popup] Fading out skeleton...');
+      loadingSkeleton.classList.add('fade-out');
+
+      // フェードアウト完了後にスケルトン削除
+      setTimeout(() => {
+        if (loadingSkeleton.parentNode) {
+          loadingSkeleton.remove();
+          console.log('[YTFrozen Popup] Skeleton removed');
+        }
+      }, 500);
+    }
+
+    // iframeを即座にDOMに追加してロード開始（スケルトンの裏で読み込ませる）
+    console.log('[YTFrozen Popup] Adding iframe to DOM immediately...');
+    iframeContainer.appendChild(iframe); // ここが重要：iframeは最初からDOMにいる
+
+    // loadイベント監視
+    iframe.addEventListener('load', () => {
+      console.log('[YTFrozen Popup] iframe load event fired');
+      setTimeout(showIframe, 600); // 描画安定待ち
+    });
+
+    // タイムアウト保険（10秒）
+    setTimeout(() => {
+      console.log('[YTFrozen Popup] Timeout: forcing skeleton fade out');
+      showIframe();
+    }, 10000);
+
     // 要素を組み立て
-    iframeContainer.appendChild(iframe);
+    iframeContainer.appendChild(loadingSkeleton); // iframeの上に重ねる
     content.appendChild(closeBtn);
     content.appendChild(title);
     content.appendChild(iframeContainer);
     popup.appendChild(content);
 
-    // オーバーレイクリックで閉じる
+    // イベントリスナー
     popup.addEventListener('click', (e) => {
       if (e.target === popup) hideVideoPopup();
     });
 
-    // ESCキーで閉じる
     const handleKeydown = (e) => {
       if (e.key === 'Escape') {
         hideVideoPopup();
@@ -122,10 +173,8 @@
     };
     document.addEventListener('keydown', handleKeydown);
 
-    // DOMに追加
     document.body.appendChild(popup);
-
-    console.log('[YTFrozen Popup] Popup displayed with iframe');
+    console.log('[YTFrozen Popup] Popup displayed with loading skeleton');
   }
 
   // ポップアップを非表示
@@ -137,9 +186,38 @@
     }
   }
 
-  // グローバル公開（汎用的な名前に変更）
+  // グローバル公開
   window.YTFrozenPopup = {
     showVideoPopup,
     hideVideoPopup
   };
+})();
+
+// ========================================
+// iframe内のページマーキング処理
+// ========================================
+
+(function () {
+  // iframe内（モーダル内）かどうかを判定
+  function isInsideIframe() {
+    try {
+      return window.self !== window.top;
+    } catch (e) {
+      return true;
+    }
+  }
+
+  // iframe内であることを示すクラスを<html>に追加
+  // CSSの html.ytfrozen-popup-iframe セレクタで使用
+  function markAsPopupIframe() {
+    if (isInsideIframe() && window.location.href.includes('youtube.com/watch')) {
+      if (document.documentElement) {
+        document.documentElement.classList.add('ytfrozen-popup-iframe');
+        console.log('[YTFrozen Popup] Marked as popup iframe');
+      }
+    }
+  }
+
+  // ページ読み込み時にマーキング実行
+  markAsPopupIframe();
 })();

@@ -7,11 +7,11 @@ function addYTFrozenSidebarButton() {
 	// サイドバーのitems内のytd-guide-entry-rendererを取得
 	const items = document.querySelector('#items');
 	if (!items) {
-		console.log('[YTFrozen] #items not found');
+		// console.log('[YTFrozen] #items not found');
 		return;
 	}
 	const entries = items.querySelectorAll('ytd-guide-entry-renderer');
-	console.log(`[YTFrozen] ytd-guide-entry-renderer count: ${entries.length}`);
+	// console.log(`[YTFrozen] ytd-guide-entry-renderer count: ${entries.length}`);
 	// 「登録チャンネル」ボタン（title属性が"登録チャンネル"のaタグ）を探す
 	let targetEntry = null;
 	for (const entry of entries) {
@@ -22,7 +22,7 @@ function addYTFrozenSidebarButton() {
 		}
 	}
 	if (!targetEntry) {
-		console.log('[YTFrozen] 登録チャンネル entry not found');
+		// console.log('[YTFrozen] 登録チャンネル entry not found');
 		return;
 	}
 
@@ -51,7 +51,7 @@ function addYTFrozenSidebarButton() {
 
 	// 「登録チャンネル」ボタンの直後に挿入
 	targetEntry.insertAdjacentElement('afterend', btn);
-	console.log('[YTFrozen] 管理画面ボタンを追加しました');
+	// console.log('[YTFrozen] 管理画面ボタンを追加しました');
 }
 
 // ページ遷移や動的描画に対応するため定期的に実行
@@ -85,7 +85,7 @@ function patchSubscriptionsGuideLink() {
 	};
 	a.addEventListener('click', handler, true); // キャプチャ段階で処理
 	a.classList.add('ytfrozen-patched');
-	console.log('[YTFrozen] 登録チャンネルリンクをパッチしました');
+	// console.log('[YTFrozen] 登録チャンネルリンクをパッチしました');
 }
 
 setInterval(patchSubscriptionsGuideLink, 1500);
