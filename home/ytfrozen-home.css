@@ -2,8 +2,9 @@
 
 /* カテゴリ表示欄 (ゲーム、音楽、最近アップロードされた動画とか選ぶやつ) */
 ytd-two-column-browse-results-renderer[page-subtype="home"] #chips-wrapper {
-  background: var(--ytfrozen-bg, #434c5e) !important;
-  border-bottom: 1px solid var(--ytfrozen-bd, rgba(255, 255, 255, 0.2));
+  background: var(--ytaq-bg) !important;
+  border-bottom: 1px solid var(--ytaq-bg-line) !important;
+  box-shadow: 0 1px 6px 1px hsla(var(--aquarium-primary-h), var(--aquarium-item-s), 28%, 0.4);
 }
 
 ytd-two-column-browse-results-renderer[page-subtype="home"] #contents {
@@ -12,9 +13,9 @@ ytd-two-column-browse-results-renderer[page-subtype="home"] #contents {
 
 /* 動画コンテナ */
 ytd-rich-item-renderer.style-scope.ytd-rich-grid-renderer {
-  background: var(--ytfrozen-fg, #3b4252) !important;
+  background: var(--ytaq-item) !important;
   margin-top: 2rem;
-  border: 1px solid var(--ytfrozen-border, rgba(255, 255, 255, 0.2));
+  border: 1px solid var(--ytaq-item-line) !important;
   border-radius: 1rem;
 }
 

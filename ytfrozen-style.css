@@ -1,19 +1,31 @@
-/* * * 全体css（iframe内では適用しない） * * */
+/* 全体css */
 
+/* メイン */
 html:not(.ytfrozen-popup-iframe) ytd-app {
-  background: var(--ytfrozen-bg, #434c5e) !important;
+  background: var(--ytaq-bg) !important;
 }
 
-html:not(.ytfrozen-popup-iframe) ytd-masthead {
-  background: var(--ytfrozen-bgsub, #2e3440) !important;
-}
-
+/* サイドバー */
 html:not(.ytfrozen-popup-iframe) tp-yt-app-drawer {
-  background: var(--ytfrozen-sd, #434c5e) !important;
+  background: var(--ytaq-bg-sub) !important;
+}
+
+/* ヘッダー */
+html:not(.ytfrozen-popup-iframe) ytd-masthead {
+  background: var(--ytaq-item-sub) !important;
+}
+
+html:not(.ytfrozen-popup-iframe) .ytSearchboxComponentInputBoxDark {
+  background: hsla(0, 0%, 100%, .08) !important;
+  border-color: var(--ytaq-item-line) !important;
+}
+
+html:not(.ytfrozen-popup-iframe) .ytSearchboxComponentSearchButtonDark {
+  border-color: var(--ytaq-item-line) !important;
 }
 
 
 /* ホバー時のプレビュー再生を無効化 */
 ytd-video-preview {
-	display: none !important;
+  display: none !important;
 }

@@ -1,29 +1,14 @@
 :root {
-  --aquarium-a : 0.15;
+  --aquarium-primary-h: 228;
+  --aquarium-base-s: 12%;
+  --aquarium-item-s: 20%;
+  /* ベースカラー */
+  --ytaq-bg: hsl(var(--aquarium-primary-h), var(--aquarium-base-s), 10%);
+  --ytaq-bg-sub: hsl(var(--aquarium-primary-h), var(--aquarium-base-s), 12%);
+  --ytaq-bg-line: hsl(var(--aquarium-primary-h), var(--aquarium-base-s), 24%);
+  /* コンテンツカラー */
+  --ytaq-item: hsl(var(--aquarium-primary-h), var(--aquarium-item-s), 12%);
+  --ytaq-item-sub: hsl(var(--aquarium-primary-h), var(--aquarium-item-s), 16%);
+  --ytaq-item-line: hsl(var(--aquarium-primary-h), var(--aquarium-item-s), 28%);
 
-  --aquarium-accent: hsla();
-  --aquarium-text: hsla();
-  --mermaid-accent: hsla();
-  --mermaid-text: hsla();
-  --jellyfish-accent: hsla();
-
-
-  --ytfrozen-bg-page: ;
-  --ytfrozen-bg-fixed: ;
-  --ytfrozen-bg-appbar:          hsl();
-  --ytfrozen-surface-default:    hsl();
-  --ytfrozen-surface-elevated:   hsl();
-  --ytfrozen-surface-hover: ;
-  --ytfrozen-fg-default: ;
-  --ytfrozen-fg-secondary: ;
-  --ytfrozen-fg-item: ;
-  --ytfrozen-primary-default: ;
-  --ytfrozen-primary-subtle: ;
-  --ytfrozen-primary-hover: ;
-
-  --ytfrozen-bg: #4c566a;
-  --ytfrozen-sd: #434c5e;
-  --ytfrozen-fg: #3b4252;
-  --ytfrozen-ub: #2e3440;
-  --ytfrozen-bd: rgba(255,255,255,0.2);
 }

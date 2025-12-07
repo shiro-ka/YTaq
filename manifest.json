@@ -22,7 +22,9 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://www.youtube.com/*"],
+      "matches": [
+        "https://www.youtube.com/*"
+      ],
       "js": [
         "content.js",
         "options/apply-options.js",
@@ -32,7 +34,8 @@
         "popup/ytfrozen-popup.js",
         "home/ytfrozen-home.js",
         "rate/ytfrozen-rate-manager.js",
-        "rate/ytfrozen-rate-ui.js"
+        "rate/ytfrozen-rate-ui.js",
+        "title/ytfrozen-title.js"
       ],
       "css": [
         "ytfrozen-variables.css",
