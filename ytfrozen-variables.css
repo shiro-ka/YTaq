@@ -1,14 +1,41 @@
 :root {
-  --aquarium-primary-h: 228;
   --aquarium-base-s: 12%;
   --aquarium-item-s: 20%;
-  /* ベースカラー */
-  --ytaq-bg: hsl(var(--aquarium-primary-h), var(--aquarium-base-s), 10%);
-  --ytaq-bg-sub: hsl(var(--aquarium-primary-h), var(--aquarium-base-s), 12%);
-  --ytaq-bg-line: hsl(var(--aquarium-primary-h), var(--aquarium-base-s), 24%);
-  /* コンテンツカラー */
-  --ytaq-item: hsl(var(--aquarium-primary-h), var(--aquarium-item-s), 12%);
-  --ytaq-item-sub: hsl(var(--aquarium-primary-h), var(--aquarium-item-s), 16%);
-  --ytaq-item-line: hsl(var(--aquarium-primary-h), var(--aquarium-item-s), 28%);
 
+  --aquarium-base-l: 10%;
+  --aquarium-sub-l: 12%;
+  --aquarium-line-l: 24%;
+
+  /* --- プライマリカラー --- */
+  --aquarium-primary-h: 228;
+  /* ベースカラー */
+  --aqprimary-bg: hsl(var(--aquarium-primary-h), var(--aquarium-base-s), var(--aquarium-base-l));
+  --aqprimary-bg-sub: hsl(var(--aquarium-primary-h), var(--aquarium-base-s), var(--aquarium-sub-l));
+  --aqprimary-bg-line: hsl(var(--aquarium-primary-h), var(--aquarium-base-s), var(--aquarium-line-l));
+  /* コンテンツカラー */
+  --aqprimary-item: hsl(var(--aquarium-primary-h), var(--aquarium-item-s), var(--aquarium-base-l));
+  --aqprimary-item-sub: hsl(var(--aquarium-primary-h), var(--aquarium-item-s), var(--aquarium-sub-l));
+  --aqprimary-item-line: hsl(var(--aquarium-primary-h), var(--aquarium-item-s), var(--aquarium-line-l));
+
+  /* --- セカンダリカラー --- */
+  --aquarium-secondary-h: 228;
+  /* ベースカラー */
+  --aqsecondary-bg: hsl(var(--aquarium-secondary-h), var(--aquarium-base-s), var(--aquarium-base-l));
+  --aqsecondary-bg-sub: hsl(var(--aquarium-secondary-h), var(--aquarium-base-s), var(--aquarium-sub-l));
+  --aqsecondary-bg-line: hsl(var(--aquarium-secondary-h), var(--aquarium-base-s), var(--aquarium-line-l));
+  /* コンテンツカラー */
+  --aqsecondary-item: hsl(var(--aquarium-secondary-h), var(--aquarium-item-s), var(--aquarium-base-l));
+  --aqsecondary-item-sub: hsl(var(--aquarium-secondary-h), var(--aquarium-item-s), var(--aquarium-sub-l));
+  --aqsecondary-item-line: hsl(var(--aquarium-secondary-h), var(--aquarium-item-s), var(--aquarium-line-l));
+
+  /* --- アクセントカラー --- */
+  --aquarium-accent-h: 228;
+  /* ベースカラー */
+  --aqaccent-bg: hsl(var(--aquarium-accent-h), var(--aquarium-base-s), var(--aquarium-base-l));
+  --aqaccent-bg-sub: hsl(var(--aquarium-accent-h), var(--aquarium-base-s), var(--aquarium-sub-l));
+  --aqaccent-bg-line: hsl(var(--aquarium-accent-h), var(--aquarium-base-s), var(--aquarium-line-l));
+  /* コンテンツカラー */
+  --aqaccent-item: hsl(var(--aquarium-accent-h), var(--aquarium-item-s), var(--aquarium-base-l));
+  --aqaccent-item-sub: hsl(var(--aquarium-accent-h), var(--aquarium-item-s), var(--aquarium-sub-l));
+  --aqaccent-item-line: hsl(var(--aquarium-accent-h), var(--aquarium-item-s), var(--aquarium-line-l));
 }

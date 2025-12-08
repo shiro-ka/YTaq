@@ -1,14 +1,14 @@
-/* YTFrozen: ホーム画面用スタイル */
+/* ホーム画面 */
+
+/* 左にちょっと余白 */
+ytd-two-column-browse-results-renderer[page-subtype="home"] #contents.ytd-rich-grid-renderer {
+  padding-left: 24px;
+}
 
 /* カテゴリ表示欄 (ゲーム、音楽、最近アップロードされた動画とか選ぶやつ) */
 ytd-two-column-browse-results-renderer[page-subtype="home"] #chips-wrapper {
   background: var(--ytaq-bg) !important;
-  border-bottom: 1px solid var(--ytaq-bg-line) !important;
-  box-shadow: 0 1px 6px 1px hsla(var(--aquarium-primary-h), var(--aquarium-item-s), 28%, 0.4);
-}
-
-ytd-two-column-browse-results-renderer[page-subtype="home"] #contents {
-  padding-left: 24px;
+  box-shadow: 0 1px 6px 1px hsla(var(--aquarium-primary-h), var(--aquarium-item-s), 28%, 0.6);
 }
 
 /* 動画コンテナ */
@@ -19,15 +19,18 @@ ytd-rich-item-renderer.style-scope.ytd-rich-grid-renderer {
   border-radius: 1rem;
 }
 
+/* ショートコンテナ */
+
+/* 幅調整 */
+ytd-two-column-browse-results-renderer[page-subtype="home"] #content.ytd-rich-section-renderer {
+  margin: 0 36px 0 8px !important;
+}
+
 /* デフォルトのホバー無効化 */
 ytd-two-column-browse-results-renderer[page-subtype="home"] yt-touch-feedback-shape {
   display: none !important;
 }
 
-/* ホバー時の背景 */
-ytd-rich-item-renderer:hover {
-  background: var(--ytfrozen-fg, #3b4252) !important;
-}
 
 .yt-lockup-view-model--vertical.yt-lockup-view-model--rich-grid-legacy-margin .yt-lockup-view-model__content-image {
   padding: 0 !important;

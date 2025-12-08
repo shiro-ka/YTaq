@@ -14,7 +14,8 @@
 }
 
 .ytfrozen-popup-content {
-	background: var(--ytfrozen-bg, #2e3440);
+	background: var(--ytaq-item);
+	border: 1px solid var(--ytaq-item-line);
 	border-radius: 12px;
 	padding: 20px;
 	padding-right: 12px;
@@ -158,7 +159,7 @@ html.ytfrozen-popup-iframe {
 	}
 
 	ytd-watch-flexy[full-bleed-player] #full-bleed-container.ytd-watch-flexy {
-		background: transparent !important;
+		background: var(--ytaq-item) !important;
 	}
 
 	#masthead,
@@ -205,16 +206,16 @@ html.ytfrozen-popup-iframe {
 	#comments {
 		position: relative !important;
 		margin-top: 0 !important;
-		background: var(--ytfrozen-bg, #2e3440) !important;
+		background: var(--ytaq-item) !important;
 		padding: 16px !important;
 	}
 
 	ytd-comments {
-		background: var(--ytfrozen-bg, #2e3440) !important;
+		background: var(--ytaq-item) !important;
 	}
 
 	ytd-app {
-		background: var(--ytfrozen-bg, #2e3440) !important;
+		background: var(--ytaq-item) !important;
 	}
 
 	#page-manager,

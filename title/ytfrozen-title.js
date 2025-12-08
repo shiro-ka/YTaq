@@ -7,18 +7,12 @@
 
   // 処理対象のセレクタ
   const TARGET_SELECTORS = [
-    '#video-title', // 汎用: 関連動画、検索結果など（多くの箇所でIDとして使用）
-    '#video-title-link', // リンク要素自体がタイトルの場合
-    'h1.ytd-watch-metadata', // 再生画面のタイトル (新レイアウト)
-    'h1.title.ytd-video-primary-info-renderer', // 再生画面のタイトル (旧レイアウト)
-    'ytd-rich-grid-media #video-title', // ホーム画面（グリッド表示）
-    'ytd-video-renderer #video-title', // 検索結果リスト
-    'ytd-compact-video-renderer #video-title', // 関連動画サイドバー
-    'ytd-grid-video-renderer #video-title', // チャンネルページ等のグリッド
-    'a#video-title-link yt-formatted-string', // リンク内のテキスト要素
-    'h3.yt-lockup-metadata-view-model__heading-reset span.yt-core-attributed-string', // 新しいホーム画面レイアウト
-    // 必要に応じて追加
+    'h3.yt-lockup-metadata-view-model__heading-reset span.yt-core-attributed-string',
+    'yt-formatted-string.style-scope.ytd-video-renderer'
   ];
+
+  // 正規表現を定数化（作成コスト削減）
+  const EXAGGERATION_REGEX = /【[^】]*】|\[[^\]]*\]|［[^］]*］/g;
 
   /**
    * テキストから【】、[]、［］で囲まれた部分を除去する。
@@ -29,18 +23,12 @@
   function cleanTitleText(text) {
     if (!text) return text;
 
-    // 正規表現: 
-    // 1. 【...】 (全角隅付き括弧)
-    // 2. [...] (半角角括弧)
-    // 3. ［...］ (全角角括弧)
-    const regex = /【[^】]*】|\[[^\]]*\]|［[^］]*］/g;
-
-    return text.replace(regex, (match) => {
+    return text.replace(EXAGGERATION_REGEX, (match) => {
       // "#" または "＃" が含まれているかチェック
       if (match.includes('#') || match.includes('＃')) {
-        return match; // そのまま返す
+        return match;
       }
-      return ''; // 削除（空文字に置換）
+      return '';
     });
   }
 
@@ -49,72 +37,63 @@
    * @param {HTMLElement} element 
    */
   function processElement(element) {
-    // 既に処理済みかどうかのフラグは、SPAでの再利用を考慮して使用しない、
-    // あるいはテキスト内容が変わったかを基準にする。
-
-    // 要素が非表示等の場合はスキップしてもよいが、ここではテキストベースで判断
     const originalText = element.textContent;
+    // 変更がない場合は早期リターン（計算コスト削減）
+    if (!originalText) return;
+
     const newText = cleanTitleText(originalText);
 
     if (originalText !== newText) {
-      // テキストのみ更新
-      // youtubeのデータバインディングと競合する可能性はあるが、
-      // MutationObserverで監視しているので再適用されるはず。
+      // DOM書き換えコストは高いので、本当に変わる場合のみ実行
       element.textContent = newText;
-      // デバッグ用ログ
-      // console.log(`[YTFrozen] Title cleaned: "${originalText}" -> "${newText}"`);
     }
   }
 
   /**
    * ページ全体のスキャン実行
+   * requestAnimationFrameを使用して描画サイクルに合わせる
    */
   function scanAndClean() {
-    // セレクタにマッチする全ての要素を取得
-    const elements = document.querySelectorAll(TARGET_SELECTORS.join(','));
-    elements.forEach(processElement);
+    requestAnimationFrame(() => {
+      const elements = document.querySelectorAll(TARGET_SELECTORS.join(','));
+      elements.forEach(processElement);
+    });
+  }
+
+  // DebounceタイマーID
+  let timeoutId = null;
+
+  /**
+   * スキャン実行を遅延させ、連続呼び出しを間引く（Debounce）
+   * YouTubeは頻繁にDOM更新するため、この処理がパフォーマンスの肝
+   */
+  function debouncedScan() {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+    // 最後の変更検知から200ms経過後に実行
+    timeoutId = setTimeout(() => {
+      scanAndClean();
+      timeoutId = null;
+    }, 200);
   }
 
   // MutationObserverの設定
-  // YouTubeは動的にコンテンツをロードするため常に監視が必要
   const observer = new MutationObserver((mutations) => {
-    let needsScan = false;
-
-    for (const mutation of mutations) {
-      if (mutation.type === 'childList') {
-        // ノードが追加された場合
-        if (mutation.addedNodes.length > 0) {
-          needsScan = true;
-          break;
-        }
-      } else if (mutation.type === 'characterData') {
-        // テキストノードが変更された場合
-        // タイトル要素直下のテキスト変更を検知するのは難しい（親のみ監視しているため）
-        // しかしsubtree: trueなら検知可能
-        needsScan = true;
-        break;
-      }
-      // 属性変更などは無視
-    }
-
-    if (needsScan) {
-      // パフォーマンスのため、頻繁な実行を少し間引くことも考えられるが、
-      // テキスト比較が軽量なので一旦そのまま実行
-      scanAndClean();
-    }
+    // どの種類の変更であっても、画面上の要素に変更があった可能性があるため
+    // 間引きつつスキャンをリクエストする
+    debouncedScan();
   });
 
   // 監視開始
+  // body以下の全変更を監視するが、debouncedScanで処理を間引くため負荷は低い
   observer.observe(document.body, {
     childList: true,
     subtree: true,
-    characterData: true // テキスト書き換えも監視
+    characterData: true
   });
 
   // 初回実行
   scanAndClean();
-
-  // 定期的なクリーンアップ（Observer漏れ対策）
-  setInterval(scanAndClean, 2000);
 
 })();

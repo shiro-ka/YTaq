@@ -1,29 +1,51 @@
-/* 全体css */
+/* --- 全体のスタイル --- */
 
-/* メイン */
+/* 背景 */
 html:not(.ytfrozen-popup-iframe) ytd-app {
   background: var(--ytaq-bg) !important;
 }
 
-/* サイドバー */
-html:not(.ytfrozen-popup-iframe) tp-yt-app-drawer {
-  background: var(--ytaq-bg-sub) !important;
-}
+/* --- ヘッダー --- */
 
-/* ヘッダー */
+/* 背景 */
 html:not(.ytfrozen-popup-iframe) ytd-masthead {
   background: var(--ytaq-item-sub) !important;
 }
 
-html:not(.ytfrozen-popup-iframe) .ytSearchboxComponentInputBoxDark {
+/* 検索欄の背景と枠線 */
+html:not(.ytfrozen-popup-iframe) .ytSearchboxComponentInputBoxDark,
+html:not(.ytfrozen-popup-iframe) .ytSearchboxComponentSearchButtonDark {
   background: hsla(0, 0%, 100%, .08) !important;
   border-color: var(--ytaq-item-line) !important;
 }
 
-html:not(.ytfrozen-popup-iframe) .ytSearchboxComponentSearchButtonDark {
-  border-color: var(--ytaq-item-line) !important;
+/* --- サイドバー --- */
+
+/* 背景と右側のborder */
+html:not(.ytfrozen-popup-iframe) tp-yt-app-drawer {
+  background: var(--ytaq-bg-sub) !important;
+  border-right: 1px solid var(--ytaq-bg-line);
 }
 
+/* コンテンツ区切りのborderを消す */
+html:not(.ytfrozen-popup-iframe) #sections.ytd-guide-renderer>.ytd-guide-renderer:not(:last-child) {
+  border-bottom: none !important;
+}
+
+/* カテゴリの幅を100%にする（デフォルトだと右に12pxの余白がある） */
+html:not(.ytfrozen-popup-iframe) ytd-guide-entry-renderer {
+  width: 100% !important;
+}
+
+/* カテゴリ間の余白 */
+html:not(.ytfrozen-popup-iframe) ytd-guide-entry-renderer:not(:last-child) {
+  margin-bottom: 4px;
+}
+
+/* アクティブなカテゴリの背景 */
+html:not(.ytfrozen-popup-iframe) ytd-guide-entry-renderer[active] {
+  background: rgba(255, 255, 255, 0.3) !important;
+}
 
 /* ホバー時のプレビュー再生を無効化 */
 ytd-video-preview {
