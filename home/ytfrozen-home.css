@@ -7,15 +7,15 @@ ytd-two-column-browse-results-renderer[page-subtype="home"] #contents.ytd-rich-g
 
 /* カテゴリ表示欄 (ゲーム、音楽、最近アップロードされた動画とか選ぶやつ) */
 ytd-two-column-browse-results-renderer[page-subtype="home"] #chips-wrapper {
-  background: var(--ytaq-bg) !important;
+  background: var(--aqprimary-bg) !important;
   box-shadow: 0 1px 6px 1px hsla(var(--aquarium-primary-h), var(--aquarium-item-s), 28%, 0.6);
 }
 
 /* 動画コンテナ */
 ytd-rich-item-renderer.style-scope.ytd-rich-grid-renderer {
-  background: var(--ytaq-item) !important;
+  background: var(--aqprimary-item) !important;
   margin-top: 2rem;
-  border: 1px solid var(--ytaq-item-line) !important;
+  border: 1px solid var(--aqprimary-item-line) !important;
   border-radius: 1rem;
 }
 

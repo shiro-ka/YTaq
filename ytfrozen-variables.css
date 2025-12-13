@@ -1,6 +1,7 @@
 :root {
   --aquarium-base-s: 12%;
   --aquarium-item-s: 20%;
+  --aquarium-ui-s: 38%;
 
   --aquarium-base-l: 10%;
   --aquarium-sub-l: 12%;
@@ -18,7 +19,7 @@
   --aqprimary-item-line: hsl(var(--aquarium-primary-h), var(--aquarium-item-s), var(--aquarium-line-l));
 
   /* --- セカンダリカラー --- */
-  --aquarium-secondary-h: 228;
+  --aquarium-secondary-h: 242;
   /* ベースカラー */
   --aqsecondary-bg: hsl(var(--aquarium-secondary-h), var(--aquarium-base-s), var(--aquarium-base-l));
   --aqsecondary-bg-sub: hsl(var(--aquarium-secondary-h), var(--aquarium-base-s), var(--aquarium-sub-l));
