@@ -4,7 +4,7 @@
   メインバナーの背景色
 */
 #page-header-container.ytd-tabbed-page-header, #page-header.ytd-tabbed-page-header, #tabs-container.ytd-tabbed-page-header, #tabs-inner-container.ytd-tabbed-page-header {
-  background: var(--ytfrozen-fg, #3b4252) !important;
+  background: var(--ytaq-fg, #3b4252) !important;
 }
 
 

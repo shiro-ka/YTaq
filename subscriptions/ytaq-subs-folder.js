@@ -6,10 +6,10 @@
 
   // リストのデバッグ情報を取得
   async function getListDebugInfo(listName) {
-    if (!window.YTFrozenListManager) return 'ListManagerなし';
+    if (!window.YTaqListManager) return 'ListManagerなし';
 
     try {
-      const lists = await window.YTFrozenListManager.getLists();
+      const lists = await window.YTaqListManager.getLists();
       const list = lists.find(l => l.name === listName);
 
       if (!list) return 'リストが存在しません';
@@ -26,31 +26,31 @@
     if (video.isUpcoming || video.isPremiere || video.isLive) {
       // 予定動画（コンパクト表示）
       const videoDiv = document.createElement('div');
-      videoDiv.className = 'ytfrozen-upcoming-item';
+      videoDiv.className = 'ytaq-upcoming-item';
 
       const titleDiv = document.createElement('div');
-      titleDiv.className = 'ytfrozen-video-title';
+      titleDiv.className = 'ytaq-video-title';
       titleDiv.textContent = video.title;
       videoDiv.appendChild(titleDiv);
 
       const metaDiv = document.createElement('div');
-      metaDiv.className = 'ytfrozen-video-meta';
+      metaDiv.className = 'ytaq-video-meta';
 
       const channelDiv = document.createElement('div');
-      channelDiv.className = 'ytfrozen-video-channel';
+      channelDiv.className = 'ytaq-video-channel';
       channelDiv.textContent = video.channel;
       metaDiv.appendChild(channelDiv);
 
       const dateDiv = document.createElement('div');
-      dateDiv.className = 'ytfrozen-video-date';
+      dateDiv.className = 'ytaq-video-date';
       dateDiv.textContent = video.publishedText;
       metaDiv.appendChild(dateDiv);
 
       videoDiv.appendChild(metaDiv);
 
       videoDiv.addEventListener('click', () => {
-        if (video.videoId && window.YTFrozenPopup) {
-          window.YTFrozenPopup.showVideoPopup(video.videoId, video.title);
+        if (video.videoId && window.YTaqPopup) {
+          window.YTaqPopup.showVideoPopup(video.videoId, video.title);
         } else if (video.url) {
           window.open(video.url, '_blank');
         }
@@ -60,7 +60,7 @@
     } else {
       // 公開済み動画（サムネイル付き）
       const videoDiv = document.createElement('div');
-      videoDiv.className = 'ytfrozen-video-item';
+      videoDiv.className = 'ytaq-video-item';
 
       const img = document.createElement('img');
       img.src = video.thumbnail;
@@ -71,25 +71,25 @@
       infoDiv.style.minWidth = '0';
 
       const titleDiv = document.createElement('div');
-      titleDiv.className = 'ytfrozen-video-title';
+      titleDiv.className = 'ytaq-video-title';
       titleDiv.textContent = video.title;
       infoDiv.appendChild(titleDiv);
 
       const channelDiv = document.createElement('div');
-      channelDiv.className = 'ytfrozen-video-channel';
+      channelDiv.className = 'ytaq-video-channel';
       channelDiv.textContent = video.channel;
       infoDiv.appendChild(channelDiv);
 
       const dateDiv = document.createElement('div');
-      dateDiv.className = 'ytfrozen-video-date';
+      dateDiv.className = 'ytaq-video-date';
       dateDiv.textContent = video.publishedText;
       infoDiv.appendChild(dateDiv);
 
       videoDiv.appendChild(infoDiv);
 
       videoDiv.addEventListener('click', () => {
-        if (video.videoId && window.YTFrozenPopup) {
-          window.YTFrozenPopup.showVideoPopup(video.videoId, video.title);
+        if (video.videoId && window.YTaqPopup) {
+          window.YTaqPopup.showVideoPopup(video.videoId, video.title);
         } else if (video.url) {
           window.open(video.url, '_blank');
         }
@@ -101,14 +101,14 @@
 
   // リスト内チャンネルの新着動画を取得
   async function getListChannelVideos(listName) {
-    if (!window.YTFrozenListManager) {
-      console.warn(`[${listName}] YTFrozenListManagerが利用できません`);
+    if (!window.YTaqListManager) {
+      console.warn(`[${listName}] YTaqListManagerが利用できません`);
       return [];
     }
 
     try {
       // リスト情報を取得
-      const lists = await window.YTFrozenListManager.getLists();
+      const lists = await window.YTaqListManager.getLists();
       console.log(`[${listName}] 全リスト:`, lists);
 
       const list = lists.find(l => l.name === listName);
@@ -294,7 +294,7 @@
   }
 
   // グローバル公開
-  window.YTFrozenListMovie = {
+  window.YTaqListMovie = {
     renderListMovies,
   };
 
@@ -304,32 +304,32 @@
   async function createListColumns() {
     if (isUpdating) return;
 
-    // 登録チャンネル画面かつ #ytfrozen ハッシュがある場合のみ実行
+    // 登録チャンネル画面かつ #ytaq ハッシュがある場合のみ実行
     const browse = document.querySelector('ytd-browse[page-subtype="subscriptions"]');
     if (!browse) return;
-    if (!location.hash.includes('ytfrozen')) return;
+    if (!location.hash.includes('ytaq')) return;
 
     // YouTubeの#primary要素を探す
     const primary = browse.querySelector('#primary.ytd-two-column-browse-results-renderer');
     if (!primary) {
-      console.log('[YTFrozen Folder] #primary not found');
+      console.log('[YTaq Folder] #primary not found');
       return;
     }
 
     try {
       isUpdating = true;
 
-      if (!window.YTFrozenListManager) {
-        console.warn('[YTFrozen Folder] YTFrozenListManager が利用できません');
+      if (!window.YTaqListManager) {
+        console.warn('[YTaq Folder] YTaqListManager が利用できません');
         return;
       }
 
       // リスト一覧を取得
-      const lists = await window.YTFrozenListManager.getLists();
-      console.log('[YTFrozen Folder] リスト:', lists);
+      const lists = await window.YTaqListManager.getLists();
+      console.log('[YTaq Folder] リスト:', lists);
 
       // 既存のカラムを取得
-      const existingColumns = primary.querySelectorAll('.ytfrozen-list-column');
+      const existingColumns = primary.querySelectorAll('.ytaq-list-column');
       const existingListNames = new Set(
         Array.from(existingColumns).map(col => col.dataset.listHash)
       );
@@ -338,27 +338,27 @@
       for (const list of lists) {
         // 既に存在するカラムはスキップ
         if (existingListNames.has(list.name)) {
-          console.log(`[YTFrozen Folder] カラム "${list.name}" は既に存在します`);
+          console.log(`[YTaq Folder] カラム "${list.name}" は既に存在します`);
           continue;
         }
 
         const column = document.createElement('div');
-        column.className = 'ytfrozen-list-column';
+        column.className = 'ytaq-list-column';
         column.dataset.listHash = list.name;
 
         const header = document.createElement('div');
-        header.className = 'ytfrozen-header';
+        header.className = 'ytaq-header';
         header.textContent = list.name;
         column.appendChild(header);
 
         const content = document.createElement('div');
-        content.className = 'ytfrozen-list-content';
+        content.className = 'ytaq-list-content';
         column.appendChild(content);
 
         // #primaryに追加
         primary.appendChild(column);
 
-        console.log(`[YTFrozen Folder] カラム "${list.name}" を追加しました`);
+        console.log(`[YTaq Folder] カラム "${list.name}" を追加しました`);
 
         // 動画リストを描画
         setTimeout(() => {
@@ -373,7 +373,7 @@
       for (const column of existingColumns) {
         const listName = column.dataset.listHash;
         if (!lists.find(l => l.name === listName)) {
-          console.log(`[YTFrozen Folder] カラム "${listName}" を削除します（リストが存在しない）`);
+          console.log(`[YTaq Folder] カラム "${listName}" を削除します（リストが存在しない）`);
           column.remove();
         }
       }

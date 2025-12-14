@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
-  "name": "YTFrozen",
+  "name": "YTaq",
   "version": "1.0.0",
-  "description": "YTFrozen",
+  "description": "Custom YT theme.",
   "icons": {
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
@@ -16,8 +16,8 @@
   ],
   "background": {
     "scripts": [
-      "background/ytfrozen-main.js",
-      "background/ytfrozen-thumbnail-replace.js"
+      "background/ytaq-main.js",
+      "background/ytaq-thumbnail-replace.js"
     ]
   },
   "content_scripts": [
@@ -28,23 +28,23 @@
       "js": [
         "content.js",
         "options/apply-options.js",
-        "folder/ytfrozen-folder-manager.js",
-        "folder/ytfrozen-folder-ui.js",
-        "subscriptions/ytfrozen-subs-folder.js",
-        "popup/ytfrozen-popup.js",
-        "home/ytfrozen-home.js",
-        "rate/ytfrozen-rate-manager.js",
-        "rate/ytfrozen-rate-ui.js",
-        "title/ytfrozen-title.js"
+        "folder/ytaq-folder-manager.js",
+        "folder/ytaq-folder-ui.js",
+        "subscriptions/ytaq-subs-folder.js",
+        "popup/ytaq-popup.js",
+        "home/ytaq-home.js",
+        "rate/ytaq-rate-manager.js",
+        "rate/ytaq-rate-ui.js",
+        "title/ytaq-title.js"
       ],
       "css": [
-        "ytfrozen-variables.css",
-        "ytfrozen-style.css",
-        "popup/ytfrozen-popup.css",
-        "home/ytfrozen-home.css",
-        "subscriptions/ytfrozen-subs.css",
-        "folder/ytfrozen-folder.css",
-        "rate/ytfrozen-rate-manager.css"
+        "ytaq-variables.css",
+        "ytaq-style.css",
+        "popup/ytaq-popup.css",
+        "home/ytaq-home.css",
+        "subscriptions/ytaq-subs.css",
+        "folder/ytaq-folder.css",
+        "rate/ytaq-rate-manager.css"
       ],
       "all_frames": true,
       "run_at": "document_start"
@@ -54,7 +54,7 @@
     "default_icon": {
       "48": "icons/icon48.png"
     },
-    "default_title": "YTFrozen"
+    "default_title": "YTaq"
   },
   "web_accessible_resources": [
     "icons/*"

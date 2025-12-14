@@ -1,6 +1,6 @@
-// YTFrozen 設定画面 - テーマ設定モジュール
+// YTaq 設定画面 - テーマ設定モジュール
 
-const STORAGE_KEY = 'ytfrozen_colors';
+const STORAGE_KEY = 'ytaq_colors';
 
 // デフォルトの色設定
 const DEFAULT_COLORS = {
@@ -74,7 +74,7 @@ function saveThemeSettings() {
 
   chrome.storage.local.set({ [STORAGE_KEY]: colors }, () => {
     showThemeMessage('設定を保存しました！YouTubeページを再読み込みしてください。', 'success');
-    console.log('[YTFrozen Theme] 色設定を保存:', colors);
+    console.log('[YTaq Theme] 色設定を保存:', colors);
   });
 }
 
@@ -87,7 +87,7 @@ function resetThemeToDefault() {
   chrome.storage.local.set({ [STORAGE_KEY]: DEFAULT_COLORS }, () => {
     loadThemeSettings();
     showThemeMessage('デフォルト設定に戻しました。', 'success');
-    console.log('[YTFrozen Theme] デフォルト設定に戻しました');
+    console.log('[YTaq Theme] デフォルト設定に戻しました');
   });
 }
 
@@ -119,10 +119,10 @@ function initThemeSettings() {
   document.getElementById('save-btn').addEventListener('click', saveThemeSettings);
   document.getElementById('reset-btn').addEventListener('click', resetThemeToDefault);
 
-  console.log('[YTFrozen Theme] テーマ設定を初期化しました');
+  console.log('[YTaq Theme] テーマ設定を初期化しました');
 }
 
 // グローバルに公開
-window.YTFrozenTheme = {
+window.YTaqTheme = {
   init: initThemeSettings
 };

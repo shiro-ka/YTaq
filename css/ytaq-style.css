@@ -1,0 +1,15 @@
+/* * * ホーム画面 * * */
+
+
+/* サイドバー */
+tp-yt-app-drawer {
+	background: var(--ytaq-sd, #434c5e) !important;
+}
+
+ytd-app {
+	background: var(--ytaq-bg, #434c5e) !important;
+}
+
+ytd-masthead {
+	background: var(--ytaq-bgsub, #2e3440) !important;
+}

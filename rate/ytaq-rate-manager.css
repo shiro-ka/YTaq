@@ -1,12 +1,12 @@
-/* YTFrozen: 再生速度メニュー項目を非表示 */
+/* YTaq: 再生速度メニュー項目を非表示 */
 
-/* JavaScriptで.ytfrozen-hide-playback-rateクラスを追加した要素を非表示 */
-.ytp-menuitem.ytfrozen-hide-playback-rate {
+/* JavaScriptで.ytaq-hide-playback-rateクラスを追加した要素を非表示 */
+.ytp-menuitem.ytaq-hide-playback-rate {
   display: none !important;
 }
 
 /* 再生速度コントロールボタンのスタイル */
-.ytfrozen-rate-controls {
+.ytaq-rate-controls {
   display: inline-flex !important;
   align-items: center !important;
   margin-right: 8px !important;
@@ -14,9 +14,9 @@
 }
 
 /* ボタン共通スタイル - 文字を中央揃え */
-.ytfrozen-rate-minus,
-.ytfrozen-rate-display,
-.ytfrozen-rate-plus {
+.ytaq-rate-minus,
+.ytaq-rate-display,
+.ytaq-rate-plus {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -30,7 +30,7 @@
 }
 
 /* マイナスボタン */
-.ytfrozen-rate-minus {
+.ytaq-rate-minus {
   width: 30px !important;
   height: 36px !important;
   font-size: 18px !important;
@@ -38,7 +38,7 @@
 }
 
 /* 速度表示 */
-.ytfrozen-rate-display {
+.ytaq-rate-display {
   min-width: 50px !important;
   height: 36px !important;
   font-size: 13px !important;
@@ -46,7 +46,7 @@
 }
 
 /* プラスボタン */
-.ytfrozen-rate-plus {
+.ytaq-rate-plus {
   width: 30px !important;
   height: 36px !important;
   font-size: 18px !important;
@@ -54,8 +54,8 @@
 }
 
 /* ホバー時のスタイル */
-.ytfrozen-rate-minus:hover,
-.ytfrozen-rate-display:hover,
-.ytfrozen-rate-plus:hover {
+.ytaq-rate-minus:hover,
+.ytaq-rate-display:hover,
+.ytaq-rate-plus:hover {
   background: rgba(255, 255, 255, 0.1) !important;
 }

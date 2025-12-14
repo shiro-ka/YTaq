@@ -1,5 +1,5 @@
 // 拡張機能のバックグラウンドスクリプト
-console.log('YTFrozen background script running');
+console.log('YTaq background script running');
 
 // Manifest V2ではbrowser_actionを使用
 if (chrome.browserAction) {
@@ -14,7 +14,7 @@ if (chrome.browserAction) {
 }
 
 // YouTubeの埋め込み制限を回避: X-Frame-OptionsヘッダーとCSPのframe-ancestorsを削除
-console.log('[YTFrozen] Registering webRequest listener...');
+console.log('[YTaq] Registering webRequest listener...');
 
 browser.webRequest.onHeadersReceived.addListener(
 	(details) => {
@@ -23,8 +23,8 @@ browser.webRequest.onHeadersReceived.addListener(
 			return;
 		}
 
-		console.log('[YTFrozen] webRequest triggered for:', details.url);
-		console.log('[YTFrozen] Request type:', details.type);
+		console.log('[YTaq] webRequest triggered for:', details.url);
+		console.log('[YTaq] Request type:', details.type);
 
 		let modified = false;
 		const headers = details.responseHeaders;
@@ -33,7 +33,7 @@ browser.webRequest.onHeadersReceived.addListener(
 		let newHeaders = headers.filter(header => {
 			const name = header.name.toLowerCase();
 			if (name === 'x-frame-options' || name === 'frame-options') {
-				console.log('[YTFrozen] Removing header:', header.name, '=', header.value);
+				console.log('[YTaq] Removing header:', header.name, '=', header.value);
 				modified = true;
 				return false;
 			}
@@ -48,7 +48,7 @@ browser.webRequest.onHeadersReceived.addListener(
 				// frame-ancestors ディレクティブを削除
 				header.value = header.value.replace(/frame-ancestors[^;]*(;|$)/gi, '');
 				if (original !== header.value) {
-					console.log('[YTFrozen] Modified CSP:', name);
+					console.log('[YTaq] Modified CSP:', name);
 					console.log('  Original:', original);
 					console.log('  Modified:', header.value);
 					modified = true;
@@ -58,9 +58,9 @@ browser.webRequest.onHeadersReceived.addListener(
 		});
 
 		if (modified) {
-			console.log('[YTFrozen] Headers modified successfully');
+			console.log('[YTaq] Headers modified successfully');
 		} else {
-			console.log('[YTFrozen] No headers needed modification');
+			console.log('[YTaq] No headers needed modification');
 		}
 
 		return { responseHeaders: newHeaders };
@@ -71,4 +71,4 @@ browser.webRequest.onHeadersReceived.addListener(
 	['blocking', 'responseHeaders']
 );
 
-console.log('[YTFrozen] webRequest listener registered successfully');
+console.log('[YTaq] webRequest listener registered successfully');

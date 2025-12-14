@@ -102,7 +102,7 @@ ytd-item-section-renderer[page-subtype="subscriptions"] ytd-video-renderer {
 - - */
 
 /* カラムコンテナ（iframe内では適用しない） */
-html:not(.ytfrozen-popup-iframe) .ytfrozen-list-column {
+html:not(.ytaq-popup-iframe) .ytaq-list-column {
 	margin-left: 2rem;
 	background: var(--aqprimary-item);
 	color: #fff;
@@ -115,14 +115,14 @@ html:not(.ytfrozen-popup-iframe) .ytfrozen-list-column {
 }
 
 /* カラムヘッダー（iframe内では適用しない） */
-html:not(.ytfrozen-popup-iframe) .ytfrozen-header {
+html:not(.ytaq-popup-iframe) .ytaq-header {
 	font-size: 18px;
 	margin-bottom: 8px;
 	padding-bottom: 4px;
 	border-bottom: 1px solid var(--aqprimary-item-line);
 }
 
-html:not(.ytfrozen-popup-iframe) .ytfrozen-list-content {
+html:not(.ytaq-popup-iframe) .ytaq-list-content {
 	min-height: calc(100dvh - 128px);
 	max-height: calc(100dvh - 128px);
 	overflow-y: auto;
@@ -132,7 +132,7 @@ html:not(.ytfrozen-popup-iframe) .ytfrozen-list-content {
 
 
 /* --- 動画リストアイテム（iframe内では適用しない） --- */
-html:not(.ytfrozen-popup-iframe) .ytfrozen-video-item {
+html:not(.ytaq-popup-iframe) .ytaq-video-item {
 	display: flex;
 	margin-bottom: 8px;
 	padding: 8px;
@@ -142,11 +142,11 @@ html:not(.ytfrozen-popup-iframe) .ytfrozen-video-item {
 	transition: background 0.15s;
 }
 
-html:not(.ytfrozen-popup-iframe) .ytfrozen-video-item:hover {
+html:not(.ytaq-popup-iframe) .ytaq-video-item:hover {
 	background: var(--aqprimary-item-sub);
 }
 
-html:not(.ytfrozen-popup-iframe) .ytfrozen-video-item img {
+html:not(.ytaq-popup-iframe) .ytaq-video-item img {
 	width: 180px;
 	height: 102px;
 	object-fit: cover;
@@ -154,7 +154,7 @@ html:not(.ytfrozen-popup-iframe) .ytfrozen-video-item img {
 	margin-right: 8px;
 }
 
-html:not(.ytfrozen-popup-iframe) .ytfrozen-video-item .ytfrozen-video-title {
+html:not(.ytaq-popup-iframe) .ytaq-video-item .ytaq-video-title {
 	font-size: 16px;
 	font-weight: 500;
 	color: #fff;
@@ -168,19 +168,19 @@ html:not(.ytfrozen-popup-iframe) .ytfrozen-video-item .ytfrozen-video-title {
 	-webkit-box-orient: vertical;
 }
 
-html:not(.ytfrozen-popup-iframe) .ytfrozen-video-item .ytfrozen-video-channel {
+html:not(.ytaq-popup-iframe) .ytaq-video-item .ytaq-video-channel {
 	font-size: 12px;
 	color: #aaa;
 	margin-bottom: 1px;
 }
 
-html:not(.ytfrozen-popup-iframe) .ytfrozen-video-item .ytfrozen-video-date {
+html:not(.ytaq-popup-iframe) .ytaq-video-item .ytaq-video-date {
 	font-size: 10px;
 	color: #888;
 }
 
 /* --- 予定動画アイテム（プレミア公開・ライブ予定）--- */
-html:not(.ytfrozen-popup-iframe) .ytfrozen-upcoming-item {
+html:not(.ytaq-popup-iframe) .ytaq-upcoming-item {
 	display: flex;
 	flex-direction: column;
 	margin-bottom: 6px;
@@ -192,11 +192,11 @@ html:not(.ytfrozen-popup-iframe) .ytfrozen-upcoming-item {
 	transition: background 0.15s;
 }
 
-html:not(.ytfrozen-popup-iframe) .ytfrozen-upcoming-item:hover {
+html:not(.ytaq-popup-iframe) .ytaq-upcoming-item:hover {
 	background: rgba(136, 192, 208, 0.15);
 }
 
-html:not(.ytfrozen-popup-iframe) .ytfrozen-upcoming-item .ytfrozen-video-title {
+html:not(.ytaq-popup-iframe) .ytaq-upcoming-item .ytaq-video-title {
 	font-size: 13px;
 	font-weight: 500;
 	color: #88c0d0;
@@ -207,27 +207,27 @@ html:not(.ytfrozen-popup-iframe) .ytfrozen-upcoming-item .ytfrozen-video-title {
 	white-space: nowrap;
 }
 
-html:not(.ytfrozen-popup-iframe) .ytfrozen-upcoming-item .ytfrozen-video-meta {
+html:not(.ytaq-popup-iframe) .ytaq-upcoming-item .ytaq-video-meta {
 	display: flex;
 	justify-content: space-between;
 	font-size: 10px;
 	color: #aaa;
 }
 
-html:not(.ytfrozen-popup-iframe) .ytfrozen-upcoming-item .ytfrozen-video-channel {
+html:not(.ytaq-popup-iframe) .ytaq-upcoming-item .ytaq-video-channel {
 	flex: 1;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
 
-html:not(.ytfrozen-popup-iframe) .ytfrozen-upcoming-item .ytfrozen-video-date {
+html:not(.ytaq-popup-iframe) .ytaq-upcoming-item .ytaq-video-date {
 	margin-left: 8px;
 	white-space: nowrap;
 }
 
 /* 予定動画セクションタイトル */
-html:not(.ytfrozen-popup-iframe) .ytfrozen-upcoming-section {
+html:not(.ytaq-popup-iframe) .ytaq-upcoming-section {
 	font-size: 12px;
 	font-weight: bold;
 	color: #88c0d0;
@@ -237,7 +237,7 @@ html:not(.ytfrozen-popup-iframe) .ytfrozen-upcoming-section {
 }
 
 /* 公開済み動画セクションタイトル */
-html:not(.ytfrozen-popup-iframe) .ytfrozen-published-section {
+html:not(.ytaq-popup-iframe) .ytaq-published-section {
 	font-size: 12px;
 	font-weight: bold;
 	color: #fff;

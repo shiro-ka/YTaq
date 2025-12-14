@@ -1,5 +1,5 @@
-// YTFrozen: チャンネルごとに再生速度を記憶・自動適用する機能
-// データ管理のみ（UI制御はytfrozen-rate-ui.jsに分離）
+// YTaq: チャンネルごとに再生速度を記憶・自動適用する機能
+// データ管理のみ（UI制御はytaq-rate-ui.jsに分離）
 
 // チャンネル名を取得（YouTube動画ページ用）
 function getChannelName() {
@@ -16,8 +16,8 @@ function getVideoElement() {
 // 再生速度をストレージから取得
 function getStoredRate(channel, cb) {
   if (!channel) return cb(null);
-  chrome.storage.local.get(['ytfrozen_playbackrate'], result => {
-    const map = result.ytfrozen_playbackrate || {};
+  chrome.storage.local.get(['ytaq_playbackrate'], result => {
+    const map = result.ytaq_playbackrate || {};
     cb(map[channel] || null);
   });
 }
@@ -25,10 +25,10 @@ function getStoredRate(channel, cb) {
 // 再生速度をストレージに保存
 function setStoredRate(channel, rate) {
   if (!channel) return;
-  chrome.storage.local.get(['ytfrozen_playbackrate'], result => {
-    const map = result.ytfrozen_playbackrate || {};
+  chrome.storage.local.get(['ytaq_playbackrate'], result => {
+    const map = result.ytaq_playbackrate || {};
     map[channel] = rate;
-    chrome.storage.local.set({ ytfrozen_playbackrate: map });
+    chrome.storage.local.set({ ytaq_playbackrate: map });
   });
 }
 
@@ -40,7 +40,7 @@ function observePlaybackRate(video, channel) {
     if (video.playbackRate !== lastRate) {
       lastRate = video.playbackRate;
       setStoredRate(channel, lastRate);
-      console.log('[YTFrozen Rate] 再生速度を保存:', channel, lastRate);
+      console.log('[YTaq Rate] 再生速度を保存:', channel, lastRate);
     }
   });
 }
@@ -53,7 +53,7 @@ function applyPlaybackRatePerChannel() {
   getStoredRate(channel, rate => {
     if (rate && video.playbackRate !== rate) {
       video.playbackRate = rate;
-      console.log('[YTFrozen Rate] 再生速度を適用:', channel, rate);
+      console.log('[YTaq Rate] 再生速度を適用:', channel, rate);
     }
     observePlaybackRate(video, channel);
   });

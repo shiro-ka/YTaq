@@ -1,8 +1,8 @@
-// YTFrozen: チャンネルリスト管理ユーティリティ
+// YTaq: チャンネルリスト管理ユーティリティ
 // 設定画面やコンテンツスクリプトから共通で使用可能
 
-const YTFrozenListManager = {
-  STORAGE_KEY: 'ytfrozen_channel_lists',
+const YTaqListManager = {
+  STORAGE_KEY: 'ytaq_channel_lists',
 
   async getLists() {
     return new Promise(resolve => {
@@ -15,12 +15,12 @@ const YTFrozenListManager = {
 
   async addList(name) {
     if (!name) {
-      console.warn('[YTFrozenListManager] addList: 名前が空です');
+      console.warn('[YTaqListManager] addList: 名前が空です');
       return;
     }
     const lists = await this.getLists();
     if (lists.find(l => l.name === name)) {
-      console.warn('[YTFrozenListManager] addList: 同名のリストが既に存在します:', name);
+      console.warn('[YTaqListManager] addList: 同名のリストが既に存在します:', name);
       return;
     }
     lists.push({ name, channels: [] });
@@ -31,7 +31,7 @@ const YTFrozenListManager = {
 
   async removeList(name) {
     if (!name) {
-      console.warn('[YTFrozenListManager] removeList: 名前が空です');
+      console.warn('[YTaqListManager] removeList: 名前が空です');
       return;
     }
     const lists = await this.getLists();
@@ -43,13 +43,13 @@ const YTFrozenListManager = {
 
   async addChannelToList(listName, channelId) {
     if (!listName || !channelId) {
-      console.warn('[YTFrozenListManager] addChannelToList: 無効なパラメータ');
+      console.warn('[YTaqListManager] addChannelToList: 無効なパラメータ');
       return;
     }
     const lists = await this.getLists();
     const list = lists.find(l => l.name === listName);
     if (!list) {
-      console.warn('[YTFrozenListManager] addChannelToList: リストが見つかりません');
+      console.warn('[YTaqListManager] addChannelToList: リストが見つかりません');
       return;
     }
 
@@ -77,13 +77,13 @@ const YTFrozenListManager = {
 
   async removeChannelFromList(listName, channelId) {
     if (!listName || !channelId) {
-      console.warn('[YTFrozenListManager] removeChannelFromList: 無効なパラメータ');
+      console.warn('[YTaqListManager] removeChannelFromList: 無効なパラメータ');
       return;
     }
     const lists = await this.getLists();
     const list = lists.find(l => l.name === listName);
     if (!list) {
-      console.warn('[YTFrozenListManager] removeChannelFromList: リストが見つかりません');
+      console.warn('[YTaqListManager] removeChannelFromList: リストが見つかりません');
       return;
     }
 
@@ -151,4 +151,4 @@ const YTFrozenListManager = {
 };
 
 // グローバルに公開
-window.YTFrozenListManager = YTFrozenListManager;
+window.YTaqListManager = YTaqListManager;

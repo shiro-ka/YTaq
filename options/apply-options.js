@@ -1,9 +1,9 @@
-// YTFrozen: 保存された色設定をページに適用
+// YTaq: 保存された色設定をページに適用
 
 (function() {
-  const STORAGE_KEY = 'ytfrozen_colors';
+  const STORAGE_KEY = 'ytaq_colors';
 
-  // デフォルトの色設定（ytfrozen-variables.cssと同じ）
+  // デフォルトの色設定（ytaq-variables.cssと同じ）
   const DEFAULT_COLORS = {
     bg: '#4c566a',
     sd: '#434c5e',
@@ -16,13 +16,13 @@
   function applyColors(colors) {
     // CSS変数を動的に設定
     const root = document.documentElement;
-    root.style.setProperty('--ytfrozen-bg', colors.bg);
-    root.style.setProperty('--ytfrozen-sd', colors.sd);
-    root.style.setProperty('--ytfrozen-fg', colors.fg);
-    root.style.setProperty('--ytfrozen-ub', colors.ub);
-    root.style.setProperty('--ytfrozen-bd', colors.bd);
+    root.style.setProperty('--ytaq-bg', colors.bg);
+    root.style.setProperty('--ytaq-sd', colors.sd);
+    root.style.setProperty('--ytaq-fg', colors.fg);
+    root.style.setProperty('--ytaq-ub', colors.ub);
+    root.style.setProperty('--ytaq-bd', colors.bd);
 
-    console.log('[YTFrozen] 色設定を適用しました:', colors);
+    console.log('[YTaq] 色設定を適用しました:', colors);
   }
 
   // 保存された設定を読み込んで適用

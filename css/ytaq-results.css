@@ -5,8 +5,8 @@
 */
 
 ytd-two-column-search-results-renderer ytd-video-renderer {
-  background: var(--ytfrozen-fg, #3b4252) !important;
-  border: 1px solid var(--ytfrozen-border, rgba(255,255,255,0.2));
+  background: var(--ytaq-fg, #3b4252) !important;
+  border: 1px solid var(--ytaq-border, rgba(255,255,255,0.2));
   border-radius: 1rem;
 }
 ytd-two-column-search-results-renderer ytd-video-renderer .text-wrapper {

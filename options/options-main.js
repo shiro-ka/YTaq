@@ -1,4 +1,4 @@
-// YTFrozen 設定画面 - メインスクリプト
+// YTaq 設定画面 - メインスクリプト
 // ナビゲーションと各モジュールの初期化のみを担当
 
 // セクション切り替え
@@ -25,7 +25,7 @@ function switchSection(sectionName) {
     targetNav.classList.add('active');
   }
 
-  console.log(`[YTFrozen] セクション切り替え: ${sectionName}`);
+  console.log(`[YTaq] セクション切り替え: ${sectionName}`);
 }
 
 // 初期化
@@ -40,17 +40,17 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // 各モジュールの初期化
-  if (window.YTFrozenTheme) {
-    window.YTFrozenTheme.init();
+  if (window.YTaqTheme) {
+    window.YTaqTheme.init();
   }
 
-  if (window.YTFrozenAntibite) {
-    window.YTFrozenAntibite.init();
+  if (window.YTaqAntibite) {
+    window.YTaqAntibite.init();
   }
 
-  if (window.YTFrozenPlaybackrate) {
-    window.YTFrozenPlaybackrate.init();
+  if (window.YTaqPlaybackrate) {
+    window.YTaqPlaybackrate.init();
   }
 
-  console.log('[YTFrozen] 設定画面を初期化しました');
+  console.log('[YTaq] 設定画面を初期化しました');
 });

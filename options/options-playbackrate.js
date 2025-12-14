@@ -1,6 +1,6 @@
-// YTFrozen 設定画面 - Playbackrate設定モジュール
+// YTaq 設定画面 - Playbackrate設定モジュール
 
-const PLAYBACKRATE_STORAGE_KEY = 'ytfrozen_playbackrate_settings';
+const PLAYBACKRATE_STORAGE_KEY = 'ytaq_playbackrate_settings';
 
 // デフォルトのPlaybackrate設定
 const DEFAULT_PLAYBACKRATE = {
@@ -47,7 +47,7 @@ function savePlaybackrateSettings() {
 
   chrome.storage.local.set({ [PLAYBACKRATE_STORAGE_KEY]: settings }, () => {
     showPlaybackrateMessage('設定を保存しました！拡張機能を再読み込みしてください。', 'success');
-    console.log('[YTFrozen Playbackrate] 設定を保存:', settings);
+    console.log('[YTaq Playbackrate] 設定を保存:', settings);
   });
 }
 
@@ -60,7 +60,7 @@ function resetPlaybackrateToDefault() {
   chrome.storage.local.set({ [PLAYBACKRATE_STORAGE_KEY]: DEFAULT_PLAYBACKRATE }, () => {
     loadPlaybackrateSettings();
     showPlaybackrateMessage('デフォルト設定に戻しました。', 'success');
-    console.log('[YTFrozen Playbackrate] デフォルト設定に戻しました');
+    console.log('[YTaq Playbackrate] デフォルト設定に戻しました');
   });
 }
 
@@ -85,10 +85,10 @@ function initPlaybackrateSettings() {
   document.getElementById('playbackrate-save-btn').addEventListener('click', savePlaybackrateSettings);
   document.getElementById('playbackrate-reset-btn').addEventListener('click', resetPlaybackrateToDefault);
 
-  console.log('[YTFrozen Playbackrate] Playbackrate設定を初期化しました');
+  console.log('[YTaq Playbackrate] Playbackrate設定を初期化しました');
 }
 
 // グローバルに公開
-window.YTFrozenPlaybackrate = {
+window.YTaqPlaybackrate = {
   init: initPlaybackrateSettings
 };

@@ -1,6 +1,6 @@
-// YTFrozen 設定画面 - Antibite設定モジュール
+// YTaq 設定画面 - Antibite設定モジュール
 
-const ANTIBITE_STORAGE_KEY = 'ytfrozen_antibite';
+const ANTIBITE_STORAGE_KEY = 'ytaq_antibite';
 
 // デフォルトのAntibite設定
 const DEFAULT_ANTIBITE = {
@@ -30,7 +30,7 @@ function saveAntibiteSettings() {
 
   chrome.storage.local.set({ [ANTIBITE_STORAGE_KEY]: antibite }, () => {
     showAntibiteMessage('設定を保存しました！拡張機能を再読み込みしてください。', 'success');
-    console.log('[YTFrozen Antibite] 設定を保存:', antibite);
+    console.log('[YTaq Antibite] 設定を保存:', antibite);
   });
 }
 
@@ -43,7 +43,7 @@ function resetAntibiteToDefault() {
   chrome.storage.local.set({ [ANTIBITE_STORAGE_KEY]: DEFAULT_ANTIBITE }, () => {
     loadAntibiteSettings();
     showAntibiteMessage('デフォルト設定に戻しました。', 'success');
-    console.log('[YTFrozen Antibite] デフォルト設定に戻しました');
+    console.log('[YTaq Antibite] デフォルト設定に戻しました');
   });
 }
 
@@ -86,10 +86,10 @@ function initAntibiteSettings() {
   // サムネイル有効/無効チェックボックスの変更イベント
   document.getElementById('thumbnail-enabled').addEventListener('change', updateThumbnailFrameSetting);
 
-  console.log('[YTFrozen Antibite] Antibite設定を初期化しました');
+  console.log('[YTaq Antibite] Antibite設定を初期化しました');
 }
 
 // グローバルに公開
-window.YTFrozenAntibite = {
+window.YTaqAntibite = {
   init: initAntibiteSettings
 };

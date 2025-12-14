@@ -1,20 +1,20 @@
 /* --- 全体のスタイル --- */
 
 /* 背景 */
-html:not(.ytfrozen-popup-iframe) ytd-app {
+html:not(.ytaq-popup-iframe) ytd-app {
   background: var(--aqprimary-bg) !important;
 }
 
 /* --- ヘッダー --- */
 
 /* 背景 */
-html:not(.ytfrozen-popup-iframe) ytd-masthead {
+html:not(.ytaq-popup-iframe) ytd-masthead {
   background: var(--aqsecondary-bg) !important;
 }
 
 /* 検索欄の背景と枠線 */
-html:not(.ytfrozen-popup-iframe) .ytSearchboxComponentInputBoxDark,
-html:not(.ytfrozen-popup-iframe) .ytSearchboxComponentSearchButtonDark {
+html:not(.ytaq-popup-iframe) .ytSearchboxComponentInputBoxDark,
+html:not(.ytaq-popup-iframe) .ytSearchboxComponentSearchButtonDark {
   background: hsla(0, 0%, 100%, .08) !important;
   border-color: var(--aqsecondary-bg-line) !important;
 }
@@ -22,28 +22,28 @@ html:not(.ytfrozen-popup-iframe) .ytSearchboxComponentSearchButtonDark {
 /* --- サイドバー --- */
 
 /* 背景と右側のborder */
-html:not(.ytfrozen-popup-iframe) tp-yt-app-drawer {
+html:not(.ytaq-popup-iframe) tp-yt-app-drawer {
   background: var(--aqprimary-bg-sub) !important;
   border-right: 1px solid var(--aqprimary-bg-line);
 }
 
 /* コンテンツ区切りのborderを消す */
-html:not(.ytfrozen-popup-iframe) #sections.ytd-guide-renderer>.ytd-guide-renderer:not(:last-child) {
+html:not(.ytaq-popup-iframe) #sections.ytd-guide-renderer>.ytd-guide-renderer:not(:last-child) {
   border-bottom: none !important;
 }
 
 /* カテゴリの幅を100%にする（デフォルトだと右に12pxの余白がある） */
-html:not(.ytfrozen-popup-iframe) ytd-guide-entry-renderer {
+html:not(.ytaq-popup-iframe) ytd-guide-entry-renderer {
   width: 100% !important;
 }
 
 /* カテゴリ間の余白 */
-html:not(.ytfrozen-popup-iframe) ytd-guide-entry-renderer:not(:last-child) {
+html:not(.ytaq-popup-iframe) ytd-guide-entry-renderer:not(:last-child) {
   margin-bottom: 4px;
 }
 
 /* アクティブなカテゴリの背景 */
-html:not(.ytfrozen-popup-iframe) ytd-guide-entry-renderer[active] {
+html:not(.ytaq-popup-iframe) ytd-guide-entry-renderer[active] {
   background: var(--aqaccent-item) !important;
 }
 

@@ -1,10 +1,10 @@
-/* YTFrozen: フォルダ分け機能用スタイル（iframe内では適用しない） */
+/* YTaq: フォルダ分け機能用スタイル（iframe内では適用しない） */
 
 /* チャンネルアクションボタン */
-html:not(.ytfrozen-popup-iframe) .ytfrozen-channel-action-btn {
+html:not(.ytaq-popup-iframe) .ytaq-channel-action-btn {
   margin: 0 8px;
   padding: 6px 16px;
-  background: var(--ytfrozen-nord8, #88c0d0);
+  background: var(--ytaq-nord8, #88c0d0);
   color: #fff;
   border: none;
   border-radius: 6px;
@@ -13,12 +13,12 @@ html:not(.ytfrozen-popup-iframe) .ytfrozen-channel-action-btn {
   transition: background 0.2s;
 }
 
-html:not(.ytfrozen-popup-iframe) .ytfrozen-channel-action-btn:hover {
-  background: var(--ytfrozen-nord7, #8fbcbb);
+html:not(.ytaq-popup-iframe) .ytaq-channel-action-btn:hover {
+  background: var(--ytaq-nord7, #8fbcbb);
 }
 
 /* モーダルオーバーレイ */
-html:not(.ytfrozen-popup-iframe) #ytfrozen-channel-modal {
+html:not(.ytaq-popup-iframe) #ytaq-channel-modal {
   position: fixed;
   top: 0;
   left: 0;
@@ -32,9 +32,9 @@ html:not(.ytfrozen-popup-iframe) #ytfrozen-channel-modal {
 }
 
 /* モーダル本体 */
-html:not(.ytfrozen-popup-iframe) .ytfrozen-folder-modal {
-  background: var(--ytfrozen-nord0, #2e3440);
-  color: var(--ytfrozen-nord6, #eceff4);
+html:not(.ytaq-popup-iframe) .ytaq-folder-modal {
+  background: var(--ytaq-nord0, #2e3440);
+  color: var(--ytaq-nord6, #eceff4);
   border-radius: 12px;
   box-shadow: 0 4px 32px rgba(0, 0, 0, 0.5);
   padding: 32px 40px;
@@ -44,26 +44,26 @@ html:not(.ytfrozen-popup-iframe) .ytfrozen-folder-modal {
 }
 
 /* 入力欄ラッパー */
-html:not(.ytfrozen-popup-iframe) .ytfrozen-folder-input-wrap {
+html:not(.ytaq-popup-iframe) .ytaq-folder-input-wrap {
   display: flex;
   align-items: center;
   margin-bottom: 16px;
 }
 
-html:not(.ytfrozen-popup-iframe) .ytfrozen-folder-input-wrap input {
+html:not(.ytaq-popup-iframe) .ytaq-folder-input-wrap input {
   flex: 1;
   padding: 6px 10px;
   border-radius: 6px;
   border: 1px solid #888;
   margin-right: 8px;
   font-size: 1em;
-  background: var(--ytfrozen-nord1, #3b4252);
-  color: var(--ytfrozen-nord6, #eceff4);
+  background: var(--ytaq-nord1, #3b4252);
+  color: var(--ytaq-nord6, #eceff4);
 }
 
-html:not(.ytfrozen-popup-iframe) .ytfrozen-folder-input-wrap button {
+html:not(.ytaq-popup-iframe) .ytaq-folder-input-wrap button {
   padding: 6px 16px;
-  background: var(--ytfrozen-nord8, #88c0d0);
+  background: var(--ytaq-nord8, #88c0d0);
   color: #fff;
   border: none;
   border-radius: 6px;
@@ -72,51 +72,51 @@ html:not(.ytfrozen-popup-iframe) .ytfrozen-folder-input-wrap button {
   transition: background 0.2s;
 }
 
-html:not(.ytfrozen-popup-iframe) .ytfrozen-folder-input-wrap button:hover {
-  background: var(--ytfrozen-nord7, #8fbcbb);
+html:not(.ytaq-popup-iframe) .ytaq-folder-input-wrap button:hover {
+  background: var(--ytaq-nord7, #8fbcbb);
 }
 
 /* タイトル */
-html:not(.ytfrozen-popup-iframe) .ytfrozen-folder-title {
+html:not(.ytaq-popup-iframe) .ytaq-folder-title {
   font-weight: bold;
   font-size: 1.2em;
   margin-bottom: 12px;
-  color: var(--ytfrozen-nord6, #eceff4);
+  color: var(--ytaq-nord6, #eceff4);
 }
 
 /* リスト一覧コンテナ */
-html:not(.ytfrozen-popup-iframe) .ytfrozen-folder-list-wrap {
+html:not(.ytaq-popup-iframe) .ytaq-folder-list-wrap {
   margin-top: 10px;
   display: flex;
   flex-direction: column;
 }
 
 /* リスト行 */
-html:not(.ytfrozen-popup-iframe) .ytfrozen-folder-list-row {
+html:not(.ytaq-popup-iframe) .ytaq-folder-list-row {
   display: flex;
   align-items: center;
   margin-bottom: 6px;
 }
 
-html:not(.ytfrozen-popup-iframe) .ytfrozen-folder-list-row label {
+html:not(.ytaq-popup-iframe) .ytaq-folder-list-row label {
   flex: 1;
   cursor: pointer;
-  color: var(--ytfrozen-nord6, #eceff4);
+  color: var(--ytaq-nord6, #eceff4);
 }
 
-html:not(.ytfrozen-popup-iframe) .ytfrozen-folder-list-row input[type="checkbox"] {
+html:not(.ytaq-popup-iframe) .ytaq-folder-list-row input[type="checkbox"] {
   margin-left: 12px;
   cursor: pointer;
 }
 
 /* 閉じるボタン */
-html:not(.ytfrozen-popup-iframe) .ytfrozen-folder-close-btn {
+html:not(.ytaq-popup-iframe) .ytaq-folder-close-btn {
   position: absolute;
   top: 8px;
   right: 12px;
   background: none;
   border: none;
-  color: var(--ytfrozen-nord6, #eceff4);
+  color: var(--ytaq-nord6, #eceff4);
   font-size: 1.3em;
   cursor: pointer;
   width: 32px;
@@ -128,6 +128,6 @@ html:not(.ytfrozen-popup-iframe) .ytfrozen-folder-close-btn {
   transition: background 0.2s;
 }
 
-html:not(.ytfrozen-popup-iframe) .ytfrozen-folder-close-btn:hover {
+html:not(.ytaq-popup-iframe) .ytaq-folder-close-btn:hover {
   background: rgba(255, 255, 255, 0.1);
 }

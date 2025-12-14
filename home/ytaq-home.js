@@ -1,4 +1,4 @@
-// YTFrozen: ホーム画面での動画クリック時にポップアップ表示
+// YTaq: ホーム画面での動画クリック時にポップアップ表示
 
 (function() {
   // 動画IDをURLから抽出（通常動画とShorts両対応）
@@ -30,7 +30,7 @@
 
     const videoId = getVideoIdFromUrl(a.href);
     if (!videoId) {
-      console.warn('[YTFrozen Home] Could not extract video ID from:', a.href);
+      console.warn('[YTaq Home] Could not extract video ID from:', a.href);
       return false;
     }
 
@@ -88,7 +88,7 @@
     // それでもない場合は空文字列
     videoTitle = videoTitle || '';
 
-    console.log('[YTFrozen Home] Title extraction:', {
+    console.log('[YTaq Home] Title extraction:', {
       'from a.title': a.getAttribute('title'),
       'from a.aria-label': a.getAttribute('aria-label'),
       'final': videoTitle
@@ -96,7 +96,7 @@
 
     // タイトルが取得できなかった場合、デバッグ情報を出力
     if (!videoTitle) {
-      console.warn('[YTFrozen Home] Failed to extract title. Debugging info:');
+      console.warn('[YTaq Home] Failed to extract title. Debugging info:');
       console.log('- Clicked element:', a);
       console.log('- Element HTML:', a.outerHTML.substring(0, 200));
       console.log('- Parent ytd-video-renderer:', a.closest('ytd-video-renderer'));
@@ -127,25 +127,25 @@
 
     // デバッグ: 削除処理で変化があった場合のみログ出力
     if (originalTitle !== videoTitle) {
-      console.log('[YTFrozen Home] Title cleaned:', originalTitle, '→', videoTitle);
+      console.log('[YTaq Home] Title cleaned:', originalTitle, '→', videoTitle);
     }
 
     // タイトルが空になってしまった場合は元に戻す
     if (!videoTitle && originalTitle) {
-      console.warn('[YTFrozen Home] Title became empty after cleaning, reverting:', originalTitle);
+      console.warn('[YTaq Home] Title became empty after cleaning, reverting:', originalTitle);
       videoTitle = originalTitle;
     }
 
     // Shortsかどうかを判定
     const isShorts = a.href.includes('/shorts/');
 
-    console.log('[YTFrozen Home] Video clicked:', videoId, videoTitle, 'isShorts:', isShorts);
+    console.log('[YTaq Home] Video clicked:', videoId, videoTitle, 'isShorts:', isShorts);
 
     // 汎用ポップアップを使用
-    if (window.YTFrozenPopup) {
-      window.YTFrozenPopup.showVideoPopup(videoId, videoTitle, isShorts);
+    if (window.YTaqPopup) {
+      window.YTaqPopup.showVideoPopup(videoId, videoTitle, isShorts);
     } else {
-      console.error('[YTFrozen Home] YTFrozenPopup not available');
+      console.error('[YTaq Home] YTaqPopup not available');
       // フォールバック: 通常通り動画ページに遷移
       window.location.href = a.href;
     }
@@ -165,11 +165,11 @@
 
     document.querySelectorAll(selector).forEach(a => {
       // 既に処理済みかチェック
-      if (!a.dataset.ytfrozenHome) {
+      if (!a.dataset.ytaqHome) {
         // キャプチャフェーズで最優先で実行（YouTubeのハンドラより先）
         // 第3引数にtrueを指定（オブジェクト形式だと古いブラウザで効かない可能性）
         a.addEventListener('click', onVideoClick, true);
-        a.dataset.ytfrozenHome = '1';
+        a.dataset.ytaqHome = '1';
       }
     });
 
@@ -185,8 +185,8 @@
     // 初回実行
     observeVideoLinks();
 
-    console.log('[YTFrozen Home] Video link observer initialized');
-    console.log('[YTFrozen Home] YTFrozenPopup available?', !!window.YTFrozenPopup);
+    console.log('[YTaq Home] Video link observer initialized');
+    console.log('[YTaq Home] YTaqPopup available?', !!window.YTaqPopup);
   }
 
   // document.bodyが存在するまで待機

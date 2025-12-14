@@ -1,7 +1,7 @@
 // YouTubeサムネイルを代替フレームにリダイレクト
-console.log('[YTFrozen] Initializing thumbnail replacement...');
+console.log('[YTaq] Initializing thumbnail replacement...');
 
-const ANTIBITE_STORAGE_KEY = 'ytfrozen_antibite';
+const ANTIBITE_STORAGE_KEY = 'ytaq_antibite';
 
 // デフォルト設定
 const DEFAULT_ANTIBITE = {
@@ -16,7 +16,7 @@ let currentSettings = DEFAULT_ANTIBITE;
 function loadSettings() {
   chrome.storage.local.get([ANTIBITE_STORAGE_KEY], (result) => {
     currentSettings = result[ANTIBITE_STORAGE_KEY] || DEFAULT_ANTIBITE;
-    console.log('[YTFrozen Thumbnail] Settings loaded:', currentSettings);
+    console.log('[YTaq Thumbnail] Settings loaded:', currentSettings);
   });
 }
 
@@ -27,7 +27,7 @@ loadSettings();
 chrome.storage.onChanged.addListener((changes, areaName) => {
   if (areaName === 'local' && changes[ANTIBITE_STORAGE_KEY]) {
     currentSettings = changes[ANTIBITE_STORAGE_KEY].newValue || DEFAULT_ANTIBITE;
-    console.log('[YTFrozen Thumbnail] Settings updated:', currentSettings);
+    console.log('[YTaq Thumbnail] Settings updated:', currentSettings);
   }
 });
 
@@ -52,7 +52,7 @@ browser.webRequest.onBeforeRequest.addListener(
 			// 指定されたフレームにリダイレクト
 			const redirectUrl = `https://i.ytimg.com/vi/${videoId}/${frame}.${extension}`;
 
-			console.log('[YTFrozen Thumbnail] Redirecting:', details.url, '→', redirectUrl);
+			console.log('[YTaq Thumbnail] Redirecting:', details.url, '→', redirectUrl);
 
 			return { redirectUrl: redirectUrl };
 		}
@@ -66,4 +66,4 @@ browser.webRequest.onBeforeRequest.addListener(
 	['blocking']
 );
 
-console.log('[YTFrozen] Thumbnail redirect listener registered successfully');
+console.log('[YTaq] Thumbnail redirect listener registered successfully');

@@ -1,4 +1,4 @@
-// YTFrozen: 再生速度メニュー項目を非表示にするUI制御
+// YTaq: 再生速度メニュー項目を非表示にするUI制御
 // YouTubeネイティブの「再生速度」メニューを隠して、独自の再生速度管理を使用
 
 // === YouTubeの再生速度メニュー項目を非表示にする ===
@@ -7,8 +7,8 @@ function hidePlaybackSpeedMenuItem() {
   menuItems.forEach(item => {
     const label = item.querySelector('.ytp-menuitem-label');
     if (label && label.textContent.trim() === '再生速度') {
-      item.classList.add('ytfrozen-hide-playback-rate');
-      console.log('[YTFrozen Rate UI] 再生速度メニュー項目を非表示にしました');
+      item.classList.add('ytaq-hide-playback-rate');
+      console.log('[YTaq Rate UI] 再生速度メニュー項目を非表示にしました');
     }
   });
 }
@@ -36,7 +36,7 @@ setTimeout(waitAndHideMenuItem, 1000);
 setInterval(hidePlaybackSpeedMenuItem, 2000);
 
 // === 再生速度コントロールボタンを追加 ===
-const PLAYBACKRATE_STORAGE_KEY = 'ytfrozen_playbackrate_settings';
+const PLAYBACKRATE_STORAGE_KEY = 'ytaq_playbackrate_settings';
 const DEFAULT_PLAYBACKRATE = {
   speedStep: 0.25,
   speedPresets: [1.0, 1.25, 1.5, 1.75, 2.0, 4.0]
@@ -47,7 +47,7 @@ function addPlaybackSpeedControls() {
   if (!rightControls) return;
 
   // 既に追加済みの場合はスキップ
-  if (document.querySelector('.ytfrozen-rate-controls')) return;
+  if (document.querySelector('.ytaq-rate-controls')) return;
 
   // 設定を読み込んでからボタンを作成
   chrome.storage.local.get([PLAYBACKRATE_STORAGE_KEY], (result) => {
@@ -57,11 +57,11 @@ function addPlaybackSpeedControls() {
 
     // ボタンコンテナ作成
     const container = document.createElement('div');
-    container.className = 'ytfrozen-rate-controls';
+    container.className = 'ytaq-rate-controls';
 
     // 現在の速度表示
     const speedDisplay = document.createElement('button');
-    speedDisplay.className = 'ytfrozen-rate-display ytp-button';
+    speedDisplay.className = 'ytaq-rate-display ytp-button';
     speedDisplay.textContent = '1.0x';
     speedDisplay.title = '再生速度';
 
@@ -88,7 +88,7 @@ function addPlaybackSpeedControls() {
 
     // マイナスボタン
     const minusBtn = document.createElement('button');
-    minusBtn.className = 'ytfrozen-rate-minus ytp-button';
+    minusBtn.className = 'ytaq-rate-minus ytp-button';
     minusBtn.textContent = '−';
     minusBtn.title = `再生速度を下げる（-${speedStep}）`;
     minusBtn.addEventListener('click', () => {
@@ -102,7 +102,7 @@ function addPlaybackSpeedControls() {
 
     // プラスボタン
     const plusBtn = document.createElement('button');
-    plusBtn.className = 'ytfrozen-rate-plus ytp-button';
+    plusBtn.className = 'ytaq-rate-plus ytp-button';
     plusBtn.textContent = '＋';
     plusBtn.title = `再生速度を上げる（+${speedStep}）`;
     plusBtn.addEventListener('click', () => {
@@ -136,7 +136,7 @@ function addPlaybackSpeedControls() {
       updateSpeedDisplay();
     }
 
-    console.log('[YTFrozen Rate UI] 再生速度コントロールボタンを追加しました');
+    console.log('[YTaq Rate UI] 再生速度コントロールボタンを追加しました');
   });
 }
 
