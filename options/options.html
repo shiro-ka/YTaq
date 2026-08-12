@@ -18,6 +18,7 @@
         <ul>
           <li><a href="#" class="nav-item active" data-section="home">ホーム</a></li>
           <li><a href="#" class="nav-item" data-section="theme">テーマ</a></li>
+          <li><a href="#" class="nav-item" data-section="perf">軽量化</a></li>
           <li><a href="#" class="nav-item" data-section="antibite">Antibite</a></li>
           <li><a href="#" class="nav-item" data-section="playbackrate">Playbackrate</a></li>
         </ul>
@@ -89,6 +90,91 @@
         </div>
 
         <div class="message" id="message"></div>
+      </div>
+
+      <!-- 軽量化セクション -->
+      <div id="section-perf" class="content-section">
+        <h2>軽量化</h2>
+        <p style="color: #888; margin-bottom: 20px;">
+          YouTube 本体の JS は消せない（消すとページが死ぬ）ので、
+          そこに乗っている重い仕事を止める引き算の設定です。上から効果が大きい順。
+        </p>
+
+        <div class="setting-group">
+          <h3>ホバープレビュー</h3>
+          <p class="setting-description">
+            サムネイルにマウスを乗せたときのプレビュー再生を止めます。
+            乗せるだけで別の video 要素がデコードを始めるため、体感に一番効きます。
+          </p>
+          <div class="setting-item">
+            <label class="checkbox-label">
+              <input type="checkbox" id="perf-hoverPreview" />
+              <span>ホバープレビュー再生を止める</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="setting-group">
+          <h3>画面外のレンダリング省略</h3>
+          <p class="setting-description">
+            無限スクロールで DOM は増え続けます。画面外に出た動画カードや
+            コメントのレイアウト/描画を content-visibility でスキップします。
+          </p>
+          <div class="setting-item">
+            <label class="checkbox-label">
+              <input type="checkbox" id="perf-lazyOffscreen" />
+              <span>画面外の要素を描画しない</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="setting-group">
+          <h3>シネマティック照明（アンビエントモード）</h3>
+          <p class="setting-description">
+            動画の縮小フレームを canvas に描いて常時ぼかす演出です。
+            再生中ずっと CPU を使い続けます。
+          </p>
+          <div class="setting-item">
+            <label class="checkbox-label">
+              <input type="checkbox" id="perf-ambient" />
+              <span>シネマティック照明を止める</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="setting-group">
+          <h3>アニメーション</h3>
+          <p class="setting-description">
+            ホバー演出・リップル・トランジションを無効化します。
+            スクロール中の合成処理が減ります（ローディングスピナーは除外）。
+          </p>
+          <div class="setting-item">
+            <label class="checkbox-label">
+              <input type="checkbox" id="perf-animations" />
+              <span>アニメーション/トランジションを止める</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="setting-group">
+          <h3>Shorts</h3>
+          <p class="setting-description">
+            Shorts 棚は複数の video を同時に抱えます。好みが分かれるので既定は OFF。
+          </p>
+          <div class="setting-item">
+            <label class="checkbox-label">
+              <input type="checkbox" id="perf-hideShorts" />
+              <span>Shorts 棚を隠す</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="button-group">
+          <button id="perf-save-btn">保存</button>
+          <button id="perf-reset-btn">デフォルトに戻す</button>
+        </div>
+
+        <div class="message" id="perf-message"></div>
       </div>
 
       <!-- Antibiteセクション -->
@@ -167,6 +253,7 @@
   </div>
 
   <script src="options-theme.js"></script>
+  <script src="options-perf.js"></script>
   <script src="options-antibite.js"></script>
   <script src="options-playbackrate.js"></script>
   <script src="options-main.js"></script>

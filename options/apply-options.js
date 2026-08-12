@@ -21,8 +21,6 @@
     root.style.setProperty('--ytaq-fg', colors.fg);
     root.style.setProperty('--ytaq-ub', colors.ub);
     root.style.setProperty('--ytaq-bd', colors.bd);
-
-    console.log('[YTaq] 色設定を適用しました:', colors);
   }
 
   // 保存された設定を読み込んで適用

@@ -1,74 +1,56 @@
-// 拡張機能のバックグラウンドスクリプト
-console.log('YTaq background script running');
+// YTaq バックグラウンド
+//
+// 重要: onHeadersReceived は blocking なので、マッチしたリクエストの
+// レスポンスを同期的に止めて処理する。以前は urls:['<all_urls>'] だったため
+// YouTube に限らず全サイトの全レスポンスを毎回この関数に通していた
+// （しかも1件ごとに console.log を4〜5行出していた）。
+// ブラウジング全体が遅くなるので、YouTube の sub_frame だけに絞ってある。
 
-// Manifest V2ではbrowser_actionを使用
+const DEBUG = false;
+const log = DEBUG ? console.log.bind(console, '[YTaq BG]') : function () {};
+
 if (chrome.browserAction) {
-	chrome.browserAction.onClicked.addListener(() => {
-		chrome.runtime.openOptionsPage();
-	});
+	chrome.browserAction.onClicked.addListener(() => chrome.runtime.openOptionsPage());
 } else if (chrome.action) {
-	// Manifest V3用（念のため）
-	chrome.action.onClicked.addListener(() => {
-		chrome.runtime.openOptionsPage();
-	});
+	chrome.action.onClicked.addListener(() => chrome.runtime.openOptionsPage());
 }
 
-// YouTubeの埋め込み制限を回避: X-Frame-OptionsヘッダーとCSPのframe-ancestorsを削除
-console.log('[YTaq] Registering webRequest listener...');
-
+// ポップアップ内 iframe の埋め込み制限を外す。
+// /embed/ は本来埋め込み可能なので通常は不要だが、埋め込み無効設定の動画で
+// /watch にフォールバックした場合に必要になる。
 browser.webRequest.onHeadersReceived.addListener(
 	(details) => {
-		// YouTubeの埋め込みURLのみ処理
-		if (!details.url.includes('youtube.com/embed/') && !details.url.includes('youtube-nocookie.com/embed/')) {
-			return;
-		}
-
-		console.log('[YTaq] webRequest triggered for:', details.url);
-		console.log('[YTaq] Request type:', details.type);
-
 		let modified = false;
-		const headers = details.responseHeaders;
 
-		// X-Frame-Options ヘッダーを削除
-		let newHeaders = headers.filter(header => {
-			const name = header.name.toLowerCase();
+		const headers = details.responseHeaders.filter(h => {
+			const name = h.name.toLowerCase();
 			if (name === 'x-frame-options' || name === 'frame-options') {
-				console.log('[YTaq] Removing header:', header.name, '=', header.value);
 				modified = true;
 				return false;
 			}
 			return true;
 		});
 
-		// Content-Security-Policy の frame-ancestors を削除/変更
-		newHeaders = newHeaders.map(header => {
-			const name = header.name.toLowerCase();
-			if (name === 'content-security-policy' || name === 'content-security-policy-report-only') {
-				const original = header.value;
-				// frame-ancestors ディレクティブを削除
-				header.value = header.value.replace(/frame-ancestors[^;]*(;|$)/gi, '');
-				if (original !== header.value) {
-					console.log('[YTaq] Modified CSP:', name);
-					console.log('  Original:', original);
-					console.log('  Modified:', header.value);
-					modified = true;
-				}
-			}
-			return header;
-		});
-
-		if (modified) {
-			console.log('[YTaq] Headers modified successfully');
-		} else {
-			console.log('[YTaq] No headers needed modification');
+		for (const h of headers) {
+			const name = h.name.toLowerCase();
+			if (name !== 'content-security-policy' && name !== 'content-security-policy-report-only') continue;
+			const original = h.value;
+			h.value = h.value.replace(/frame-ancestors[^;]*(;|$)/gi, '');
+			if (original !== h.value) modified = true;
 		}
 
-		return { responseHeaders: newHeaders };
+		if (!modified) return;
+		log('headers relaxed for', details.url);
+		return { responseHeaders: headers };
 	},
 	{
-		urls: ['<all_urls>']
+		// 対象を絞ることが軽量化の本体。ここを広げてはいけない。
+		urls: [
+			'*://www.youtube.com/embed/*',
+			'*://www.youtube-nocookie.com/embed/*',
+			'*://www.youtube.com/watch*'
+		],
+		types: ['sub_frame']
 	},
 	['blocking', 'responseHeaders']
 );
-
-console.log('[YTaq] webRequest listener registered successfully');

@@ -1,69 +1,47 @@
-// YouTubeサムネイルを代替フレームにリダイレクト
-console.log('[YTaq] Initializing thumbnail replacement...');
+// YTaq: サムネイルを別フレームの静止画にリダイレクトする
+//
+// このリスナーは blocking で、ホーム1画面あたり数百回呼ばれる。
+// 以前は1リクエストごとに console.log を出していて、それ自体が無視できない
+// コストになっていた（DevTools を開いていると特に）。ログは DEBUG 時のみ。
 
 const ANTIBITE_STORAGE_KEY = 'ytaq_antibite';
 
-// デフォルト設定
 const DEFAULT_ANTIBITE = {
-  thumbnailEnabled: true,
-  thumbnailFrame: 'hq1'
+	thumbnailEnabled: true,
+	thumbnailFrame: 'hq1'
 };
 
-// 現在の設定を保持
-let currentSettings = DEFAULT_ANTIBITE;
+// URL パターンはリスナーの外で1回だけ作る
+const THUMB_RE = /^https:\/\/i9?\.ytimg\.com\/(vi|vi_webp)\/([\w-]+)\/(default|hqdefault|mqdefault|sddefault|maxresdefault|hq720)(_custom_\d+)?\.(jpg|webp)/;
 
-// 設定を読み込み
-function loadSettings() {
-  chrome.storage.local.get([ANTIBITE_STORAGE_KEY], (result) => {
-    currentSettings = result[ANTIBITE_STORAGE_KEY] || DEFAULT_ANTIBITE;
-    console.log('[YTaq Thumbnail] Settings loaded:', currentSettings);
-  });
-}
+let settings = DEFAULT_ANTIBITE;
 
-// 初回読み込み
-loadSettings();
-
-// 設定変更を監視
-chrome.storage.onChanged.addListener((changes, areaName) => {
-  if (areaName === 'local' && changes[ANTIBITE_STORAGE_KEY]) {
-    currentSettings = changes[ANTIBITE_STORAGE_KEY].newValue || DEFAULT_ANTIBITE;
-    console.log('[YTaq Thumbnail] Settings updated:', currentSettings);
-  }
+chrome.storage.local.get([ANTIBITE_STORAGE_KEY], (result) => {
+	settings = Object.assign({}, DEFAULT_ANTIBITE, result[ANTIBITE_STORAGE_KEY]);
 });
 
-// webRequestリスナーを登録
+chrome.storage.onChanged.addListener((changes, areaName) => {
+	if (areaName === 'local' && changes[ANTIBITE_STORAGE_KEY]) {
+		settings = Object.assign({}, DEFAULT_ANTIBITE, changes[ANTIBITE_STORAGE_KEY].newValue);
+	}
+});
+
 browser.webRequest.onBeforeRequest.addListener(
 	(details) => {
-		// 機能が無効の場合は何もしない
-		if (!currentSettings.thumbnailEnabled) {
-			return;
-		}
+		if (!settings.thumbnailEnabled) return;
 
-		// YouTubeサムネイルURLをパターンマッチ
-		// 例: https://i.ytimg.com/vi/VIDEO_ID/hqdefault.jpg
-		//     https://i9.ytimg.com/vi_webp/VIDEO_ID/sddefault.webp
-		const match = details.url.match(/^https:\/\/i9?\.ytimg\.com\/(vi|vi_webp)\/([\w-]+)\/(default|hqdefault|mqdefault|sddefault|maxresdefault|hq720)(_custom_\d+)?\.(jpg|webp)/);
+		const match = THUMB_RE.exec(details.url);
+		if (!match) return;
 
-		if (match) {
-			const videoId = match[2];
-			const extension = match[5]; // jpg or webp
-			const frame = currentSettings.thumbnailFrame || 'hq1';
+		const videoId = match[2];
+		const extension = match[5];
+		const frame = settings.thumbnailFrame || 'hq1';
 
-			// 指定されたフレームにリダイレクト
-			const redirectUrl = `https://i.ytimg.com/vi/${videoId}/${frame}.${extension}`;
-
-			console.log('[YTaq Thumbnail] Redirecting:', details.url, '→', redirectUrl);
-
-			return { redirectUrl: redirectUrl };
-		}
+		return { redirectUrl: `https://i.ytimg.com/vi/${videoId}/${frame}.${extension}` };
 	},
 	{
-		urls: [
-			"*://i.ytimg.com/*",
-			"*://i9.ytimg.com/*"
-		]
+		urls: ['*://i.ytimg.com/*', '*://i9.ytimg.com/*'],
+		types: ['image', 'imageset', 'xmlhttprequest']
 	},
 	['blocking']
 );
-
-console.log('[YTaq] Thumbnail redirect listener registered successfully');

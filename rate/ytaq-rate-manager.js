@@ -1,72 +1,65 @@
-// YTaq: チャンネルごとに再生速度を記憶・自動適用する機能
-// データ管理のみ（UI制御はytaq-rate-ui.jsに分離）
+// YTaq: チャンネルごとに再生速度を記憶・自動適用する
+// データ管理のみ（UI は ytaq-rate-ui.js）
+//
+// 以前は 1秒ごとに location.href を比較していたが、遷移検知は core に集約した。
 
-// チャンネル名を取得（YouTube動画ページ用）
-function getChannelName() {
-  // 動画ページのチャンネル名要素を取得
-  const el = document.querySelector('ytd-channel-name a, #owner-name a, .ytd-channel-name a');
-  return el ? el.textContent.trim() : null;
-}
+(function () {
+	'use strict';
 
-// video要素を取得
-function getVideoElement() {
-  return document.querySelector('video');
-}
+	const YTaq = window.YTaq;
+	const KEY = 'ytaq_playbackrate';
 
-// 再生速度をストレージから取得
-function getStoredRate(channel, cb) {
-  if (!channel) return cb(null);
-  chrome.storage.local.get(['ytaq_playbackrate'], result => {
-    const map = result.ytaq_playbackrate || {};
-    cb(map[channel] || null);
-  });
-}
+	function getChannelName() {
+		const el = document.querySelector('ytd-channel-name a, #owner-name a, .ytd-channel-name a');
+		return el ? el.textContent.trim() : null;
+	}
 
-// 再生速度をストレージに保存
-function setStoredRate(channel, rate) {
-  if (!channel) return;
-  chrome.storage.local.get(['ytaq_playbackrate'], result => {
-    const map = result.ytaq_playbackrate || {};
-    map[channel] = rate;
-    chrome.storage.local.set({ ytaq_playbackrate: map });
-  });
-}
+	async function getStoredRate(channel) {
+		const map = await YTaq.getStorage(KEY, {});
+		return map[channel] || null;
+	}
 
-// video要素の再生速度を監視し、変更時に保存
-function observePlaybackRate(video, channel) {
-  if (!video || !channel) return;
-  let lastRate = video.playbackRate;
-  video.addEventListener('ratechange', () => {
-    if (video.playbackRate !== lastRate) {
-      lastRate = video.playbackRate;
-      setStoredRate(channel, lastRate);
-      console.log('[YTaq Rate] 再生速度を保存:', channel, lastRate);
-    }
-  });
-}
+	async function setStoredRate(channel, rate) {
+		const map = await YTaq.getStorage(KEY, {});
+		map[channel] = rate;
+		await YTaq.setStorage(KEY, map);
+	}
 
-// メイン処理: チャンネルごとの再生速度を適用
-function applyPlaybackRatePerChannel() {
-  const channel = getChannelName();
-  const video = getVideoElement();
-  if (!video || !channel) return;
-  getStoredRate(channel, rate => {
-    if (rate && video.playbackRate !== rate) {
-      video.playbackRate = rate;
-      console.log('[YTaq Rate] 再生速度を適用:', channel, rate);
-    }
-    observePlaybackRate(video, channel);
-  });
-}
+	// 同じ video 要素に何度も listener を付けないよう印を付ける
+	function observeRateChanges(video, channel) {
+		if (video.dataset.ytaqRateWatched === channel) return;
+		video.dataset.ytaqRateWatched = channel;
 
-// 動画ページの遷移やvideo要素の差し替えにも対応
-let lastUrl = location.href;
-setInterval(() => {
-  if (location.href !== lastUrl) {
-    lastUrl = location.href;
-    setTimeout(applyPlaybackRatePerChannel, 1000);
-  }
-}, 1000);
+		video.addEventListener('ratechange', () => {
+			setStoredRate(channel, video.playbackRate);
+			YTaq.log('rate saved:', channel, video.playbackRate);
+		});
+	}
 
-// 初回実行
-setTimeout(applyPlaybackRatePerChannel, 1000);
+	async function apply() {
+		if (!location.pathname.startsWith('/watch')) return;
+
+		const channel = getChannelName();
+		const video = document.querySelector('video');
+		if (!channel || !video) return;
+
+		const rate = await getStoredRate(channel);
+		if (rate && video.playbackRate !== rate) {
+			video.playbackRate = rate;
+			YTaq.log('rate applied:', channel, rate);
+		}
+		observeRateChanges(video, channel);
+	}
+
+	// 遷移直後はチャンネル名も video 要素もまだ無いことが多いので、
+	// 揃うまで数フレーム粘る（タイマーではなく rAF）。
+	function applyWhenReady() {
+		if (!location.pathname.startsWith('/watch')) return;
+		YTaq.waitFor('ytd-channel-name a, #owner-name a', () => {
+			YTaq.waitFor('video', apply);
+		});
+	}
+
+	YTaq.ready(applyWhenReady);
+	YTaq.onNavigate(applyWhenReady);
+})();

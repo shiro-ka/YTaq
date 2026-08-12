@@ -44,6 +44,10 @@ document.addEventListener('DOMContentLoaded', () => {
     window.YTaqTheme.init();
   }
 
+  if (window.YTaqPerf) {
+    window.YTaqPerf.init();
+  }
+
   if (window.YTaqAntibite) {
     window.YTaqAntibite.init();
   }

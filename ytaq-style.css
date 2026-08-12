@@ -47,7 +47,16 @@ html:not(.ytaq-popup-iframe) ytd-guide-entry-renderer[active] {
   background: var(--aqaccent-item) !important;
 }
 
-/* ホバー時のプレビュー再生を無効化 */
-ytd-video-preview {
-  display: none !important;
+/* サイドバーの YTaq 管理画面ボタン（旧: content.js のインラインスタイル） */
+html:not(.ytaq-popup-iframe) .ytaq-custom-sidebar-btn {
+  margin: 8px 0 8px 40px;
+  padding: 6px 12px;
+  background: var(--ytaq-nord8, #88c0d0);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
 }
+
+/* ホバープレビューの無効化は perf/ytaq-perf.css に移動（設定で切り替え可能） */

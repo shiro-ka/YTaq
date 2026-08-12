@@ -115,28 +115,13 @@
     parent.appendChild(btn);
   }
 
-  // URL変化検知
-  let lastUrl = location.href;
-  function checkUrlChange() {
-    if (location.href !== lastUrl) {
-      lastUrl = location.href;
-      setTimeout(tryInsertButton, 400); // ページ描画待ち
-    }
+  // 挿入先はチャンネルページにしか存在しない。500ms ポーリングと
+  // （Firefox では効かない）pushState フックをやめ、core の遷移イベント＋
+  // 要素が現れるまでの rAF 待ちに置き換えた。
+  function setup() {
+    window.YTaq.waitFor('yt-flexible-actions-view-model', tryInsertButton);
   }
-  setInterval(checkUrlChange, 500);
-  // 初回
-  setTimeout(tryInsertButton, 400);
 
-  // pushState/replaceStateフック
-  const origPush = history.pushState;
-  const origReplace = history.replaceState;
-  history.pushState = function() {
-    origPush.apply(this, arguments);
-    setTimeout(checkUrlChange, 100);
-  };
-  history.replaceState = function() {
-    origReplace.apply(this, arguments);
-    setTimeout(checkUrlChange, 100);
-  };
-  window.addEventListener('popstate', checkUrlChange);
+  window.YTaq.ready(setup);
+  window.YTaq.onNavigate(setup);
 })();

@@ -1,18 +1,19 @@
 {
   "manifest_version": 2,
   "name": "YTaq",
-  "version": "1.0.0",
-  "description": "Custom YT theme.",
+  "version": "1.1.0",
+  "description": "Custom YT theme + 軽量化.",
   "icons": {
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
   "permissions": [
     "storage",
-    "tabs",
     "webRequest",
     "webRequestBlocking",
-    "<all_urls>"
+    "*://*.youtube.com/*",
+    "*://*.youtube-nocookie.com/*",
+    "*://*.ytimg.com/*"
   ],
   "background": {
     "scripts": [
@@ -26,8 +27,10 @@
         "https://www.youtube.com/*"
       ],
       "js": [
-        "content.js",
+        "core/ytaq-core.js",
+        "perf/ytaq-perf.js",
         "options/apply-options.js",
+        "content.js",
         "folder/ytaq-folder-manager.js",
         "folder/ytaq-folder-ui.js",
         "subscriptions/ytaq-subs-folder.js",
@@ -40,13 +43,14 @@
       "css": [
         "ytaq-variables.css",
         "ytaq-style.css",
+        "perf/ytaq-perf.css",
         "popup/ytaq-popup.css",
         "home/ytaq-home.css",
         "subscriptions/ytaq-subs.css",
         "folder/ytaq-folder.css",
         "rate/ytaq-rate-manager.css"
       ],
-      "all_frames": true,
+      "all_frames": false,
       "run_at": "document_start"
     }
   ],

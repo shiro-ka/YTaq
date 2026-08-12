@@ -1,223 +1,138 @@
-// YTaq: 汎用動画ポップアップ表示機能
-// フルページiframe + 代替サムネイルローディング
+// YTaq: 動画ポップアップ
+//
+// 以前は iframe に youtube.com/watch をそのまま読み込んでいた。これは
+// 「重い SPA をもう1枚起動する」だけで、軽量化どころか二重に重い。
+// /embed/ は Polymer アプリもサイドバーもコメントも関連動画も持たない
+// 別実装のページなので、同じ再生を桁違いに軽く行える。
+//
+// 代償は「投稿者が埋め込みを禁止している動画は再生できない」こと。
+// 検出は cross-origin では確実にできないので、常に脱出口（YouTubeで開く）を
+// ヘッダに置いてある。
 
 (function () {
-  const ANTIBITE_STORAGE_KEY = 'ytaq_antibite';
-  const DEFAULT_ANTIBITE = {
-    thumbnailEnabled: true,
-    thumbnailFrame: 'hq1'
-  };
+	'use strict';
 
-  // 設定をキャッシュ
-  let thumbnailSettings = DEFAULT_ANTIBITE;
+	const YTaq = window.YTaq;
 
-  // 設定を読み込み
-  function loadThumbnailSettings() {
-    if (typeof chrome !== 'undefined' && chrome.storage) {
-      chrome.storage.local.get([ANTIBITE_STORAGE_KEY], (result) => {
-        thumbnailSettings = result[ANTIBITE_STORAGE_KEY] || DEFAULT_ANTIBITE;
-        console.log('[YTaq Popup] Thumbnail settings loaded:', thumbnailSettings);
-      });
-    }
-  }
+	const ANTIBITE_KEY = 'ytaq_antibite';
+	const DEFAULT_ANTIBITE = { thumbnailEnabled: true, thumbnailFrame: 'hq1' };
 
-  // 初回読み込み
-  loadThumbnailSettings();
+	let thumbSettings = DEFAULT_ANTIBITE;
 
-  // 設定変更を監視
-  if (typeof chrome !== 'undefined' && chrome.storage) {
-    chrome.storage.onChanged.addListener((changes, areaName) => {
-      if (areaName === 'local' && changes[ANTIBITE_STORAGE_KEY]) {
-        thumbnailSettings = changes[ANTIBITE_STORAGE_KEY].newValue || DEFAULT_ANTIBITE;
-        console.log('[YTaq Popup] Thumbnail settings updated:', thumbnailSettings);
-      }
-    });
-  }
+	YTaq.getStorage(ANTIBITE_KEY, null).then(v => {
+		thumbSettings = Object.assign({}, DEFAULT_ANTIBITE, v);
+	});
+	YTaq.onStorageChange(ANTIBITE_KEY, v => {
+		thumbSettings = Object.assign({}, DEFAULT_ANTIBITE, v);
+	});
 
-  // サムネイルURLを取得
-  function getThumbnailUrl(videoId) {
-    const frame = thumbnailSettings.thumbnailFrame || 'hq1';
-    return `https://i.ytimg.com/vi/${videoId}/${frame}.jpg`;
-  }
+	function thumbnailUrl(videoId) {
+		return `https://i.ytimg.com/vi/${videoId}/${thumbSettings.thumbnailFrame || 'hq1'}.jpg`;
+	}
 
-  // ポップアップを表示
-  function showVideoPopup(videoId, videoTitle, isShorts = false) {
-    if (!videoId) {
-      console.error('[YTaq Popup] No videoId provided!');
-      return;
-    }
+	function embedUrl(videoId) {
+		const params = new URLSearchParams({
+			autoplay: '1',
+			playsinline: '1',
+			rel: '0',            // 関連動画を同チャンネルに限定（読み込む量が減る）
+			modestbranding: '1'
+		});
+		return `https://www.youtube.com/embed/${videoId}?${params}`;
+	}
 
-    console.log('[YTaq Popup] Opening video popup:', videoId, 'Title:', videoTitle, 'isShorts:', isShorts);
+	let escHandler = null;
 
-    // 既存のポップアップがあれば削除
-    const existingPopup = document.getElementById('ytaq-popup');
-    if (existingPopup) {
-      existingPopup.remove();
-    }
+	function hideVideoPopup() {
+		const popup = document.getElementById('ytaq-popup');
+		if (popup) popup.remove();  // iframe ごと落として再生とネットワークを止める
+		if (escHandler) {
+			document.removeEventListener('keydown', escHandler);
+			escHandler = null;
+		}
+	}
 
-    // オーバーレイ作成
-    const popup = document.createElement('div');
-    popup.id = 'ytaq-popup';
+	function showVideoPopup(videoId, videoTitle, isShorts = false) {
+		if (!videoId) return;
+		hideVideoPopup();
 
-    // コンテンツコンテナ
-    const content = document.createElement('div');
-    content.className = 'ytaq-popup-content';
-    if (isShorts) {
-      content.classList.add('ytaq-popup-shorts');
-    }
+		const popup = document.createElement('div');
+		popup.id = 'ytaq-popup';
 
-    // 閉じるボタン
-    const closeBtn = document.createElement('button');
-    closeBtn.className = 'ytaq-popup-close';
-    closeBtn.textContent = '×';
-    closeBtn.addEventListener('click', hideVideoPopup);
+		const content = document.createElement('div');
+		content.className = 'ytaq-popup-content';
+		if (isShorts) content.classList.add('ytaq-popup-shorts');
 
-    // タイトル
-    const title = document.createElement('div');
-    title.className = 'ytaq-popup-title';
-    title.textContent = videoTitle || '動画を読み込み中...';
+		const closeBtn = document.createElement('button');
+		closeBtn.className = 'ytaq-popup-close';
+		closeBtn.textContent = '×';
+		closeBtn.addEventListener('click', hideVideoPopup);
 
-    // iframeコンテナ
-    const iframeContainer = document.createElement('div');
-    iframeContainer.className = 'ytaq-popup-iframe-container';
-    if (isShorts) {
-      iframeContainer.classList.add('ytaq-popup-shorts');
-    }
+		const title = document.createElement('div');
+		title.className = 'ytaq-popup-title';
+		title.textContent = videoTitle || '';
 
-    // ローディングスケルトン（サムネイル + スピナー）
-    const loadingSkeleton = document.createElement('div');
-    loadingSkeleton.className = 'ytaq-popup-loading-skeleton';
+		// 埋め込み禁止動画などのための脱出口
+		const openLink = document.createElement('a');
+		openLink.className = 'ytaq-popup-open-original';
+		openLink.textContent = 'YouTubeで開く';
+		openLink.href = `https://www.youtube.com/watch?v=${videoId}`;
+		openLink.target = '_blank';
+		openLink.rel = 'noopener';
+		title.appendChild(openLink);
 
-    // 代替サムネイル画像
-    const thumbnailImg = document.createElement('img');
-    thumbnailImg.className = 'ytaq-popup-thumbnail';
-    thumbnailImg.src = getThumbnailUrl(videoId);
-    thumbnailImg.alt = videoTitle || 'Loading...';
+		const iframeContainer = document.createElement('div');
+		iframeContainer.className = 'ytaq-popup-iframe-container';
+		if (isShorts) iframeContainer.classList.add('ytaq-popup-shorts');
 
-    // ローディングスピナー
-    const spinner = document.createElement('div');
-    spinner.className = 'ytaq-popup-spinner';
+		// ローディング中はサムネ＋スピナーを重ねておく
+		const skeleton = document.createElement('div');
+		skeleton.className = 'ytaq-popup-loading-skeleton';
 
-    loadingSkeleton.appendChild(thumbnailImg);
-    loadingSkeleton.appendChild(spinner);
+		const thumb = document.createElement('img');
+		thumb.className = 'ytaq-popup-thumbnail';
+		thumb.src = thumbnailUrl(videoId);
+		thumb.alt = '';
 
-    // iframe作成: YouTube全体ページを読み込む（シアターモード）
-    const iframe = document.createElement('iframe');
-    iframe.className = 'ytaq-popup-iframe';
+		const spinner = document.createElement('div');
+		spinner.className = 'ytaq-popup-spinner';
+		skeleton.append(thumb, spinner);
 
-    // URLパラメータでシアターモード＆自動再生
-    const params = new URLSearchParams({
-      v: videoId,
-      autoplay: '1',
-      theater: '1'
-    });
+		const iframe = document.createElement('iframe');
+		iframe.className = 'ytaq-popup-iframe';
+		iframe.src = embedUrl(videoId);
+		iframe.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+		iframe.allowFullscreen = true;
+		iframe.setAttribute('frameborder', '0');
 
-    iframe.src = `https://www.youtube.com/watch?${params}`;
-    iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen';
-    iframe.allowFullscreen = true;
-    iframe.setAttribute('frameborder', '0');
+		let skeletonGone = false;
+		function dropSkeleton() {
+			if (skeletonGone) return;
+			skeletonGone = true;
+			skeleton.classList.add('fade-out');
+			skeleton.addEventListener('transitionend', () => skeleton.remove(), { once: true });
+			// アニメーション無効設定だと transitionend が来ないことがある
+			setTimeout(() => skeleton.remove(), 600);
+		}
 
-    console.log('[YTaq Popup] Loading YouTube (Theater Mode):', iframe.src);
+		// /watch と違って embed は速いので、load 後の待ち時間は短くてよい
+		iframe.addEventListener('load', () => setTimeout(dropSkeleton, 150));
+		setTimeout(dropSkeleton, 5000); // 保険
 
-    // 描画完了後の処理（スケルトンフェードアウト）
-    let hasShownIframe = false;
-    function showIframe() {
-      if (hasShownIframe) return;
-      hasShownIframe = true;
+		iframeContainer.append(iframe, skeleton);
+		content.append(closeBtn, title, iframeContainer);
+		popup.appendChild(content);
 
-      console.log('[YTaq Popup] Fading out skeleton...');
-      loadingSkeleton.classList.add('fade-out');
+		popup.addEventListener('click', e => {
+			if (e.target === popup) hideVideoPopup();
+		});
 
-      // フェードアウト完了後にスケルトン削除
-      setTimeout(() => {
-        if (loadingSkeleton.parentNode) {
-          loadingSkeleton.remove();
-          console.log('[YTaq Popup] Skeleton removed');
-        }
-      }, 500);
-    }
+		escHandler = e => {
+			if (e.key === 'Escape') hideVideoPopup();
+		};
+		document.addEventListener('keydown', escHandler);
 
-    // iframeを即座にDOMに追加してロード開始（スケルトンの裏で読み込ませる）
-    console.log('[YTaq Popup] Adding iframe to DOM immediately...');
-    iframeContainer.appendChild(iframe); // ここが重要：iframeは最初からDOMにいる
+		document.body.appendChild(popup);
+	}
 
-    // loadイベント監視
-    iframe.addEventListener('load', () => {
-      console.log('[YTaq Popup] iframe load event fired');
-      setTimeout(showIframe, 600); // 描画安定待ち
-    });
-
-    // タイムアウト保険（10秒）
-    setTimeout(() => {
-      console.log('[YTaq Popup] Timeout: forcing skeleton fade out');
-      showIframe();
-    }, 10000);
-
-    // 要素を組み立て
-    iframeContainer.appendChild(loadingSkeleton); // iframeの上に重ねる
-    content.appendChild(closeBtn);
-    content.appendChild(title);
-    content.appendChild(iframeContainer);
-    popup.appendChild(content);
-
-    // イベントリスナー
-    popup.addEventListener('click', (e) => {
-      if (e.target === popup) hideVideoPopup();
-    });
-
-    const handleKeydown = (e) => {
-      if (e.key === 'Escape') {
-        hideVideoPopup();
-        document.removeEventListener('keydown', handleKeydown);
-      }
-    };
-    document.addEventListener('keydown', handleKeydown);
-
-    document.body.appendChild(popup);
-    console.log('[YTaq Popup] Popup displayed with loading skeleton');
-  }
-
-  // ポップアップを非表示
-  function hideVideoPopup() {
-    const popup = document.getElementById('ytaq-popup');
-    if (popup) {
-      popup.remove();
-      console.log('[YTaq Popup] Popup closed');
-    }
-  }
-
-  // グローバル公開
-  window.YTaqPopup = {
-    showVideoPopup,
-    hideVideoPopup
-  };
-})();
-
-// ========================================
-// iframe内のページマーキング処理
-// ========================================
-
-(function () {
-  // iframe内（モーダル内）かどうかを判定
-  function isInsideIframe() {
-    try {
-      return window.self !== window.top;
-    } catch (e) {
-      return true;
-    }
-  }
-
-  // iframe内であることを示すクラスを<html>に追加
-  // CSSの html.ytaq-popup-iframe セレクタで使用
-  function markAsPopupIframe() {
-    if (isInsideIframe() && window.location.href.includes('youtube.com/watch')) {
-      if (document.documentElement) {
-        document.documentElement.classList.add('ytaq-popup-iframe');
-        console.log('[YTaq Popup] Marked as popup iframe');
-      }
-    }
-  }
-
-  // ページ読み込み時にマーキング実行
-  markAsPopupIframe();
+	window.YTaqPopup = { showVideoPopup, hideVideoPopup };
 })();

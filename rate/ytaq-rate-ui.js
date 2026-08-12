@@ -1,176 +1,135 @@
-// YTaq: 再生速度メニュー項目を非表示にするUI制御
-// YouTubeネイティブの「再生速度」メニューを隠して、独自の再生速度管理を使用
+// YTaq: プレイヤーの再生速度 UI
+//   - YouTube ネイティブの「再生速度」メニュー項目を隠す
+//   - 右下コントロールに −／表示／＋ を追加する
+//
+// 以前は setInterval 2本（2秒間隔）で常時 querySelector していた。
+// プレイヤーの DOM が変わるのは遷移時とメニューを開いた時だけなので、
+// core の遷移イベント＋メニュー開閉の検知で十分。
+// history.pushState のフックは Firefox の isolated world ではページ側の
+// 呼び出しを捕捉できない（expando になるだけ）ため削除した。
 
-// === YouTubeの再生速度メニュー項目を非表示にする ===
-function hidePlaybackSpeedMenuItem() {
-  const menuItems = document.querySelectorAll('.ytp-menuitem');
-  menuItems.forEach(item => {
-    const label = item.querySelector('.ytp-menuitem-label');
-    if (label && label.textContent.trim() === '再生速度') {
-      item.classList.add('ytaq-hide-playback-rate');
-      console.log('[YTaq Rate UI] 再生速度メニュー項目を非表示にしました');
-    }
-  });
-}
+(function () {
+	'use strict';
 
-// 動画プレイヤーが読み込まれるまで待機してメニュー項目を非表示
-function waitAndHideMenuItem() {
-  hidePlaybackSpeedMenuItem();
+	const YTaq = window.YTaq;
 
-  // MutationObserverでメニューの動的追加を監視
-  const observer = new MutationObserver(() => {
-    hidePlaybackSpeedMenuItem();
-  });
+	const KEY = 'ytaq_playbackrate_settings';
+	const DEFAULTS = {
+		speedStep: 0.25,
+		speedPresets: [1.0, 1.25, 1.5, 1.75, 2.0, 4.0]
+	};
 
-  const playerElement = document.querySelector('.html5-video-player');
-  if (playerElement) {
-    observer.observe(playerElement, {
-      childList: true,
-      subtree: true
-    });
-  }
-}
+	// --- ネイティブの再生速度メニューを隠す ---------------------------------
 
-// 初回実行と定期チェック
-setTimeout(waitAndHideMenuItem, 1000);
-setInterval(hidePlaybackSpeedMenuItem, 2000);
+	function hideNativeSpeedMenu(root) {
+		const scope = root && root.querySelectorAll ? root : document;
+		const items = scope.querySelectorAll('.ytp-menuitem:not(.ytaq-hide-playback-rate)');
+		for (let i = 0; i < items.length; i++) {
+			const label = items[i].querySelector('.ytp-menuitem-label');
+			if (label && label.textContent.trim() === '再生速度') {
+				items[i].classList.add('ytaq-hide-playback-rate');
+			}
+		}
+	}
 
-// === 再生速度コントロールボタンを追加 ===
-const PLAYBACKRATE_STORAGE_KEY = 'ytaq_playbackrate_settings';
-const DEFAULT_PLAYBACKRATE = {
-  speedStep: 0.25,
-  speedPresets: [1.0, 1.25, 1.5, 1.75, 2.0, 4.0]
-};
+	// --- 速度コントロールボタン ---------------------------------------------
 
-function addPlaybackSpeedControls() {
-  const rightControls = document.querySelector('.ytp-right-controls');
-  if (!rightControls) return;
+	function video() {
+		return document.querySelector('video');
+	}
 
-  // 既に追加済みの場合はスキップ
-  if (document.querySelector('.ytaq-rate-controls')) return;
+	async function addSpeedControls() {
+		const rightControls = document.querySelector('.ytp-right-controls');
+		if (!rightControls) return;
+		if (document.querySelector('.ytaq-rate-controls')) return;
 
-  // 設定を読み込んでからボタンを作成
-  chrome.storage.local.get([PLAYBACKRATE_STORAGE_KEY], (result) => {
-    const settings = result[PLAYBACKRATE_STORAGE_KEY] || DEFAULT_PLAYBACKRATE;
-    const speedStep = settings.speedStep;
-    const speeds = settings.speedPresets;
+		const settings = Object.assign({}, DEFAULTS, await YTaq.getStorage(KEY, null));
+		const { speedStep, speedPresets } = settings;
 
-    // ボタンコンテナ作成
-    const container = document.createElement('div');
-    container.className = 'ytaq-rate-controls';
+		// 非同期で設定を読む間に別の呼び出しが追加済みかもしれない
+		if (document.querySelector('.ytaq-rate-controls')) return;
 
-    // 現在の速度表示
-    const speedDisplay = document.createElement('button');
-    speedDisplay.className = 'ytaq-rate-display ytp-button';
-    speedDisplay.textContent = '1.0x';
-    speedDisplay.title = '再生速度';
+		const container = document.createElement('div');
+		container.className = 'ytaq-rate-controls';
 
-    // 速度を更新する関数
-    function updateSpeedDisplay() {
-      const video = document.querySelector('video');
-      if (video) {
-        speedDisplay.textContent = video.playbackRate.toFixed(2) + 'x';
-      }
-    }
+		const display = document.createElement('button');
+		display.className = 'ytaq-rate-display ytp-button';
+		display.title = '再生速度';
 
-    // クリックで速度変更（プリセット循環）
-    speedDisplay.addEventListener('click', () => {
-      const video = document.querySelector('video');
-      if (!video) return;
+		function updateDisplay() {
+			const v = video();
+			if (v) display.textContent = v.playbackRate.toFixed(2) + 'x';
+		}
 
-      const currentSpeed = video.playbackRate;
-      const currentIndex = speeds.findIndex(s => Math.abs(s - currentSpeed) < 0.01);
-      const nextIndex = (currentIndex + 1) % speeds.length;
+		function setRate(fn) {
+			const v = video();
+			if (!v) return;
+			v.playbackRate = fn(v.playbackRate);
+			updateDisplay();
+		}
 
-      video.playbackRate = speeds[nextIndex];
-      updateSpeedDisplay();
-    });
+		// クリックでプリセットを循環
+		display.addEventListener('click', () => setRate(current => {
+			const i = speedPresets.findIndex(s => Math.abs(s - current) < 0.01);
+			return speedPresets[(i + 1) % speedPresets.length];
+		}));
 
-    // マイナスボタン
-    const minusBtn = document.createElement('button');
-    minusBtn.className = 'ytaq-rate-minus ytp-button';
-    minusBtn.textContent = '−';
-    minusBtn.title = `再生速度を下げる（-${speedStep}）`;
-    minusBtn.addEventListener('click', () => {
-      const video = document.querySelector('video');
-      if (!video) return;
+		const minus = document.createElement('button');
+		minus.className = 'ytaq-rate-minus ytp-button';
+		minus.textContent = '−';
+		minus.title = `再生速度を下げる（-${speedStep}）`;
+		minus.addEventListener('click', () => setRate(c => Math.max(0.25, c - speedStep)));
 
-      const newSpeed = Math.max(0.25, video.playbackRate - speedStep);
-      video.playbackRate = newSpeed;
-      updateSpeedDisplay();
-    });
+		const plus = document.createElement('button');
+		plus.className = 'ytaq-rate-plus ytp-button';
+		plus.textContent = '＋';
+		plus.title = `再生速度を上げる（+${speedStep}）`;
+		plus.addEventListener('click', () => setRate(c => Math.min(16.0, c + speedStep)));
 
-    // プラスボタン
-    const plusBtn = document.createElement('button');
-    plusBtn.className = 'ytaq-rate-plus ytp-button';
-    plusBtn.textContent = '＋';
-    plusBtn.title = `再生速度を上げる（+${speedStep}）`;
-    plusBtn.addEventListener('click', () => {
-      const video = document.querySelector('video');
-      if (!video) return;
+		container.append(minus, display, plus);
 
-      const newSpeed = Math.min(16.0, video.playbackRate + speedStep);
-      video.playbackRate = newSpeed;
-      updateSpeedDisplay();
-    });
+		// #startSegmentButton（他拡張）があればその後ろ、無ければ先頭
+		const anchor = document.getElementById('startSegmentButton');
+		if (anchor && anchor.parentElement === rightControls) {
+			rightControls.insertBefore(container, anchor.nextSibling);
+		} else {
+			rightControls.insertBefore(container, rightControls.firstChild);
+		}
 
-    // ボタンをコンテナに追加
-    container.appendChild(minusBtn);
-    container.appendChild(speedDisplay);
-    container.appendChild(plusBtn);
+		const v = video();
+		if (v) {
+			v.addEventListener('ratechange', updateDisplay);
+			updateDisplay();
+		} else {
+			display.textContent = '1.00x';
+		}
+	}
 
-    // #startSegmentButtonがあればその次に、なければ先頭に追加
-    const startSegmentButton = document.getElementById('startSegmentButton');
-    if (startSegmentButton && startSegmentButton.parentElement === rightControls) {
-      // startSegmentButtonの次に挿入
-      rightControls.insertBefore(container, startSegmentButton.nextSibling);
-    } else {
-      // 先頭に追加
-      rightControls.insertBefore(container, rightControls.firstChild);
-    }
+	// --- 起動 ---------------------------------------------------------------
 
-    // video要素の速度変更を監視して表示を更新
-    const video = document.querySelector('video');
-    if (video) {
-      video.addEventListener('ratechange', updateSpeedDisplay);
-      updateSpeedDisplay();
-    }
+	function setup() {
+		if (!location.pathname.startsWith('/watch')) return;
+		YTaq.waitFor('.ytp-right-controls', addSpeedControls);
+	}
 
-    console.log('[YTaq Rate UI] 再生速度コントロールボタンを追加しました');
-  });
-}
+	YTaq.ready(() => {
+		setup();
+		hideNativeSpeedMenu(document);
 
-// ボタン追加の初回実行と定期チェック（SPA対応）
-let lastVideoUrl = location.href;
-function checkAndAddControls() {
-  // URL変化を検知
-  if (location.href !== lastVideoUrl) {
-    lastVideoUrl = location.href;
-  }
+		YTaq.onNavigate(setup);
 
-  // 動画ページでのみボタンを追加
-  if (location.pathname.includes('/watch')) {
-    addPlaybackSpeedControls();
-  }
-}
-
-setTimeout(checkAndAddControls, 1000);
-setInterval(checkAndAddControls, 2000);
-
-// pushState/replaceStateフック（SPA対応）
-const origPushState = history.pushState;
-const origReplaceState = history.replaceState;
-
-history.pushState = function() {
-  origPushState.apply(this, arguments);
-  setTimeout(checkAndAddControls, 500);
-};
-
-history.replaceState = function() {
-  origReplaceState.apply(this, arguments);
-  setTimeout(checkAndAddControls, 500);
-};
-
-window.addEventListener('popstate', () => {
-  setTimeout(checkAndAddControls, 500);
-});
+		// 設定メニューは開いた瞬間に生成される。追加ノードにメニュー項目が
+		// 含まれるときだけ処理するので、閉じている間のコストはゼロ。
+		YTaq.onMutation(added => {
+			for (let i = 0; i < added.length; i++) {
+				const n = added[i];
+				if (!n.querySelector) continue;
+				if ((n.matches && n.matches('.ytp-menuitem, .ytp-panel, .ytp-popup')) ||
+					n.querySelector('.ytp-menuitem')) {
+					hideNativeSpeedMenu(n.parentElement || document);
+					return;
+				}
+			}
+		});
+	});
+})();

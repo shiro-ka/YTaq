@@ -148,79 +148,20 @@
 	max-height: 95vh;
 }
 
-/* ========================================
-  iframe内（ポップアップ内）のYouTubeページカスタマイズ
-  ======================================== */
+/* iframe 内の /watch を整形していた html.ytaq-popup-iframe ブロックは削除。
+   ポップアップは /embed/ を読むようになり、そもそも masthead も #related も
+   コメントも存在しないため不要になった。 */
 
-html.ytaq-popup-iframe {
+/* 埋め込み禁止動画などのための脱出口 */
+.ytaq-popup-open-original {
+	float: right;
+	font-size: 12px;
+	font-weight: normal;
+	color: var(--ytaq-nord8, #88c0d0);
+	text-decoration: none;
+	margin-left: 12px;
+}
 
-	ytd-app {
-		padding-right: 8px;
-	}
-
-	ytd-watch-flexy[full-bleed-player] #full-bleed-container.ytd-watch-flexy {
-		background: var(--aqprimary-item) !important;
-	}
-
-	#masthead,
-	ytd-masthead {
-		display: none !important;
-	}
-
-	#related,
-	#secondary,
-	ytd-watch-next-secondary-results-renderer {
-		display: none !important;
-	}
-
-	#full-bleed-container {
-		height: 100vh !important;
-		min-height: 100vh !important;
-		overflow: hidden !important;
-	}
-
-	#player-full-bleed-container,
-	.player-container-background,
-	#cinematics-full-bleed-container,
-	#cinematics,
-	#player-container,
-	#movie_player,
-	.html5-video-player {
-		border-radius: 16px !important;
-	}
-
-	#primary,
-	ytd-watch-flexy #primary {
-		width: 100% !important;
-		max-width: 100% !important;
-		margin: 0 !important;
-	}
-
-	ytd-watch-flexy {
-		display: flex !important;
-		flex-direction: column !important;
-	}
-
-	#below,
-	ytd-watch-metadata,
-	#comments {
-		position: relative !important;
-		margin-top: 0 !important;
-		background: var(--aqprimary-item) !important;
-		padding: 16px !important;
-	}
-
-	ytd-comments {
-		background: var(--aqprimary-item) !important;
-	}
-
-	ytd-app {
-		background: var(--aqprimary-item) !important;
-	}
-
-	#page-manager,
-	ytd-page-manager {
-		margin: 0 !important;
-		padding: 0 !important;
-	}
+.ytaq-popup-open-original:hover {
+	text-decoration: underline;
 }

@@ -15,12 +15,12 @@ const YTaqListManager = {
 
   async addList(name) {
     if (!name) {
-      console.warn('[YTaqListManager] addList: 名前が空です');
+      window.YTaq.warn('[YTaqListManager] addList: 名前が空です');
       return;
     }
     const lists = await this.getLists();
     if (lists.find(l => l.name === name)) {
-      console.warn('[YTaqListManager] addList: 同名のリストが既に存在します:', name);
+      window.YTaq.warn('[YTaqListManager] addList: 同名のリストが既に存在します:', name);
       return;
     }
     lists.push({ name, channels: [] });
@@ -31,7 +31,7 @@ const YTaqListManager = {
 
   async removeList(name) {
     if (!name) {
-      console.warn('[YTaqListManager] removeList: 名前が空です');
+      window.YTaq.warn('[YTaqListManager] removeList: 名前が空です');
       return;
     }
     const lists = await this.getLists();
@@ -43,13 +43,13 @@ const YTaqListManager = {
 
   async addChannelToList(listName, channelId) {
     if (!listName || !channelId) {
-      console.warn('[YTaqListManager] addChannelToList: 無効なパラメータ');
+      window.YTaq.warn('[YTaqListManager] addChannelToList: 無効なパラメータ');
       return;
     }
     const lists = await this.getLists();
     const list = lists.find(l => l.name === listName);
     if (!list) {
-      console.warn('[YTaqListManager] addChannelToList: リストが見つかりません');
+      window.YTaq.warn('[YTaqListManager] addChannelToList: リストが見つかりません');
       return;
     }
 
@@ -77,13 +77,13 @@ const YTaqListManager = {
 
   async removeChannelFromList(listName, channelId) {
     if (!listName || !channelId) {
-      console.warn('[YTaqListManager] removeChannelFromList: 無効なパラメータ');
+      window.YTaq.warn('[YTaqListManager] removeChannelFromList: 無効なパラメータ');
       return;
     }
     const lists = await this.getLists();
     const list = lists.find(l => l.name === listName);
     if (!list) {
-      console.warn('[YTaqListManager] removeChannelFromList: リストが見つかりません');
+      window.YTaq.warn('[YTaqListManager] removeChannelFromList: リストが見つかりません');
       return;
     }
 
