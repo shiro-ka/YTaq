@@ -43,10 +43,13 @@
 	//   年齢制限・メンバー限定の動画は再生できない。
 	//   Referer さえ通れば www.youtube.com/embed/ でも再生できる可能性があり、
 	//   そちらなら Cookie が飛ぶのでログイン状態を保てる。設定で切り替える。
+	// Referer 差し替えが効いているので www.youtube.com/embed/ でも再生できることを確認済み。
+	// nocookie より Cookie のぶんだけ重いが、視聴履歴・年齢制限・メンバー限定が
+	// 使えるので既定はこちら。塞がれたら設定で OFF にすれば nocookie に戻る。
 	const LOGIN_KEY = 'ytaq_embed_login';
-	let useLoggedInEmbed = false;
+	let useLoggedInEmbed = true;
 
-	YTaq.getStorage(LOGIN_KEY, false).then(v => { useLoggedInEmbed = !!v; });
+	YTaq.getStorage(LOGIN_KEY, true).then(v => { useLoggedInEmbed = !!v; });
 	YTaq.onStorageChange(LOGIN_KEY, v => { useLoggedInEmbed = !!v; });
 
 	function embedHost() {

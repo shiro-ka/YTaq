@@ -1,11 +1,13 @@
 // YTaq Perf: youtube.com そのものを軽くするモジュール
 //
 // base.js（YouTube 本体の SPA ランタイム）は消せない。消したらページが死ぬ。
-// なので「base.js が作った重い仕事を止める」引き算に徹する。効果の大きい順:
-//   1. ホバープレビュー再生の停止  … サムネに乗せるだけで video がデコードを始める
-//   2. 画面外要素のレンダリング省略 … 無限スクロールで DOM が単調増加するため
-//   3. アンビエント照明の停止      … watch ページの常時 CPU 消費
-//   4. アニメーション停止          … スクロール中のコンポジット削減
+// なので「base.js が作った重い仕事を止める」引き算に徹する。
+//
+// ただし当初の想定「無限スクロールで DOM が増える → スクロールが重い」は
+// 実測で否定された（ホーム 327 件で A/B、ON/OFF とも median 8ms / jank 0.1%）。
+// この環境の本当の痛みはページ遷移であり、そちらはポップアップ側で解決している。
+// このモジュールは「未計測だが理屈上効くもの」を既定 ON、
+// 「実測で効果が無かったもの」を既定 OFF にして残してある。詳細は DEFAULTS。
 //
 // CSS 側の実体は perf/ytaq-perf.css。ここは <html> のクラス付け外しと、
 // CSS だけでは止められない「既に再生が始まった要素」の後始末を担当する。
@@ -20,12 +22,20 @@
 
 	const KEY = 'ytaq_perf';
 
+	// 既定値は実測に基づく。ホームで 327 件を A/B 計測したところ、
+	// lazyOffscreen と animations はスクロール性能に有意差が出なかった
+	// （median 8ms / jank 0.1% で ON/OFF 同値）。効果が確認できないものを
+	// 既定で有効にはしない。設定自体は残してあるのでいつでも試せる。
+	//
+	// hoverPreview と ambient はこの計測ではカバーできていない
+	// （前者はホバーしないと発火せず、後者は watch ページ限定）。
+	// 「効かない」と示されたわけではないので既定 ON のまま。
 	const DEFAULTS = {
-		hoverPreview: true,   // ホバープレビューを止める
-		lazyOffscreen: true,  // 画面外を content-visibility でスキップ
-		ambient: true,        // シネマティック照明を止める
-		animations: true,     // アニメーション/トランジションを止める
-		hideShorts: false     // Shorts 棚ごと隠す（好みが分かれるので既定 OFF）
+		hoverPreview: true,   // ホバープレビューを止める（未計測・理屈上は CPU 削減）
+		lazyOffscreen: false, // 画面外を content-visibility でスキップ（実測で効果なし）
+		ambient: true,        // シネマティック照明を止める（未計測・watch ページ限定）
+		animations: false,    // アニメーション/トランジション停止（実測で効果なし）
+		hideShorts: false     // Shorts 棚ごと隠す（好みの問題）
 	};
 
 	// クラス名は CSS 側と対応。値が true のときクラスを付ける。

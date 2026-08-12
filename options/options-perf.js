@@ -3,11 +3,12 @@
 
 const PERF_STORAGE_KEY = 'ytaq_perf';
 
+// perf/ytaq-perf.js の DEFAULTS と必ず一致させること
 const DEFAULT_PERF = {
   hoverPreview: true,
-  lazyOffscreen: true,
+  lazyOffscreen: false,
   ambient: true,
-  animations: true,
+  animations: false,
   hideShorts: false
 };
 
@@ -23,7 +24,7 @@ const DEFAULT_REFERER = 'https://example.com/';
 
 // ログイン状態で埋め込むか（true = www.youtube.com / false = nocookie）
 const LOGIN_STORAGE_KEY = 'ytaq_embed_login';
-const DEFAULT_LOGIN = false;
+const DEFAULT_LOGIN = true;
 
 function perfInput(key) {
   return document.getElementById(`perf-${key}`);
