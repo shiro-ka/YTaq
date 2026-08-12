@@ -1,56 +1,21 @@
 // YTaq バックグラウンド
 //
-// 重要: onHeadersReceived は blocking なので、マッチしたリクエストの
-// レスポンスを同期的に止めて処理する。以前は urls:['<all_urls>'] だったため
-// YouTube に限らず全サイトの全レスポンスを毎回この関数に通していた
-// （しかも1件ごとに console.log を4〜5行出していた）。
-// ブラウジング全体が遅くなるので、YouTube の sub_frame だけに絞ってある。
-
-const DEBUG = false;
-const log = DEBUG ? console.log.bind(console, '[YTaq BG]') : function () {};
+// かつてここには X-Frame-Options と CSP frame-ancestors を剥がす
+// onHeadersReceived リスナーがあった（ポップアップの iframe に /watch を
+// 読ませるため）。以下の理由で削除した:
+//
+//   1. ポップアップは /embed/ を使うようになった。embed は元々埋め込み可能な
+//      ページなのでヘッダを触る必要がない。
+//   2. 埋め込み制限(onError 101/150)はヘッダでは絶対に外せない。プレイヤーが
+//      ロード後に自分で判定するサーバ側ポリシーなので層が違う。剥がしても無駄。
+//      制限に当たった動画はトップレベルで /watch に遷移させる方針にした。
+//   3. onHeadersReceived の blocking リスナーはマッチしたレスポンスを同期的に
+//      止める。常駐させないに越したことはない。
+//
+// 結果、このファイルに残るのはツールバーボタンだけになった。
 
 if (chrome.browserAction) {
 	chrome.browserAction.onClicked.addListener(() => chrome.runtime.openOptionsPage());
 } else if (chrome.action) {
 	chrome.action.onClicked.addListener(() => chrome.runtime.openOptionsPage());
 }
-
-// ポップアップ内 iframe の埋め込み制限を外す。
-// /embed/ は本来埋め込み可能なので通常は不要だが、埋め込み無効設定の動画で
-// /watch にフォールバックした場合に必要になる。
-browser.webRequest.onHeadersReceived.addListener(
-	(details) => {
-		let modified = false;
-
-		const headers = details.responseHeaders.filter(h => {
-			const name = h.name.toLowerCase();
-			if (name === 'x-frame-options' || name === 'frame-options') {
-				modified = true;
-				return false;
-			}
-			return true;
-		});
-
-		for (const h of headers) {
-			const name = h.name.toLowerCase();
-			if (name !== 'content-security-policy' && name !== 'content-security-policy-report-only') continue;
-			const original = h.value;
-			h.value = h.value.replace(/frame-ancestors[^;]*(;|$)/gi, '');
-			if (original !== h.value) modified = true;
-		}
-
-		if (!modified) return;
-		log('headers relaxed for', details.url);
-		return { responseHeaders: headers };
-	},
-	{
-		// 対象を絞ることが軽量化の本体。ここを広げてはいけない。
-		urls: [
-			'*://www.youtube.com/embed/*',
-			'*://www.youtube-nocookie.com/embed/*',
-			'*://www.youtube.com/watch*'
-		],
-		types: ['sub_frame']
-	},
-	['blocking', 'responseHeaders']
-);

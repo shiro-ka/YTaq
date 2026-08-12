@@ -30,17 +30,46 @@
 		return `https://i.ytimg.com/vi/${videoId}/${thumbSettings.thumbnailFrame || 'hq1'}.jpg`;
 	}
 
+	// 埋め込み方式の経緯:
+	//   www.youtube.com/embed/ を親 www.youtube.com から開くと全動画が
+	//   onError(152) で落ちる。第三者サイトの iframe からは通るので、
+	//   YouTube が「youtube.com が youtube.com を埋め込むこと」を弾いている。
+	//
+	//   同一オリジンだと埋め込み側から window.top.location が読めてしまい、
+	//   親が youtube.com だと即座に分かる。youtube-nocookie.com にすると
+	//   クロスオリジンになり、それが読めなくなる。ドメインも別なので判定が変わる。
+	//
+	//   代償: nocookie はログインセッションを持たない。視聴履歴に残らず、
+	//   年齢制限・メンバー限定の動画は再生できない。
+	//   Referer さえ通れば www.youtube.com/embed/ でも再生できる可能性があり、
+	//   そちらなら Cookie が飛ぶのでログイン状態を保てる。設定で切り替える。
+	const LOGIN_KEY = 'ytaq_embed_login';
+	let useLoggedInEmbed = false;
+
+	YTaq.getStorage(LOGIN_KEY, false).then(v => { useLoggedInEmbed = !!v; });
+	YTaq.onStorageChange(LOGIN_KEY, v => { useLoggedInEmbed = !!v; });
+
+	function embedHost() {
+		return useLoggedInEmbed ? 'https://www.youtube.com' : 'https://www.youtube-nocookie.com';
+	}
+
 	function embedUrl(videoId) {
 		const params = new URLSearchParams({
 			autoplay: '1',
 			playsinline: '1',
-			rel: '0',            // 関連動画を同チャンネルに限定（読み込む量が減る）
-			modestbranding: '1'
+			rel: '0',
+			enablejsapi: '1',   // onError を受け取るため
+			origin: location.origin
 		});
-		return `https://www.youtube.com/embed/${videoId}?${params}`;
+		return `${embedHost()}/embed/${videoId}?${params}`;
+	}
+
+	function watchUrl(videoId) {
+		return `https://www.youtube.com/watch?v=${videoId}`;
 	}
 
 	let escHandler = null;
+	let messageHandler = null;
 
 	function hideVideoPopup() {
 		const popup = document.getElementById('ytaq-popup');
@@ -48,6 +77,10 @@
 		if (escHandler) {
 			document.removeEventListener('keydown', escHandler);
 			escHandler = null;
+		}
+		if (messageHandler) {
+			window.removeEventListener('message', messageHandler);
+			messageHandler = null;
 		}
 	}
 
@@ -100,7 +133,9 @@
 		const iframe = document.createElement('iframe');
 		iframe.className = 'ytaq-popup-iframe';
 		iframe.src = embedUrl(videoId);
-		iframe.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+		// autoplay / encrypted-media は Firefox が Permissions Policy として
+		// 未実装で警告が出るだけ。同一オリジンなので既定 allowlist の self で足りる。
+		iframe.allow = 'fullscreen';
 		iframe.allowFullscreen = true;
 		iframe.setAttribute('frameborder', '0');
 
@@ -114,8 +149,60 @@
 			setTimeout(() => skeleton.remove(), 600);
 		}
 
-		// /watch と違って embed は速いので、load 後の待ち時間は短くてよい
-		iframe.addEventListener('load', () => setTimeout(dropSkeleton, 150));
+		// --- 埋め込み失敗の表示 ---------------------------------------------
+		// enablejsapi=1 のプレイヤーは listening ハンドシェイクを送ると
+		// onError を返す。cross-origin で取れる情報はこれだけ。
+		// 自動遷移はしない（全動画で失敗する状況だと拡張が無いのと同じになる）。
+		let failed = false;
+
+		function showEmbedError(code) {
+			if (failed) return;
+			failed = true;
+			skeleton.remove();
+			iframe.src = 'about:blank';  // 失敗した埋め込みの通信を止める
+
+			const box = document.createElement('div');
+			box.className = 'ytaq-popup-error';
+
+			const msg = document.createElement('p');
+			msg.textContent = `埋め込み再生に失敗しました（コード: ${code}）`;
+			box.appendChild(msg);
+
+			const btn = document.createElement('button');
+			btn.className = 'ytaq-popup-error-btn';
+			btn.textContent = '新しいタブで開く';
+			btn.addEventListener('click', () => {
+				window.open(watchUrl(videoId), '_blank', 'noopener');
+				hideVideoPopup();
+			});
+			box.appendChild(btn);
+
+			iframeContainer.appendChild(box);
+		}
+
+		messageHandler = e => {
+			if (e.source !== iframe.contentWindow) return;
+			let data = e.data;
+			if (typeof data === 'string') {
+				try { data = JSON.parse(data); } catch (_) { return; }
+			}
+			if (!data || data.event !== 'onError') return;
+			showEmbedError(Number(data.info));
+		};
+		window.addEventListener('message', messageHandler);
+
+		iframe.addEventListener('load', () => {
+			setTimeout(dropSkeleton, 150);
+			if (failed) return;
+			try {
+				iframe.contentWindow.postMessage(
+					JSON.stringify({ event: 'listening', id: 1, channel: 'widget' }),
+					embedHost()
+				);
+			} catch (err) {
+				YTaq.warn('popup: listening handshake failed:', err);
+			}
+		});
 		setTimeout(dropSkeleton, 5000); // 保険
 
 		iframeContainer.append(iframe, skeleton);

@@ -101,6 +101,47 @@
         </p>
 
         <div class="setting-group">
+          <h3>動画クリック時の挙動</h3>
+          <p class="setting-description">
+            YouTube は SPA 遷移のたびにフィードを作り直すので、遷移させないこと自体が
+            軽量化になります。新しいタブはフィードのタブに一切触らないので再描画ゼロ。
+            ポップアップは iframe に /watch を読むため、この環境では重くなります。
+          </p>
+          <div class="setting-item">
+            <select id="perf-clickAction">
+              <option value="newtab">新しいタブで開く（軽い）</option>
+              <option value="popup">ポップアップ（重い・iframe）</option>
+              <option value="normal">何もしない（YouTube 標準）</option>
+            </select>
+          </div>
+
+          <div class="setting-item">
+            <label for="perf-embedReferer">ポップアップの Referer</label>
+            <input type="text" id="perf-embedReferer" style="width: 100%;"
+                   placeholder="https://example.com/" />
+            <p class="setting-note">
+              YouTube は「親が youtube.com」の埋め込みを拒否します（エラー 152）。
+              ポップアップの iframe が送る Referer だけをこの値に差し替えて回避します。
+              既定の example.com で弾かれる場合は、自分が持っているサイトの URL を入れてください。
+              差し替え対象は /embed/ のサブフレームのみで、他の通信には影響しません。
+            </p>
+          </div>
+
+          <div class="setting-item">
+            <label class="checkbox-label">
+              <input type="checkbox" id="perf-embedLogin" />
+              <span>ポップアップをログイン状態で再生する</span>
+            </label>
+            <p class="setting-note">
+              OFF のとき youtube-nocookie.com を使います。Cookie を送らないぶん軽い代わりに、
+              視聴履歴に残らず、年齢制限・メンバー限定の動画は再生できません。
+              ON にすると www.youtube.com を使うのでログイン状態が保たれますが、
+              Referer 回避が効かず 152 で弾かれる可能性があります。
+            </p>
+          </div>
+        </div>
+
+        <div class="setting-group">
           <h3>ホバープレビュー</h3>
           <p class="setting-description">
             サムネイルにマウスを乗せたときのプレビュー再生を止めます。

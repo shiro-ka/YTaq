@@ -165,3 +165,38 @@
 .ytaq-popup-open-original:hover {
 	text-decoration: underline;
 }
+
+/* 埋め込み不可で /watch にフォールバックしたときの表示 */
+.ytaq-popup-notice {
+	float: right;
+	font-size: 12px;
+	font-weight: normal;
+	color: #ebcb8b;
+	margin-left: 12px;
+}
+
+/* 埋め込み再生に失敗したときの表示。コードを画面に出して切り分けに使う */
+.ytaq-popup-error {
+	position: absolute;
+	inset: 0;
+	z-index: 3;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 16px;
+	background: #000;
+	color: #fff;
+	text-align: center;
+	padding: 24px;
+}
+
+.ytaq-popup-error-btn {
+	padding: 8px 20px;
+	background: var(--ytaq-nord8, #88c0d0);
+	color: #2e3440;
+	border: none;
+	border-radius: 6px;
+	cursor: pointer;
+	font-size: 14px;
+}

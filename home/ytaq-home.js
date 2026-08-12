@@ -12,6 +12,16 @@
 
 	const YTaq = window.YTaq;
 
+	// 動画クリック時の挙動。
+	//   popup  : ポップアップ(iframe で /embed/)。フィードを生かしたまま観られる
+	//   newtab : 新しいタブで開く。フィードのタブに一切触らないので再描画ゼロ
+	//   normal : 何もしない（YouTube 標準の SPA 遷移）
+	const CLICK_KEY = 'ytaq_click';
+	let clickAction = 'popup';
+
+	YTaq.getStorage(CLICK_KEY, null).then(v => { clickAction = v || 'popup'; });
+	YTaq.onStorageChange(CLICK_KEY, v => { clickAction = v || 'popup'; });
+
 	const VIDEO_ID_PATTERNS = [
 		/[?&]v=([\w-]{11})/,      // /watch?v=ID
 		/\/shorts\/([\w-]{11})/,  // /shorts/ID
@@ -61,6 +71,27 @@
 		return cleaned || title;
 	}
 
+	/**
+	 * クリックされた a を探す。
+	 *
+	 * closest() はシャドウ DOM の境界を越えられない。YouTube の新 UI には
+	 * シャドウルート内に <a> を持つカードがあり、その場合 e.target は
+	 * ホスト要素に retarget されるので closest では見つからない。
+	 * これが「カードによってポップアップが出たり出なかったりする」原因。
+	 * composedPath() はシャドウ境界を含む全経路を返すので、まずこちらを見る。
+	 */
+	function findAnchor(e, target) {
+		if (e.composedPath) {
+			const path = e.composedPath();
+			for (let i = 0; i < path.length; i++) {
+				const n = path[i];
+				if (n === document || n === window) break;
+				if (n.nodeType === 1 && n.tagName === 'A' && n.getAttribute('href')) return n;
+			}
+		}
+		return target.closest ? target.closest('a[href]') : null;
+	}
+
 	function onClick(e) {
 		// 修飾キー・中クリックは「新しいタブで開く」意図なので邪魔しない
 		if (e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
@@ -71,21 +102,34 @@
 		// 自前 UI（ポップアップやリストカラム）の中のクリックは対象外
 		if (t.closest('#ytaq-popup, #ytaq-channel-modal, .ytaq-list-column')) return;
 
-		const a = t.closest('a[href]');
+		const a = findAnchor(e, t);
 		if (!a) return;
 
 		const href = a.href;
 		// 再生リストへの遷移は挙動が変わるので素通しする
-		if (href.includes('&list=') || href.includes('?list=')) return;
+		if (href.includes('&list=') || href.includes('?list=')) {
+			YTaq.log('home: skip (playlist)', href);
+			return;
+		}
 
 		const videoId = getVideoId(href);
-		if (!videoId) return;
+		if (!videoId) {
+			YTaq.log('home: skip (no video id)', href);
+			return;
+		}
 
-		if (!window.YTaqPopup) return; // 初期化前なら通常遷移に任せる
+		if (clickAction === 'normal') return;
+		if (clickAction === 'popup' && !window.YTaqPopup) return; // 初期化前は素通し
 
 		e.preventDefault();
 		e.stopPropagation();
 		e.stopImmediatePropagation();
+
+		if (clickAction === 'newtab') {
+			// フィードのタブには一切触らないので、YouTube の重い再描画が起きない
+			window.open(href, '_blank', 'noopener');
+			return;
+		}
 
 		window.YTaqPopup.showVideoPopup(videoId, extractTitle(a), href.includes('/shorts/'));
 	}

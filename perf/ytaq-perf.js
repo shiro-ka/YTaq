@@ -13,6 +13,11 @@
 (function () {
 	'use strict';
 
+	// manifest の content_scripts エントリが2つ（トップ用とサブフレーム用）あり、
+	// トップフレームには両方から注入される。二重にリスナーを張らないための番人。
+	if (window.__ytaqPerfLoaded) return;
+	window.__ytaqPerfLoaded = true;
+
 	const KEY = 'ytaq_perf';
 
 	const DEFAULTS = {
