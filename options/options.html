@@ -97,20 +97,24 @@
         <h2>軽量化</h2>
         <p style="color: #888; margin-bottom: 20px;">
           YouTube 本体の JS は消せない（消すとページが死ぬ）ので、
-          そこに乗っている重い仕事を止める引き算の設定です。上から効果が大きい順。
+          そこに乗っている重い仕事を止める引き算の設定です。<br />
+          この環境で一番効くのは「動画クリック時の挙動」で、それ以外は
+          ホーム 327 件での実測では有意差が出ませんでした。各項目に実測の有無を書いてあります。
         </p>
 
         <div class="setting-group">
           <h3>動画クリック時の挙動</h3>
           <p class="setting-description">
             YouTube は SPA 遷移のたびにフィードを作り直すので、遷移させないこと自体が
-            軽量化になります。新しいタブはフィードのタブに一切触らないので再描画ゼロ。
-            ポップアップは iframe に /watch を読むため、この環境では重くなります。
+            軽量化になります。<strong>この環境で一番効いている設定です。</strong><br />
+            ポップアップは /embed/（プレイヤーだけの軽量ページ）を読むので、フィードを
+            生かしたまま観られます。新しいタブはフィードのタブに一切触らないので再描画ゼロ。
+            ポップアップが YouTube 側の仕様変更で使えなくなったら、新しいタブに切り替えてください。
           </p>
           <div class="setting-item">
             <select id="perf-clickAction">
-              <option value="newtab">新しいタブで開く（軽い）</option>
-              <option value="popup">ポップアップ（重い・iframe）</option>
+              <option value="popup">ポップアップ（推奨・遷移しない）</option>
+              <option value="newtab">新しいタブで開く</option>
               <option value="normal">何もしない（YouTube 標準）</option>
             </select>
           </div>
@@ -133,10 +137,11 @@
               <span>ポップアップをログイン状態で再生する</span>
             </label>
             <p class="setting-note">
-              OFF のとき youtube-nocookie.com を使います。Cookie を送らないぶん軽い代わりに、
-              視聴履歴に残らず、年齢制限・メンバー限定の動画は再生できません。
-              ON にすると www.youtube.com を使うのでログイン状態が保たれますが、
-              Referer 回避が効かず 152 で弾かれる可能性があります。
+              ON（既定）は www.youtube.com を使い、ログイン状態が保たれます。
+              視聴履歴に残り、年齢制限・メンバー限定の動画も再生できます。<br />
+              OFF にすると youtube-nocookie.com を使います。Cookie を送らないぶんわずかに
+              軽い代わりに、履歴に残らず年齢制限・メンバー限定は再生できません。
+              ON で 152 が出るようになったら OFF を試してください。
             </p>
           </div>
         </div>
@@ -145,7 +150,8 @@
           <h3>ホバープレビュー</h3>
           <p class="setting-description">
             サムネイルにマウスを乗せたときのプレビュー再生を止めます。
-            乗せるだけで別の video 要素がデコードを始めるため、体感に一番効きます。
+            乗せるだけで別の video 要素がデコードを始めます。
+            <strong>未計測</strong>（自動計測ではホバーが発生しないため）。理屈上は CPU を節約します。
           </p>
           <div class="setting-item">
             <label class="checkbox-label">
@@ -159,7 +165,9 @@
           <h3>画面外のレンダリング省略</h3>
           <p class="setting-description">
             無限スクロールで DOM は増え続けます。画面外に出た動画カードや
-            コメントのレイアウト/描画を content-visibility でスキップします。
+            コメントのレイアウト/描画を content-visibility でスキップします。<br />
+            <strong>実測で効果なし</strong>（ON/OFF とも median 8ms / jank 0.1%）のため既定 OFF。
+            ページの高さが変わる副作用があります。
           </p>
           <div class="setting-item">
             <label class="checkbox-label">
@@ -173,7 +181,8 @@
           <h3>シネマティック照明（アンビエントモード）</h3>
           <p class="setting-description">
             動画の縮小フレームを canvas に描いて常時ぼかす演出です。
-            再生中ずっと CPU を使い続けます。
+            再生中ずっと CPU を使い続けます。<br />
+            <strong>未計測</strong>（watch ページ限定の機能で、ポップアップの /embed/ には存在しません）。
           </p>
           <div class="setting-item">
             <label class="checkbox-label">
@@ -186,8 +195,8 @@
         <div class="setting-group">
           <h3>アニメーション</h3>
           <p class="setting-description">
-            ホバー演出・リップル・トランジションを無効化します。
-            スクロール中の合成処理が減ります（ローディングスピナーは除外）。
+            ホバー演出・リップル・トランジションを無効化します（ローディングスピナーは除外）。<br />
+            <strong>実測で効果なし</strong>のため既定 OFF。見た目の好みで選んでください。
           </p>
           <div class="setting-item">
             <label class="checkbox-label">
