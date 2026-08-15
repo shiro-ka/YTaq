@@ -62,4 +62,10 @@
 
 	YTaq.ready(applyWhenReady);
 	YTaq.onNavigate(applyWhenReady);
+
+	// ポップアップ（/embed/）からも同じ記憶を読み書きするための公開口。
+	// あちらは content script を注入できないので DOM からチャンネル名を取れず、
+	// IFrame API の infoDelivery が返す videoData.author を使う。
+	// 保存先が同じなので、/watch で付けた速度がポップアップでも効く。
+	window.YTaqRate = { getStoredRate, setStoredRate };
 })();
