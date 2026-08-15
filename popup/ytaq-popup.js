@@ -71,6 +71,56 @@
 		return `https://www.youtube.com/watch?v=${videoId}`;
 	}
 
+	// --- 再生速度 -------------------------------------------------------------
+	// 公式 IFrame API の setPlaybackRate は「サポート外の値は 1 に近い方向へ
+	// 丸める」仕様で、実質 2.0 が上限になる。標準の速度メニューも 0.25 刻み・2.0 まで。
+	//
+	// ログイン埋め込み（www.youtube.com/embed/）なら親と iframe が同一オリジンなので、
+	// contentDocument から生の <video> を掴んで playbackRate を直接書ける。
+	// これは HTML5 のプロパティなので YouTube の UI 制限とは無関係で、上限を超えられる。
+	// nocookie モードではクロスオリジンになって触れないので、その場合だけ API に落ちる。
+
+	const RATE_SETTINGS_KEY = 'ytaq_playbackrate_settings';
+	const DEFAULT_RATE_SETTINGS = {
+		speedStep: 0.25,
+		speedPresets: [1.0, 1.25, 1.5, 1.75, 2.0, 4.0]
+	};
+
+	const RATE_MIN = 0.25;
+	const RATE_MAX = 16.0;
+
+	function command(iframe, func, args) {
+		try {
+			iframe.contentWindow.postMessage(
+				JSON.stringify({ event: 'command', func, args: args || [], id: 1, channel: 'widget' }),
+				embedHost()
+			);
+		} catch (e) {
+			YTaq.warn('popup: command failed:', func, e);
+		}
+	}
+
+	/** 同一オリジンなら iframe 内の video 要素。無理なら null。 */
+	function embeddedVideo(iframe) {
+		try {
+			const doc = iframe.contentDocument;
+			return (doc && doc.querySelector('video')) || null;
+		} catch (e) {
+			return null; // nocookie（クロスオリジン）
+		}
+	}
+
+	/** @returns {boolean} 生の video を直接書けたか（false なら API 経由＝2.0 上限） */
+	function applyRate(iframe, rate) {
+		const v = embeddedVideo(iframe);
+		if (v) {
+			v.playbackRate = rate;
+			return true;
+		}
+		command(iframe, 'setPlaybackRate', [rate]);
+		return false;
+	}
+
 	let escHandler = null;
 	let messageHandler = null;
 
@@ -115,6 +165,12 @@
 		openLink.target = '_blank';
 		openLink.rel = 'noopener';
 		title.appendChild(openLink);
+
+		// 速度コントロールは iframe の中ではなくポップアップ側（親ドキュメント）に置く。
+		// 中に注入するとプレイヤーの DOM 構造に依存するうえ、nocookie では触れない。
+		const rateBox = document.createElement('div');
+		rateBox.className = 'ytaq-popup-rate';
+		title.appendChild(rateBox);
 
 		const iframeContainer = document.createElement('div');
 		iframeContainer.className = 'ytaq-popup-iframe-container';
@@ -183,20 +239,128 @@
 			iframeContainer.appendChild(box);
 		}
 
+		// --- 再生速度コントロール -------------------------------------------
+		// チャンネル名は /watch のように DOM から取れないので、
+		// listening ハンドシェイク後に流れてくる infoDelivery の
+		// videoData.author を使う。保存先は /watch 側と同じ ytaq_playbackrate。
+		let rateSettings = DEFAULT_RATE_SETTINGS;
+		let channel = null;
+		let currentRate = 1;
+		let appliedStoredRate = false;
+		// 自分で適用した直後は onPlaybackRateChange が返ってくる。それを
+		// 「ユーザーが変えた」と誤認して保存すると、API 側で丸められた値
+		// （nocookie の 2.0 上限など）で記憶を上書きしてしまう。
+		let suppressSaveUntil = 0;
+
+		const rateDisplay = document.createElement('button');
+		rateDisplay.className = 'ytaq-popup-rate-display';
+		rateDisplay.textContent = '1.00x';
+		rateDisplay.title = '再生速度（クリックでプリセット循環）';
+
+		const rateMinus = document.createElement('button');
+		rateMinus.className = 'ytaq-popup-rate-btn';
+		rateMinus.textContent = '−';
+
+		const ratePlus = document.createElement('button');
+		ratePlus.className = 'ytaq-popup-rate-btn';
+		ratePlus.textContent = '＋';
+
+		rateBox.append(rateMinus, rateDisplay, ratePlus);
+
+		function renderRate() {
+			rateDisplay.textContent = currentRate.toFixed(2) + 'x';
+		}
+
+		function changeRate(next) {
+			const rate = Math.min(RATE_MAX, Math.max(RATE_MIN, next));
+			const direct = applyRate(iframe, rate);
+			currentRate = rate;
+			renderRate();
+			// 直接書けた場合は丸められないので、その値をそのまま記憶してよい。
+			// API 経由のときは丸められた実値が後から infoDelivery で返ってくる。
+			if (channel) YTaqRateSave(channel, rate);
+			// 直接書けた場合でもプレイヤーが自分の値を報告し返してくるので、
+			// 明示保存を済ませたあとの報告はすべて無視する。
+			suppressSaveUntil = performance.now() + 1500;
+			if (!direct) YTaq.log('popup: API 経由のため 2.0 に丸められる可能性あり');
+		}
+
+		function YTaqRateSave(ch, rate) {
+			if (window.YTaqRate) window.YTaqRate.setStoredRate(ch, rate);
+		}
+
+		rateMinus.addEventListener('click', () => changeRate(currentRate - rateSettings.speedStep));
+		ratePlus.addEventListener('click', () => changeRate(currentRate + rateSettings.speedStep));
+		rateDisplay.addEventListener('click', () => {
+			const presets = rateSettings.speedPresets;
+			const i = presets.findIndex(s => Math.abs(s - currentRate) < 0.01);
+			changeRate(presets[(i + 1) % presets.length]);
+		});
+
+		YTaq.getStorage(RATE_SETTINGS_KEY, null).then(v => {
+			rateSettings = Object.assign({}, DEFAULT_RATE_SETTINGS, v);
+			rateMinus.title = `再生速度を下げる（-${rateSettings.speedStep}）`;
+			ratePlus.title = `再生速度を上げる（+${rateSettings.speedStep}）`;
+		});
+
+		// チャンネルが判明した時点で記憶していた速度を適用する。
+		// 動画のロードで速度は 1 にリセットされるので、ready 後でないと効かない。
+		async function applyStoredRateOnce() {
+			if (appliedStoredRate || !channel || !window.YTaqRate) return;
+			appliedStoredRate = true;
+			const stored = await window.YTaqRate.getStoredRate(channel);
+			if (!stored || Math.abs(stored - currentRate) < 0.01) return;
+			suppressSaveUntil = performance.now() + 1500;
+			applyRate(iframe, stored);
+			currentRate = stored;
+			renderRate();
+			YTaq.log('popup: rate applied', channel, stored);
+		}
+
+		// プレイヤー側から報告された速度を取り込む（ユーザーが標準メニューで
+		// 変えた場合もここに来る）。自分で適用した直後の分は保存しない。
+		function onReportedRate(rate) {
+			if (!(rate > 0) || Math.abs(rate - currentRate) < 0.01) return;
+			currentRate = rate;
+			renderRate();
+			if (performance.now() < suppressSaveUntil) return;
+			if (channel) YTaqRateSave(channel, rate);
+		}
+
 		messageHandler = e => {
 			if (e.source !== iframe.contentWindow) return;
 			let data = e.data;
 			if (typeof data === 'string') {
 				try { data = JSON.parse(data); } catch (_) { return; }
 			}
-			if (!data || data.event !== 'onError') return;
-			showEmbedError(Number(data.info));
+			if (!data) return;
+
+			if (data.event === 'onError') return showEmbedError(Number(data.info));
+
+			if (data.event === 'onPlaybackRateChange') return onReportedRate(Number(data.info));
+
+			if (data.event === 'infoDelivery' && data.info) {
+				const author = data.info.videoData && data.info.videoData.author;
+				if (author && author !== channel) {
+					channel = author;
+					applyStoredRateOnce();
+				}
+				if (typeof data.info.playbackRate === 'number') onReportedRate(data.info.playbackRate);
+			}
 		};
 		window.addEventListener('message', messageHandler);
 
 		iframe.addEventListener('load', () => {
 			setTimeout(dropSkeleton, 150);
 			if (failed) return;
+
+			// 同一オリジン（ログイン埋め込み）なら video の ratechange を直接聞ける。
+			// infoDelivery より正確で、標準メニューでの変更も即座に拾える。
+			const v = embeddedVideo(iframe);
+			if (v) {
+				v.addEventListener('ratechange', () => onReportedRate(v.playbackRate));
+			}
+
 			try {
 				iframe.contentWindow.postMessage(
 					JSON.stringify({ event: 'listening', id: 1, channel: 'widget' }),
