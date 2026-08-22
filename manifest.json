@@ -46,6 +46,7 @@
         "folder/ytaq-folder-manager.js",
         "folder/ytaq-folder-ui.js",
         "subscriptions/ytaq-subs-folder.js",
+        "popup/ytaq-history.js",
         "popup/ytaq-popup.js",
         "home/ytaq-home.js",
         "rate/ytaq-rate-manager.js",

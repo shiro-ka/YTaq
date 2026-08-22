@@ -39,13 +39,19 @@
 	//   親が youtube.com だと即座に分かる。youtube-nocookie.com にすると
 	//   クロスオリジンになり、それが読めなくなる。ドメインも別なので判定が変わる。
 	//
-	//   代償: nocookie はログインセッションを持たない。視聴履歴に残らず、
+	//   代償: nocookie はログインセッションを持たない。
 	//   年齢制限・メンバー限定の動画は再生できない。
 	//   Referer さえ通れば www.youtube.com/embed/ でも再生できる可能性があり、
 	//   そちらなら Cookie が飛ぶのでログイン状態を保てる。設定で切り替える。
 	// Referer 差し替えが効いているので www.youtube.com/embed/ でも再生できることを確認済み。
-	// nocookie より Cookie のぶんだけ重いが、視聴履歴・年齢制限・メンバー限定が
-	// 使えるので既定はこちら。塞がれたら設定で OFF にすれば nocookie に戻る。
+	// nocookie より Cookie のぶんだけ重いが、年齢制限・メンバー限定が使えて、
+	// 同一オリジンなので playbackRate を直接書ける。よって既定はこちら。
+	// 塞がれたら設定で OFF にすれば nocookie に戻る。
+	//
+	// 視聴履歴には残らない（2026-08-15 実測）。ログイン埋め込みでも同じで、
+	// 埋め込みプレイヤーからの再生は再生回数には入るが watch history には載らない。
+	// 埋め込みという再生経路そのものの仕様なので、iframe 側では変えられない。
+	// 履歴が要る場合は popup/ytaq-history.js が /watch 用の再生ログを代わりに送る。
 	const LOGIN_KEY = 'ytaq_embed_login';
 	let useLoggedInEmbed = true;
 
@@ -123,8 +129,15 @@
 
 	let escHandler = null;
 	let messageHandler = null;
+	let historyStop = null;
 
 	function hideVideoPopup() {
+		// iframe を消す前に呼ぶこと。中の <video> から実際の再生位置を読むので、
+		// 先に remove すると最後の報告が 0 秒になる。
+		if (historyStop) {
+			historyStop();
+			historyStop = null;
+		}
 		const popup = document.getElementById('ytaq-popup');
 		if (popup) popup.remove();  // iframe ごと落として再生とネットワークを止める
 		if (escHandler) {
@@ -346,13 +359,56 @@
 					applyStoredRateOnce();
 				}
 				if (typeof data.info.playbackRate === 'number') onReportedRate(data.info.playbackRate);
+				// nocookie では contentDocument が読めないので、履歴に送る秒数はこれが頼り
+				if (typeof data.info.currentTime === 'number') lastTime = data.info.currentTime;
 			}
 		};
 		window.addEventListener('message', messageHandler);
 
+		// --- 視聴履歴 --------------------------------------------------------
+		// 埋め込み経路は watch history を書かないので、/watch 用の再生ログを
+		// popup/ytaq-history.js から自前で送る。秒数はプレイヤーの実測値で、
+		// 同一オリジン（ログイン埋め込み）なら <video> から直接、nocookie なら
+		// infoDelivery の currentTime から拾う。
+		const HISTORY_MIN_SECONDS = 5;  // ytaq-history.js の MIN_SECONDS と合わせる
+		let lastTime = 0;
+		let historySession = null;
+		let historyTimer = null;
+
+		function playedSeconds() {
+			const v = embeddedVideo(iframe);
+			if (v && v.currentTime > 0) return v.currentTime;
+			return lastTime;
+		}
+
+		function reportHistory(final) {
+			if (historySession) historySession.report(playedSeconds(), final);
+		}
+
+		function tickHistory() {
+			if (historySession) return reportHistory(false);
+			if (failed || playedSeconds() < HISTORY_MIN_SECONDS) return;
+			if (!window.YTaqHistory || !window.YTaqHistory.enabled) return;
+
+			historySession = window.YTaqHistory.begin(videoId);
+			reportHistory(false);
+			// 開始待ちの間だけ 5 秒刻み。始まったら本家と同じくらいまで落とす。
+			clearInterval(historyTimer);
+			historyTimer = setInterval(() => reportHistory(false), 30000);
+		}
+
+		historyStop = () => {
+			clearInterval(historyTimer);
+			historyTimer = null;
+			reportHistory(true);
+			historySession = null;
+		};
+
 		iframe.addEventListener('load', () => {
 			setTimeout(dropSkeleton, 150);
 			if (failed) return;
+
+			historyTimer = setInterval(tickHistory, 5000);
 
 			// 同一オリジン（ログイン埋め込み）なら video の ratechange を直接聞ける。
 			// infoDelivery より正確で、標準メニューでの変更も即座に拾える。

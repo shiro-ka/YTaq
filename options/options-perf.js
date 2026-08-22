@@ -26,6 +26,10 @@ const DEFAULT_REFERER = 'https://example.com/';
 const LOGIN_STORAGE_KEY = 'ytaq_embed_login';
 const DEFAULT_LOGIN = true;
 
+// ポップアップ再生を視聴履歴に残すか。popup/ytaq-history.js と同じキー・既定値。
+const HISTORY_STORAGE_KEY = 'ytaq_watch_history';
+const DEFAULT_HISTORY = false;
+
 function perfInput(key) {
   return document.getElementById(`perf-${key}`);
 }
@@ -39,8 +43,11 @@ function loadPerfSettings() {
     });
   });
 
-  chrome.storage.local.get([CLICK_STORAGE_KEY, REFERER_STORAGE_KEY, LOGIN_STORAGE_KEY], (result) => {
+  chrome.storage.local.get([
+    CLICK_STORAGE_KEY, REFERER_STORAGE_KEY, LOGIN_STORAGE_KEY, HISTORY_STORAGE_KEY
+  ], (result) => {
     document.getElementById('perf-embedLogin').checked = !!result[LOGIN_STORAGE_KEY];
+    document.getElementById('perf-watchHistory').checked = !!result[HISTORY_STORAGE_KEY];
     document.getElementById('perf-clickAction').value =
       result[CLICK_STORAGE_KEY] || DEFAULT_CLICK;
     document.getElementById('perf-embedReferer').value =
@@ -60,7 +67,8 @@ function savePerfSettings() {
     [CLICK_STORAGE_KEY]: document.getElementById('perf-clickAction').value,
     [REFERER_STORAGE_KEY]:
       document.getElementById('perf-embedReferer').value.trim() || DEFAULT_REFERER,
-    [LOGIN_STORAGE_KEY]: document.getElementById('perf-embedLogin').checked
+    [LOGIN_STORAGE_KEY]: document.getElementById('perf-embedLogin').checked,
+    [HISTORY_STORAGE_KEY]: document.getElementById('perf-watchHistory').checked
   }, () => {
     // content script 側は storage.onChanged で即反映するので再読み込み不要
     showPerfMessage('保存しました。開いている YouTube のタブに即反映されます。', 'success');
@@ -74,7 +82,8 @@ function resetPerfToDefault() {
     [PERF_STORAGE_KEY]: DEFAULT_PERF,
     [CLICK_STORAGE_KEY]: DEFAULT_CLICK,
     [REFERER_STORAGE_KEY]: DEFAULT_REFERER,
-    [LOGIN_STORAGE_KEY]: DEFAULT_LOGIN
+    [LOGIN_STORAGE_KEY]: DEFAULT_LOGIN,
+    [HISTORY_STORAGE_KEY]: DEFAULT_HISTORY
   }, () => {
     loadPerfSettings();
     showPerfMessage('デフォルト設定に戻しました。', 'success');
