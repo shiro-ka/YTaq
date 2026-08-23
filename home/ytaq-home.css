@@ -5,18 +5,20 @@ ytd-two-column-browse-results-renderer[page-subtype="home"] #contents.ytd-rich-g
   padding-left: 24px;
 }
 
-/* カテゴリ表示欄 (ゲーム、音楽、最近アップロードされた動画とか選ぶやつ) */
+/* カテゴリ表示欄 (ゲーム、音楽、最近アップロードされた動画とか選ぶやつ)
+ * 影は使わない（線形）。bg 面のまま、下に弱い罫を敷いて区切る */
 ytd-two-column-browse-results-renderer[page-subtype="home"] #chips-wrapper {
-  background: var(--aqprimary-bg) !important;
-  box-shadow: 0 1px 6px 1px hsla(var(--aquarium-primary-h), var(--aquarium-item-s), 28%, 0.6);
+  background: var(--suisou-bg) !important;
+  box-shadow: none;
+  border-bottom: 1px solid var(--suisou-line-weak);
 }
 
-/* 動画コンテナ */
+/* 動画コンテナ = item 面 + 弱い罫（Suisou の panel bleed と同じ考え方） */
 ytd-rich-item-renderer.style-scope.ytd-rich-grid-renderer {
-  background: var(--aqprimary-item) !important;
+  background: var(--suisou-item) !important;
   margin-top: 2rem;
-  border: 1px solid var(--aqprimary-item-line) !important;
-  border-radius: 1rem;
+  border: 1px solid var(--suisou-line-weak-item) !important;
+  border-radius: var(--suisou-radius);
 }
 
 /* ショートコンテナ */

@@ -8,8 +8,7 @@
  * 載せる最適化が使えなくなり、フレームごとにこの経路を通る羽目になる。
  * 背後の YouTube ホームは生きたまま動き続けるので、ぼかしの再計算も走る。
  *
- * 見た目の役割は「後ろを沈める」ことなので、不透明度を上げれば代わりになる。
- * 0.8 → 0.92。ぼかしのコストはゼロになる。
+ * 膜は Suisou の scrim（ぼかし無し・単色）。コストはゼロのまま。
  */
 #ytaq-popup {
 	position: fixed;
@@ -17,23 +16,23 @@
 	left: 0;
 	width: 100%;
 	height: 100%;
-	background: rgba(0, 0, 0, 0.92);
+	background: var(--suisou-scrim);
 	z-index: 10000;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 }
 
+/* ポップアップ本体 = Suisou の overlay 面。影ではなく縁で切る（線形） */
 .ytaq-popup-content {
-	background: var(--aqprimary-item);
-	border: 1px solid var(--aqprimary-item-line);
-	border-radius: 12px;
+	background: var(--suisou-overlay);
+	border: 1px solid var(--suisou-line-strong-overlay);
+	border-radius: var(--suisou-radius);
 	padding: 20px;
 	padding-right: 12px;
 	max-width: 90vw;
 	max-height: 90vh;
 	overflow: hidden;
-	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
 	position: relative;
 }
 
@@ -43,7 +42,7 @@
 	right: 12px;
 	background: none;
 	border: none;
-	color: #fff;
+	color: var(--suisou-text-sub);
 	font-size: 24px;
 	cursor: pointer;
 	width: 32px;
@@ -51,16 +50,18 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	border-radius: 50%;
-	transition: background 0.2s;
+	border-radius: var(--suisou-radius-pill);
+	transition: background var(--suisou-motion-fast) var(--suisou-ease),
+	            color var(--suisou-motion-fast) var(--suisou-ease);
 }
 
 .ytaq-popup-close:hover {
-	background: rgba(255, 255, 255, 0.1);
+	background: var(--suisou-hover-surface);
+	color: var(--suisou-text-main);
 }
 
 .ytaq-popup-title {
-	color: #fff;
+	color: var(--suisou-text-main);
 	font-size: 16px;
 	font-weight: bold;
 	margin-bottom: 12px;
@@ -68,7 +69,8 @@
 	line-height: 1.4;
 }
 
-/* --- YouTube IFrame Player API用のプレイヤーコンテナ --- */
+/* --- YouTube IFrame Player API用のプレイヤーコンテナ ---
+ * 動画まわりの #000 はテーマ色ではなくレターボックス（映像の黒）なので残す */
 .ytaq-popup-iframe-container {
 	width: 80vw;
 	max-width: 1280px;
@@ -106,14 +108,14 @@
 	opacity: 0.6;
 }
 
-/* ローディングスピナー */
+/* ローディングスピナー（Suisou spinner と同じ作り: 弱い罫の輪 + アクセントの頭） */
 .ytaq-popup-spinner {
 	position: relative;
 	width: 60px;
 	height: 60px;
-	border: 4px solid rgba(255, 255, 255, 0.2);
-	border-top-color: #fff;
-	border-radius: 50%;
+	border: 6px solid var(--suisou-line-weak);
+	border-top-color: var(--suisou-accent);
+	border-radius: var(--suisou-radius-pill);
 	animation: ytaq-spin 0.8s linear infinite;
 	z-index: 3;
 }
@@ -168,7 +170,7 @@
 	float: right;
 	font-size: 12px;
 	font-weight: normal;
-	color: var(--ytaq-nord8, #88c0d0);
+	color: var(--suisou-accent);
 	text-decoration: none;
 	margin-left: 12px;
 }
@@ -182,7 +184,7 @@
 	float: right;
 	font-size: 12px;
 	font-weight: normal;
-	color: #ebcb8b;
+	color: var(--suisou-warning);
 	margin-left: 12px;
 }
 
@@ -197,23 +199,25 @@
 	justify-content: center;
 	gap: 16px;
 	background: #000;
-	color: #fff;
+	color: var(--suisou-text-main);
 	text-align: center;
 	padding: 24px;
 }
 
+/* 脱出ボタン = outline ボタン（塗らない） */
 .ytaq-popup-error-btn {
 	padding: 8px 20px;
-	background: var(--ytaq-nord8, #88c0d0);
-	color: #2e3440;
-	border: none;
-	border-radius: 6px;
+	background: transparent;
+	color: var(--suisou-accent);
+	border: 1px solid var(--suisou-accent);
+	border-radius: var(--suisou-radius);
 	cursor: pointer;
 	font-size: 14px;
 }
 
 /* 再生速度コントロール。iframe の中ではなくポップアップ側に置いてあるので、
-   プレイヤーの DOM 構造に依存せず nocookie モードでも表示される。 */
+   プレイヤーの DOM 構造に依存せず nocookie モードでも表示される。
+   みためは Suisou の plain ボタン（強い罫 + 沈むホバー）。 */
 .ytaq-popup-rate {
 	float: right;
 	display: inline-flex;
@@ -224,15 +228,17 @@
 
 .ytaq-popup-rate-btn,
 .ytaq-popup-rate-display {
-	background: rgba(255, 255, 255, 0.1);
-	color: #fff;
-	border: none;
-	border-radius: 4px;
+	background: transparent;
+	color: var(--suisou-text-sub);
+	border: 1px solid var(--suisou-line-strong-overlay);
+	border-radius: var(--suisou-radius-small);
 	cursor: pointer;
 	font-size: 12px;
 	font-weight: normal;
 	line-height: 1;
 	padding: 5px 8px;
+	transition: background var(--suisou-motion-fast) var(--suisou-ease),
+	            color var(--suisou-motion-fast) var(--suisou-ease);
 }
 
 .ytaq-popup-rate-display {
@@ -242,5 +248,6 @@
 
 .ytaq-popup-rate-btn:hover,
 .ytaq-popup-rate-display:hover {
-	background: rgba(255, 255, 255, 0.22);
+	background: var(--suisou-hover-surface);
+	color: var(--suisou-text-main);
 }

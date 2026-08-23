@@ -1,4 +1,7 @@
-/* YTaq: 再生速度メニュー項目を非表示 */
+/* YTaq: 再生速度メニュー項目を非表示
+ *
+ * ここの #fff や白アルファはテーマ色ではなくプレイヤー chrome の色。
+ * 隣に並ぶ ytp ボタンと揃えるため Suisou トークンに寄せない。 */
 
 /* JavaScriptで.ytaq-hide-playback-rateクラスを追加した要素を非表示 */
 .ytp-menuitem.ytaq-hide-playback-rate {
