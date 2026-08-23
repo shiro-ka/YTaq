@@ -220,7 +220,9 @@
 		if (cfg.pageId) headers['X-Goog-PageId'] = cfg.pageId;
 		if (cfg.visitorData) headers['X-Goog-Visitor-Id'] = cfg.visitorData;
 
-		const url = '/youtubei/v1/player?prettyPrint=false' +
+		// 絶対 URL で組むこと。content script の fetch は相対 URL をドキュメントの
+		// ベース URI で解決しないので、'/youtubei/...' だと URL として弾かれる。
+		const url = ORIGIN + '/youtubei/v1/player?prettyPrint=false' +
 			(cfg.apiKey ? '&key=' + encodeURIComponent(cfg.apiKey) : '');
 
 		const res = await fetch(url, {
