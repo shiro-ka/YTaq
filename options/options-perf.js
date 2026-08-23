@@ -30,6 +30,11 @@ const DEFAULT_LOGIN = true;
 const HISTORY_STORAGE_KEY = 'ytaq_watch_history';
 const DEFAULT_HISTORY = true;
 
+// 未保存（undefined）なら既定値、保存済みならその値
+function checkedOr(value, fallback) {
+  return value === undefined ? fallback : !!value;
+}
+
 function perfInput(key) {
   return document.getElementById(`perf-${key}`);
 }
@@ -46,8 +51,11 @@ function loadPerfSettings() {
   chrome.storage.local.get([
     CLICK_STORAGE_KEY, REFERER_STORAGE_KEY, LOGIN_STORAGE_KEY, HISTORY_STORAGE_KEY
   ], (result) => {
-    document.getElementById('perf-embedLogin').checked = !!result[LOGIN_STORAGE_KEY];
-    document.getElementById('perf-watchHistory').checked = !!result[HISTORY_STORAGE_KEY];
+    // 一度も保存していないキーは undefined で返る。!! で潰すと、既定が true の
+    // 項目が「未チェック表示なのに実際は有効」になる（2026-08-23 に踏んだ）。
+    // 既定値は content script 側と同じものをここで当てること。
+    document.getElementById('perf-embedLogin').checked = checkedOr(result[LOGIN_STORAGE_KEY], DEFAULT_LOGIN);
+    document.getElementById('perf-watchHistory').checked = checkedOr(result[HISTORY_STORAGE_KEY], DEFAULT_HISTORY);
     document.getElementById('perf-clickAction').value =
       result[CLICK_STORAGE_KEY] || DEFAULT_CLICK;
     document.getElementById('perf-embedReferer').value =
