@@ -1,30 +1,33 @@
-/* --- 全体のスタイル --- */
+/* --- 全体のスタイル ---
+ *
+ * 面の割り当ては Suisou / Mado の骨格と同じ:
+ *   アプリの底 = bg、ヘッダーとサイドバー = panel、区切りは罫（線形。影は使わない）。
+ * 面ごとの罫は data-suisou-surface が無いので -panel / -item を手で選ぶ。 */
 
 /* 背景 */
 html:not(.ytaq-popup-iframe) ytd-app {
-  background: var(--aqprimary-bg) !important;
+  background: var(--suisou-bg) !important;
 }
 
 /* --- ヘッダー --- */
 
-/* 背景 */
 html:not(.ytaq-popup-iframe) ytd-masthead {
-  background: var(--aqsecondary-bg) !important;
+  background: var(--suisou-panel) !important;
 }
 
-/* 検索欄の背景と枠線 */
+/* 検索欄。Suisou の field と同じ宣言（item 面 + 強い罫） */
 html:not(.ytaq-popup-iframe) .ytSearchboxComponentInputBoxDark,
 html:not(.ytaq-popup-iframe) .ytSearchboxComponentSearchButtonDark {
-  background: hsla(0, 0%, 100%, .08) !important;
-  border-color: var(--aqsecondary-bg-line) !important;
+  background: var(--suisou-item) !important;
+  border-color: var(--suisou-line-strong-panel) !important;
 }
 
 /* --- サイドバー --- */
 
 /* 背景と右側のborder */
 html:not(.ytaq-popup-iframe) tp-yt-app-drawer {
-  background: var(--aqprimary-bg-sub) !important;
-  border-right: 1px solid var(--aqprimary-bg-line);
+  background: var(--suisou-panel) !important;
+  border-right: 1px solid var(--suisou-line-weak-panel);
 }
 
 /* コンテンツ区切りのborderを消す */
@@ -42,21 +45,28 @@ html:not(.ytaq-popup-iframe) ytd-guide-entry-renderer:not(:last-child) {
   margin-bottom: 4px;
 }
 
-/* アクティブなカテゴリの背景 */
+/* アクティブなカテゴリ = Suisou の選択下地（アクセント色の面） */
 html:not(.ytaq-popup-iframe) ytd-guide-entry-renderer[active] {
-  background: var(--aqaccent-item) !important;
+  background: var(--suisou-selected-surface) !important;
 }
 
-/* サイドバーの YTaq 管理画面ボタン（旧: content.js のインラインスタイル） */
+/* サイドバーの YTaq 管理画面ボタン = Suisou の outline ボタン（塗らない） */
 html:not(.ytaq-popup-iframe) .ytaq-custom-sidebar-btn {
   margin: 8px 0 8px 40px;
   padding: 6px 12px;
-  background: var(--ytaq-nord8, #88c0d0);
-  color: #fff;
-  border: none;
-  border-radius: 6px;
+  background: transparent;
+  color: var(--suisou-accent);
+  border: 1px solid var(--suisou-accent);
+  border-radius: var(--suisou-radius);
   cursor: pointer;
   font-size: 14px;
+  transition: color var(--suisou-motion-fast) var(--suisou-ease),
+              border-color var(--suisou-motion-fast) var(--suisou-ease);
+}
+
+html:not(.ytaq-popup-iframe) .ytaq-custom-sidebar-btn:active {
+  color: var(--suisou-accent-active);
+  border-color: var(--suisou-accent-active);
 }
 
 /* ホバープレビューの無効化は perf/ytaq-perf.css に移動（設定で切り替え可能） */

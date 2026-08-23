@@ -1,42 +1,49 @@
+/* YTaq の色 = Suisou trench × blue。
+ * 生成物。編集しない。作り直すのは ./sync-suisou.sh（色の根拠は Suisou 側）。
+ * https://github.com/shiro-ka/Suisou */
 :root {
-  --aquarium-base-s: 12%;
-  --aquarium-item-s: 20%;
-  --aquarium-ui-s: 38%;
+  --suisou-bg: oklch(15.00% 0.0440 262);
+  --suisou-panel: oklch(22.00% 0.0440 262);
+  --suisou-item: oklch(28.00% 0.0440 262);
+  --suisou-overlay: oklch(34.00% 0.0440 262);
+  --suisou-hover-surface: oklch(19.00% 0.0440 262);
+  --suisou-selected-neutral-surface: oklch(33.00% 0.0440 262);
+  --suisou-line-weak: oklch(31.33% 0.0440 262);
+  --suisou-line-weak-panel: oklch(34.69% 0.0440 262);
+  --suisou-line-weak-item: oklch(38.89% 0.0440 262);
+  --suisou-line-weak-overlay: oklch(43.98% 0.0440 262);
+  --suisou-line-weak-hover: oklch(33.02% 0.0440 262);
+  --suisou-line-weak-selected: oklch(43.63% 0.0440 262);
+  --suisou-line-strong: oklch(48.73% 0.0440 262);
+  --suisou-line-strong-panel: oklch(51.70% 0.0440 262);
+  --suisou-line-strong-item: oklch(55.75% 0.0440 262);
+  --suisou-line-strong-overlay: oklch(61.01% 0.0440 262);
+  --suisou-line-strong-hover: oklch(50.19% 0.0440 262);
+  --suisou-line-strong-selected: oklch(60.63% 0.0440 262);
+  --suisou-text-disabled: oklch(62.00% 0.0440 262);
+  --suisou-text-sub: oklch(78.00% 0.0440 262);
+  --suisou-text-main: oklch(90.50% 0.0440 262);
+  --suisou-scrim: oklch(8.00% 0.0440 262 / 0.72);
+  --suisou-error: oklch(73.00% 0.1580 22);
+  --suisou-warning: oklch(82.00% 0.1592 90);
+  --suisou-success: oklch(76.00% 0.1785 155);
+  --suisou-error-active: oklch(70.00% 0.1816 22);
+  --suisou-error-surface: oklch(33.00% 0.0164 22);
+  --suisou-warning-surface: oklch(33.00% 0.0102 90);
+  --suisou-success-surface: oklch(33.00% 0.0211 155);
+  --suisou-accent: oklch(74.00% 0.1159 255);
+  --suisou-accent-active: oklch(71.00% 0.1308 255);
+  --suisou-focus-ring: oklch(74.00% 0.1159 255);
+  --suisou-selected-surface: oklch(33.00% 0.0975 255);
 
-  --aquarium-base-l: 10%;
-  --aquarium-sub-l: 12%;
-  --aquarium-line-l: 24%;
-
-  /* --- プライマリカラー --- */
-  --aquarium-primary-h: 228;
-  /* ベースカラー */
-  --aqprimary-bg: hsl(var(--aquarium-primary-h), var(--aquarium-base-s), var(--aquarium-base-l));
-  --aqprimary-bg-sub: hsl(var(--aquarium-primary-h), var(--aquarium-base-s), var(--aquarium-sub-l));
-  --aqprimary-bg-line: hsl(var(--aquarium-primary-h), var(--aquarium-base-s), var(--aquarium-line-l));
-  /* コンテンツカラー */
-  --aqprimary-item: hsl(var(--aquarium-primary-h), var(--aquarium-item-s), var(--aquarium-base-l));
-  --aqprimary-item-sub: hsl(var(--aquarium-primary-h), var(--aquarium-item-s), var(--aquarium-sub-l));
-  --aqprimary-item-line: hsl(var(--aquarium-primary-h), var(--aquarium-item-s), var(--aquarium-line-l));
-
-  /* --- セカンダリカラー --- */
-  --aquarium-secondary-h: 242;
-  /* ベースカラー */
-  --aqsecondary-bg: hsl(var(--aquarium-secondary-h), var(--aquarium-base-s), var(--aquarium-base-l));
-  --aqsecondary-bg-sub: hsl(var(--aquarium-secondary-h), var(--aquarium-base-s), var(--aquarium-sub-l));
-  --aqsecondary-bg-line: hsl(var(--aquarium-secondary-h), var(--aquarium-base-s), var(--aquarium-line-l));
-  /* コンテンツカラー */
-  --aqsecondary-item: hsl(var(--aquarium-secondary-h), var(--aquarium-item-s), var(--aquarium-base-l));
-  --aqsecondary-item-sub: hsl(var(--aquarium-secondary-h), var(--aquarium-item-s), var(--aquarium-sub-l));
-  --aqsecondary-item-line: hsl(var(--aquarium-secondary-h), var(--aquarium-item-s), var(--aquarium-line-l));
-
-  /* --- アクセントカラー --- */
-  --aquarium-accent-h: 228;
-  /* ベースカラー */
-  --aqaccent-bg: hsl(var(--aquarium-accent-h), var(--aquarium-base-s), var(--aquarium-base-l));
-  --aqaccent-bg-sub: hsl(var(--aquarium-accent-h), var(--aquarium-base-s), var(--aquarium-sub-l));
-  --aqaccent-bg-line: hsl(var(--aquarium-accent-h), var(--aquarium-base-s), var(--aquarium-line-l));
-  /* コンテンツカラー */
-  --aqaccent-item: hsl(var(--aquarium-accent-h), var(--aquarium-item-s), var(--aquarium-base-l));
-  --aqaccent-item-sub: hsl(var(--aquarium-accent-h), var(--aquarium-item-s), var(--aquarium-sub-l));
-  --aqaccent-item-line: hsl(var(--aquarium-accent-h), var(--aquarium-item-s), var(--aquarium-line-l));
+  /* 寸法だけは写せない: YouTube は html{font-size:10px} なので rem が縮む。px で持つ */
+  --suisou-radius-small: 4px;
+  --suisou-radius: 8px;
+  --suisou-radius-pill: 999px;
+  --suisou-focus: 2px solid var(--suisou-focus-ring);
+  --suisou-motion-fast: 120ms;
+  --suisou-ease: cubic-bezier(0.2, 0, 0, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  :root { --suisou-motion-fast: 0.01ms; }
 }
