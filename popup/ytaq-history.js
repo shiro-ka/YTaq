@@ -20,20 +20,24 @@
 // 黙って効かなくなる類。壊れても再生自体には影響しない（iframe とは独立で、
 // 失敗しても /watch の取得1回分を捨てるだけ）ので、既定 ON で持っている。
 //
-// 残っているコストは「再生ごとに /watch の HTML を1回取る」こと。
-// InnerTube に移せば桁で減らせる。fetchTracking() のコメントを参照。
+// 送信先の取得は InnerTube（/youtubei/v1/player）から。/watch の HTML でも
+// 取れるが 1MB 級あるので、そちらは InnerTube が使えないときのフォールバック。
+// 詳細は fetchTrackingFromInnertube() のコメント。
 
 (function () {
 	'use strict';
 
 	const YTaq = window.YTaq;
 
-	// --- 検証用ログ ---------------------------------------------------------
-	// 効いたかどうかは履歴ページを見るまで分からず、失敗しても画面には何も出ない。
-	// しかも devtools のコンソールはページ側の world なので、ここのグローバルを
-	// 触って確かめることもできない（YTaqHistory is not defined になる）。
-	// 経路が固まるまでは DEBUG に関係なく結果を吐く。固まったら YTaq.log に戻すこと。
-	const note = console.log.bind(console, '[YTaq history]');
+	// --- ログ ---------------------------------------------------------------
+	// 成功時は DEBUG 任せでいい（2026-08-23 に経路が通ることを確認済み）。
+	// ただし失敗だけは DEBUG に関係なく出す。この機能は壊れても再生に影響しないので、
+	// 黙って効かなくなると「最近おすすめが変わらないな」まで誰も気付けない。
+	// YouTube 側の仕様変更で死ぬ前提の回避策なので、死ぬときは声を上げさせる。
+	//
+	// なお devtools のコンソールはページ側の world なので、ここのグローバルは
+	// 触れない（YTaqHistory is not defined になる）。確認はこのログでやること。
+	const note = YTaq.log;
 	const noteWarn = console.warn.bind(console, '[YTaq history]');
 
 	const HISTORY_KEY = 'ytaq_watch_history';
@@ -72,14 +76,14 @@
 	}
 
 	/**
-	 * /watch の HTML から再生ログの送信先を取り出す。
+	 * /watch の HTML から再生ログの送信先を取り出す（フォールバック経路）。
 	 *
-	 * InnerTube（/youtubei/v1/player）を直接叩けば数十分の一の転送量で済むが、
-	 * あちらは SAPISIDHASH ヘッダを自分で組まないとログアウト扱いになり、
-	 * 「履歴に載るか」の検証に余計な失敗要因が増える。まず素の HTML で
-	 * 成立を確認して、効くと分かってから InnerTube に移す。
+	 * 確実だが 1MB 級を1本取る。InnerTube が使えるならそちらを先に試し、
+	 * 失敗したときだけここへ落ちる。ページの HTML は SAPISIDHASH のような
+	 * 追加の仕掛けが要らず document GET の Cookie だけで通るので、
+	 * 「重いが壊れにくい」側として残す価値がある。
 	 */
-	async function fetchTracking(videoId) {
+	async function fetchTrackingFromWatchPage(videoId) {
 		const res = await fetch('https://www.youtube.com/watch?v=' + encodeURIComponent(videoId), {
 			credentials: 'include',
 			cache: 'no-store'
@@ -96,6 +100,181 @@
 		if (!loggedIn) throw new Error('取得した /watch がログアウト状態');
 
 		return { playback, watchtime };
+	}
+
+	// --- InnerTube 経路 ------------------------------------------------------
+	// /watch の HTML は 1MB 級あるのに、要るのは playbackTracking の2本の URL だけ。
+	// /youtubei/v1/player なら同じものが数十 KB で返る。軽量化が看板の拡張で
+	// 再生のたびに1MB 引くのは筋が通らないので、こちらを既定の経路にする。
+	//
+	// 代償は認証を自分で組む必要があること。Cookie を送るだけではログアウト扱いになり、
+	// 返ってくる URL がどのアカウントにも紐づかない（ping は 204 で通るのに履歴に
+	// 載らない、という一番気付きにくい壊れ方をする）。Google の web クライアントは
+	//     Authorization: SAPISIDHASH <ts>_<sha1(ts + " " + SAPISID + " " + origin)>
+	// を付けており、SAPISID は JS から読める Cookie なので同じものを組める。
+	//
+	// ここが壊れたら /watch の HTML に落ちる。重いが動く方を残しておく。
+
+	const ORIGIN = 'https://www.youtube.com';
+
+	let cfgCache = null;
+
+	function readCookie(name) {
+		const m = document.cookie.match(new RegExp('(?:^|;\\s*)' + name + '=([^;]*)'));
+		return m ? m[1] : null;
+	}
+
+	async function sha1Hex(text) {
+		const buf = await crypto.subtle.digest('SHA-1', new TextEncoder().encode(text));
+		const bytes = new Uint8Array(buf);
+		let hex = '';
+		for (let i = 0; i < bytes.length; i++) hex += bytes[i].toString(16).padStart(2, '0');
+		return hex;
+	}
+
+	async function sapisidHash() {
+		// 通常セッションは SAPISID、3rd-party cookie 制限下だと __Secure-3PAPISID になる
+		const sapisid = readCookie('SAPISID') || readCookie('__Secure-3PAPISID') || readCookie('__Secure-1PAPISID');
+		if (!sapisid) return null;
+		const ts = Math.floor(Date.now() / 1000);
+		return 'SAPISIDHASH ' + ts + '_' + await sha1Hex(ts + ' ' + sapisid + ' ' + ORIGIN);
+	}
+
+	/**
+	 * InnerTube に必要な諸元（API キー・クライアント版・visitor 等）を集める。
+	 *
+	 * ページ側の ytcfg から読むのが正確。content script は isolated world なので
+	 * そのままでは見えないが、Firefox なら wrappedJSObject で辿れる。
+	 * それも駄目なら ytcfg.set(...) を吐いているインラインスクリプトから拾う。
+	 */
+	function readConfig() {
+		if (cfgCache) return cfgCache;
+		cfgCache = fromYtcfg() || fromInlineScripts();
+		return cfgCache;
+	}
+
+	function fromYtcfg() {
+		try {
+			const page = window.wrappedJSObject;
+			if (!page || !page.ytcfg || typeof page.ytcfg.get !== 'function') return null;
+			const get = k => {
+				const v = page.ytcfg.get(k);
+				return (v === undefined || v === null) ? null : String(v);
+			};
+			const clientVersion = get('INNERTUBE_CLIENT_VERSION');
+			if (!clientVersion) return null;
+			return {
+				apiKey: get('INNERTUBE_API_KEY'),
+				clientVersion: clientVersion,
+				visitorData: get('VISITOR_DATA'),
+				sessionIndex: get('SESSION_INDEX') || '0',
+				pageId: get('DELEGATED_SESSION_ID'),
+				hl: get('HL') || 'ja',
+				gl: get('GL') || 'JP'
+			};
+		} catch (e) {
+			return null;
+		}
+	}
+
+	function fromInlineScripts() {
+		const scripts = document.querySelectorAll('script:not([src])');
+		for (let i = 0; i < scripts.length; i++) {
+			const text = scripts[i].textContent;
+			if (!text || text.indexOf('INNERTUBE_CLIENT_VERSION') < 0) continue;
+			const pick = k => {
+				const m = text.match(new RegExp('"' + k + '"\\s*:\\s*"(.*?)"'));
+				return m ? m[1] : null;
+			};
+			const clientVersion = pick('INNERTUBE_CLIENT_VERSION');
+			if (!clientVersion) continue;
+			return {
+				apiKey: pick('INNERTUBE_API_KEY'),
+				clientVersion: clientVersion,
+				visitorData: pick('VISITOR_DATA'),
+				sessionIndex: pick('SESSION_INDEX') || '0',
+				pageId: pick('DELEGATED_SESSION_ID'),
+				hl: pick('HL') || 'ja',
+				gl: pick('GL') || 'JP'
+			};
+		}
+		return null;
+	}
+
+	async function fetchTrackingFromInnertube(videoId) {
+		const cfg = readConfig();
+		if (!cfg) throw new Error('ytcfg が読めない');
+
+		const auth = await sapisidHash();
+		if (!auth) throw new Error('SAPISID cookie が無い');
+
+		const headers = {
+			'Content-Type': 'application/json',
+			'Authorization': auth,
+			'X-Origin': ORIGIN,
+			'X-Goog-AuthUser': cfg.sessionIndex,
+			'X-Youtube-Client-Name': '1',
+			'X-Youtube-Client-Version': cfg.clientVersion
+		};
+		// 複数アカウント時、これが無いと別のアカウントの履歴に積まれる
+		if (cfg.pageId) headers['X-Goog-PageId'] = cfg.pageId;
+		if (cfg.visitorData) headers['X-Goog-Visitor-Id'] = cfg.visitorData;
+
+		const url = '/youtubei/v1/player?prettyPrint=false' +
+			(cfg.apiKey ? '&key=' + encodeURIComponent(cfg.apiKey) : '');
+
+		const res = await fetch(url, {
+			method: 'POST',
+			credentials: 'include',
+			cache: 'no-store',
+			headers: headers,
+			body: JSON.stringify({
+				videoId: videoId,
+				// 年齢制限つきでも playbackTracking を返させる
+				contentCheckOk: true,
+				racyCheckOk: true,
+				context: {
+					client: {
+						clientName: 'WEB',
+						clientVersion: cfg.clientVersion,
+						hl: cfg.hl,
+						gl: cfg.gl,
+						visitorData: cfg.visitorData || undefined
+					}
+				}
+			})
+		});
+		if (!res.ok) throw new Error('player ' + res.status);
+
+		const json = await res.json();
+		const ctx = json.responseContext && json.responseContext.mainAppWebResponseContext;
+		// ここを見落とすと「ping は 204 なのに履歴に載らない」で延々悩むことになる
+		if (ctx && ctx.loggedOut) throw new Error('ログアウト扱いで返ってきた');
+
+		const tracking = json.playbackTracking || {};
+		const playback = tracking.videostatsPlaybackUrl && tracking.videostatsPlaybackUrl.baseUrl;
+		const watchtime = tracking.videostatsWatchtimeUrl && tracking.videostatsWatchtimeUrl.baseUrl;
+		if (!playback || !watchtime) throw new Error('playbackTracking が無い');
+
+		// 履歴に効くのは el=detailpage だけ。WEB クライアントで頼んでいるのに
+		// embedded が返ってきたら、この経路を使う意味そのものが無い。
+		if (/[?&]el=embedded/.test(watchtime)) throw new Error('el=embedded が返ってきた');
+
+		return { playback: playback, watchtime: watchtime };
+	}
+
+	async function fetchTracking(videoId) {
+		try {
+			const urls = await fetchTrackingFromInnertube(videoId);
+			note('送信先を取得（InnerTube）');
+			return urls;
+		} catch (e) {
+			// 黙って重い方に落ちると、劣化に気付けないまま毎回 1MB 引き続ける
+			noteWarn('InnerTube が使えないので /watch に落ちる:', e.message);
+			const urls = await fetchTrackingFromWatchPage(videoId);
+			note('送信先を取得（/watch）');
+			return urls;
+		}
 	}
 
 	function ping(baseUrl, params) {
@@ -138,10 +317,7 @@
 			if (!pending) {
 				note('セッション開始', videoId, 'cpn=' + cpn);
 				pending = fetchTracking(videoId).then(
-					u => {
-						urls = u;
-						note('送信先を取得', u.watchtime.slice(0, 80) + '…');
-					},
+					u => { urls = u; },
 					e => { noteWarn('送信先の取得に失敗', videoId, e.message); }
 				);
 			}
