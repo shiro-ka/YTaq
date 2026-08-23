@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "YTaq",
-  "version": "1.1.0",
+  "version": "1.2.1",
   "description": "Custom YT theme + 軽量化.",
   "icons": {
     "48": "icons/icon48.png",
