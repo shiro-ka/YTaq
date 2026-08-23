@@ -28,7 +28,7 @@ const DEFAULT_LOGIN = true;
 
 // ポップアップ再生を視聴履歴に残すか。popup/ytaq-history.js と同じキー・既定値。
 const HISTORY_STORAGE_KEY = 'ytaq_watch_history';
-const DEFAULT_HISTORY = false;
+const DEFAULT_HISTORY = true;
 
 function perfInput(key) {
   return document.getElementById(`perf-${key}`);

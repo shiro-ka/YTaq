@@ -17,17 +17,29 @@
 // 埋め込み経路の代わりに報告しているだけ。
 //
 // 注意: YouTube の内部エンドポイントなので、Referer 差し替えと同じく
-// 黙って効かなくなる類。既定 OFF、設定で ON。
+// 黙って効かなくなる類。壊れても再生自体には影響しない（iframe とは独立で、
+// 失敗しても /watch の取得1回分を捨てるだけ）ので、既定 ON で持っている。
+//
+// 残っているコストは「再生ごとに /watch の HTML を1回取る」こと。
+// InnerTube に移せば桁で減らせる。fetchTracking() のコメントを参照。
 
 (function () {
 	'use strict';
 
 	const YTaq = window.YTaq;
 
+	// --- 検証用ログ ---------------------------------------------------------
+	// 効いたかどうかは履歴ページを見るまで分からず、失敗しても画面には何も出ない。
+	// しかも devtools のコンソールはページ側の world なので、ここのグローバルを
+	// 触って確かめることもできない（YTaqHistory is not defined になる）。
+	// 経路が固まるまでは DEBUG に関係なく結果を吐く。固まったら YTaq.log に戻すこと。
+	const note = console.log.bind(console, '[YTaq history]');
+	const noteWarn = console.warn.bind(console, '[YTaq history]');
+
 	const HISTORY_KEY = 'ytaq_watch_history';
 	let enabled = false;
 
-	YTaq.getStorage(HISTORY_KEY, false).then(v => { enabled = !!v; });
+	YTaq.getStorage(HISTORY_KEY, true).then(v => { enabled = !!v; });
 	YTaq.onStorageChange(HISTORY_KEY, v => { enabled = !!v; });
 
 	// 一瞬開いて閉じただけのものを履歴に積まない。ここを過ぎてから初めて
@@ -89,15 +101,18 @@
 	function ping(baseUrl, params) {
 		const url = new URL(baseUrl);
 		Object.keys(params).forEach(k => url.searchParams.set(k, params[k]));
+		// keepalive は付けないこと。content script のサンドボックスから投げると
+		// InvalidStateError（"no longer usable"）で即死する（2026-08-23 実測）。
+		// ポップアップを閉じてもページ自体はアンロードされないので、最後の ping も
+		// 普通の fetch でそのまま飛ぶ。keepalive が要る場面はここには無い。
 		return fetch(url.toString(), {
 			credentials: 'include',
-			cache: 'no-store',
-			keepalive: true
+			cache: 'no-store'
 		}).then(res => {
-			YTaq.log('history: ping', url.pathname, res.status);
+			note(url.pathname.replace('/api/stats/', ''), res.status, params.cmt !== undefined ? params.cmt + 's' : '');
 			return res.ok;
 		}).catch(e => {
-			YTaq.warn('history: ping failed', url.pathname, e);
+			noteWarn('ping 失敗', url.pathname, e);
 			return false;
 		});
 	}
@@ -111,7 +126,6 @@
 		const startedAt = performance.now();
 
 		let urls = null;
-		let failure = null;
 		let pending = null;
 		let sentPlayback = false;
 		let lastEnd = 0;
@@ -122,9 +136,13 @@
 
 		function ensureUrls() {
 			if (!pending) {
+				note('セッション開始', videoId, 'cpn=' + cpn);
 				pending = fetchTracking(videoId).then(
-					u => { urls = u; },
-					e => { failure = e; YTaq.warn('history: tracking 取得失敗', videoId, e); }
+					u => {
+						urls = u;
+						note('送信先を取得', u.watchtime.slice(0, 80) + '…');
+					},
+					e => { noteWarn('送信先の取得に失敗', videoId, e.message); }
 				);
 			}
 			return pending;
