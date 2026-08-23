@@ -34,8 +34,12 @@ browser.webRequest.onBeforeRequest.addListener(
 		if (!match) return;
 
 		const videoId = match[2];
-		const extension = match[5];
 		const frame = settings.thumbnailFrame || 'hq1';
+
+		// 拡張子は元リクエストから引き継がない。hq1〜hq3 は動画から切り出した
+		// フレームで、/vi/ の jpg にしか存在しない（/vi_webp/ にあるのは
+		// default 系だけ）。webp のまま飛ばすと全部 404 になる。
+		const extension = /^hq[123]$/.test(frame) ? 'jpg' : match[5];
 
 		return { redirectUrl: `https://i.ytimg.com/vi/${videoId}/${frame}.${extension}` };
 	},

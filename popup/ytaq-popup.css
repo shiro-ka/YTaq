@@ -1,16 +1,27 @@
 /* --- ポップアップオーバーレイ --- */
+/*
+ * backdrop-filter: blur(4px) は使わない。ここに置くと再生がガクつく。
+ *
+ * backdrop-filter を持つ要素は backdrop root になり、その配下は
+ * 「背景を別テクスチャに描く → ぼかす → 合成する」経路に乗る。
+ * 中に <video>（の iframe）が居ると、動画をコンポジタ側のオーバーレイに
+ * 載せる最適化が使えなくなり、フレームごとにこの経路を通る羽目になる。
+ * 背後の YouTube ホームは生きたまま動き続けるので、ぼかしの再計算も走る。
+ *
+ * 見た目の役割は「後ろを沈める」ことなので、不透明度を上げれば代わりになる。
+ * 0.8 → 0.92。ぼかしのコストはゼロになる。
+ */
 #ytaq-popup {
 	position: fixed;
 	top: 0;
 	left: 0;
 	width: 100%;
 	height: 100%;
-	background: rgba(0, 0, 0, 0.8);
+	background: rgba(0, 0, 0, 0.92);
 	z-index: 10000;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	backdrop-filter: blur(4px);
 }
 
 .ytaq-popup-content {
