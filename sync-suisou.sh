@@ -1,11 +1,4 @@
 #!/bin/bash
-# ytaq-variables.css を Suisou の解いた値から作り直す。
-#
-# YTaq は YouTube の DOM に被せるので suisou.css（部品）は輸入できない。
-# 輸入するのはトークン（解かれた色）だけ。色をここで手で書かない ――
-# 色を決めるのは Suisou の tools/solve.py だけ（掟1）。
-#
-# 使い方: ./sync-suisou.sh   （~/dev/Suisou が build 済みであること）
 set -eu
 cd "$(dirname "$0")"
 

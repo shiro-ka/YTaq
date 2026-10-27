@@ -1,9 +1,3 @@
-/* --- 全体のスタイル ---
- *
- * 面の割り当ては Suisou / Mado の骨格と同じ:
- *   アプリの底 = bg、ヘッダーとサイドバー = panel、区切りは罫（線形。影は使わない）。
- * 面ごとの罫は data-suisou-surface が無いので -panel / -item を手で選ぶ。 */
-
 /* 背景 */
 html:not(.ytaq-popup-iframe) ytd-app {
   background: var(--suisou-bg) !important;
