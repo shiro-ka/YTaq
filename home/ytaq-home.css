@@ -13,6 +13,7 @@ ytd-rich-item-renderer.style-scope.ytd-rich-grid-renderer {
   border: 1px solid var(--suisou-color-line-weak) !important;
   border-radius: var(--suisou-radius);
   overflow: clip;
+  box-sizing: border-box;
 }
 
 ytd-rich-item-renderer.style-scope.ytd-rich-grid-renderer:hover {
@@ -29,10 +30,6 @@ ytd-rich-item-renderer.style-scope.ytd-rich-grid-renderer yt-touch-feedback-shap
 
 ytd-two-column-browse-results-renderer[page-subtype="home"] #content.ytd-rich-section-renderer {
   margin: 0 36px 0 8px !important;
-}
-
-ytd-rich-item-renderer[rendered-from-rich-grid][is-in-first-column] {
-  margin-left: 8px !important;
 }
 
 ytd-rich-item-renderer.style-scope.ytd-rich-grid-renderer .ytLockupViewModelContentImage {
