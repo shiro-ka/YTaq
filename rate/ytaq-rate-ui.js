@@ -3,12 +3,14 @@
 
 	const YTaq = window.YTaq;
 
+	const SPEED_ICON = 'M12 1c1.44 0 2.87.28 4.21.83';
+
 	function hideNativeSpeedMenu(root) {
 		const scope = root && root.querySelectorAll ? root : document;
 		const items = scope.querySelectorAll('.ytp-menuitem:not(.ytaq-hide-playback-rate)');
 		for (let i = 0; i < items.length; i++) {
-			const label = items[i].querySelector('.ytp-menuitem-label');
-			if (label && label.textContent.trim() === '再生速度') {
+			const path = items[i].querySelector('.ytp-menuitem-icon path');
+			if (path && (path.getAttribute('d') || '').startsWith(SPEED_ICON)) {
 				items[i].classList.add('ytaq-hide-playback-rate');
 			}
 		}

@@ -44,6 +44,6 @@ html.ytaq-no-ambient #cinematics-container {
 html.ytaq-no-shorts ytd-rich-shelf-renderer[is-shorts],
 html.ytaq-no-shorts ytd-reel-shelf-renderer,
 html.ytaq-no-shorts ytm-shorts-lockup-view-model,
-html.ytaq-no-shorts ytd-guide-entry-renderer a[title="ショート"] {
+html.ytaq-no-shorts ytd-guide-entry-renderer.ytaq-guide-shorts {
 	display: none !important;
 }

@@ -3,8 +3,7 @@
 
 	const YTaq = window.YTaq;
 
-	const SUBS_LINK = '#items ytd-guide-entry-renderer a[title="登録チャンネル"], ' +
-		'#items ytd-guide-entry-renderer a[href="/feed/subscriptions"]';
+	const SUBS_LINK = '#items ytd-guide-entry-renderer a[href^="/feed/subscriptions"]';
 
 	const TARGET_HREF = '/feed/subscriptions#ytaq';
 
@@ -39,9 +38,23 @@
 		a.classList.add('ytaq-patched');
 	}
 
+	function iconType(entry) {
+		const page = entry.wrappedJSObject || entry;
+		const icon = page.data && page.data.icon;
+		return (icon && icon.iconType) || '';
+	}
+
+	function markGuideEntries() {
+		const entries = document.querySelectorAll('ytd-guide-entry-renderer');
+		for (let i = 0; i < entries.length; i++) {
+			entries[i].classList.toggle('ytaq-guide-shorts', iconType(entries[i]).startsWith('TAB_SHORTS'));
+		}
+	}
+
 	function apply() {
 		patchSubscriptionsLink();
 		addSidebarButton();
+		markGuideEntries();
 	}
 
 	YTaq.ready(() => {
