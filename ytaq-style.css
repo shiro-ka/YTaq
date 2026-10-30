@@ -1,66 +1,52 @@
-/* 背景 */
 html:not(.ytaq-popup-iframe) ytd-app {
-  background: var(--suisou-bg) !important;
+  background: var(--suisou-color-bg) !important;
 }
-
-/* --- ヘッダー --- */
 
 html:not(.ytaq-popup-iframe) ytd-masthead {
-  background: var(--suisou-panel) !important;
+  background: var(--suisou-color-panel) !important;
 }
 
-/* 検索欄。Suisou の field と同じ宣言（item 面 + 強い罫） */
 html:not(.ytaq-popup-iframe) .ytSearchboxComponentInputBoxDark,
 html:not(.ytaq-popup-iframe) .ytSearchboxComponentSearchButtonDark {
-  background: var(--suisou-item) !important;
-  border-color: var(--suisou-line-strong-panel) !important;
+  background: var(--suisou-color-field) !important;
+  border-color: var(--suisou-color-line-strong) !important;
 }
 
-/* --- サイドバー --- */
-
-/* 背景と右側のborder */
 html:not(.ytaq-popup-iframe) tp-yt-app-drawer {
-  background: var(--suisou-panel) !important;
-  border-right: 1px solid var(--suisou-line-weak-panel);
+  background: var(--suisou-color-panel) !important;
+  border-right: 1px solid var(--suisou-color-line-weak);
 }
 
-/* コンテンツ区切りのborderを消す */
 html:not(.ytaq-popup-iframe) #sections.ytd-guide-renderer>.ytd-guide-renderer:not(:last-child) {
   border-bottom: none !important;
 }
 
-/* カテゴリの幅を100%にする（デフォルトだと右に12pxの余白がある） */
 html:not(.ytaq-popup-iframe) ytd-guide-entry-renderer {
   width: 100% !important;
 }
 
-/* カテゴリ間の余白 */
 html:not(.ytaq-popup-iframe) ytd-guide-entry-renderer:not(:last-child) {
   margin-bottom: 4px;
 }
 
-/* アクティブなカテゴリ = Suisou の選択下地（アクセント色の面） */
 html:not(.ytaq-popup-iframe) ytd-guide-entry-renderer[active] {
-  background: var(--suisou-selected-surface) !important;
+  background: var(--suisou-color-accent-tint) !important;
 }
 
-/* サイドバーの YTaq 管理画面ボタン = Suisou の outline ボタン（塗らない） */
 html:not(.ytaq-popup-iframe) .ytaq-custom-sidebar-btn {
   margin: 8px 0 8px 40px;
   padding: 6px 12px;
   background: transparent;
-  color: var(--suisou-accent);
-  border: 1px solid var(--suisou-accent);
+  color: var(--suisou-color-accent);
+  border: 1px solid var(--suisou-color-accent);
   border-radius: var(--suisou-radius);
   cursor: pointer;
   font-size: 14px;
-  transition: color var(--suisou-motion-fast) var(--suisou-ease),
-              border-color var(--suisou-motion-fast) var(--suisou-ease);
+  transition: color var(--suisou-duration-fast) var(--suisou-ease),
+              border-color var(--suisou-duration-fast) var(--suisou-ease);
 }
 
 html:not(.ytaq-popup-iframe) .ytaq-custom-sidebar-btn:active {
-  color: var(--suisou-accent-active);
-  border-color: var(--suisou-accent-active);
+  background: var(--suisou-color-accent-tint);
 }
 
-/* ホバープレビューの無効化は perf/ytaq-perf.css に移動（設定で切り替え可能） */

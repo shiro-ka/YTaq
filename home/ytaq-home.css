@@ -1,38 +1,27 @@
-/* ホーム画面 */
-
-/* 左にちょっと余白 */
 ytd-two-column-browse-results-renderer[page-subtype="home"] #contents.ytd-rich-grid-renderer {
   padding-left: 24px;
 }
 
-/* カテゴリ表示欄 (ゲーム、音楽、最近アップロードされた動画とか選ぶやつ)
- * 影は使わない（線形）。bg 面のまま、下に弱い罫を敷いて区切る */
 ytd-two-column-browse-results-renderer[page-subtype="home"] #chips-wrapper {
-  background: var(--suisou-bg) !important;
+  background: var(--suisou-color-bg) !important;
   box-shadow: none;
-  border-bottom: 1px solid var(--suisou-line-weak);
+  border-bottom: 1px solid var(--suisou-color-line-weak);
 }
 
-/* 動画コンテナ = item 面 + 弱い罫（Suisou の panel bleed と同じ考え方） */
 ytd-rich-item-renderer.style-scope.ytd-rich-grid-renderer {
-  background: var(--suisou-item) !important;
+  background: var(--suisou-color-item) !important;
   margin-top: 2rem;
-  border: 1px solid var(--suisou-line-weak-item) !important;
+  border: 1px solid var(--suisou-color-line-weak) !important;
   border-radius: var(--suisou-radius);
 }
 
-/* ショートコンテナ */
-
-/* 幅調整 */
 ytd-two-column-browse-results-renderer[page-subtype="home"] #content.ytd-rich-section-renderer {
   margin: 0 36px 0 8px !important;
 }
 
-/* デフォルトのホバー無効化 */
 ytd-two-column-browse-results-renderer[page-subtype="home"] yt-touch-feedback-shape {
   display: none !important;
 }
-
 
 .yt-lockup-view-model--vertical.yt-lockup-view-model--rich-grid-legacy-margin .yt-lockup-view-model__content-image {
   padding: 0 !important;

@@ -1,32 +1,19 @@
-/* --- ポップアップオーバーレイ --- */
-/*
- * backdrop-filter: blur(4px) は使わない。ここに置くと再生がガクつく。
- *
- * backdrop-filter を持つ要素は backdrop root になり、その配下は
- * 「背景を別テクスチャに描く → ぼかす → 合成する」経路に乗る。
- * 中に <video>（の iframe）が居ると、動画をコンポジタ側のオーバーレイに
- * 載せる最適化が使えなくなり、フレームごとにこの経路を通る羽目になる。
- * 背後の YouTube ホームは生きたまま動き続けるので、ぼかしの再計算も走る。
- *
- * 膜は Suisou の scrim（ぼかし無し・単色）。コストはゼロのまま。
- */
 #ytaq-popup {
 	position: fixed;
 	top: 0;
 	left: 0;
 	width: 100%;
 	height: 100%;
-	background: var(--suisou-scrim);
+	background: var(--suisou-color-backdrop);
 	z-index: 10000;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 }
 
-/* ポップアップ本体 = Suisou の overlay 面。影ではなく縁で切る（線形） */
 .ytaq-popup-content {
-	background: var(--suisou-overlay);
-	border: 1px solid var(--suisou-line-strong-overlay);
+	background: var(--suisou-color-panel);
+	border: 1px solid var(--suisou-color-line-strong);
 	border-radius: var(--suisou-radius);
 	padding: 20px;
 	padding-right: 12px;
@@ -42,7 +29,7 @@
 	right: 12px;
 	background: none;
 	border: none;
-	color: var(--suisou-text-sub);
+	color: var(--suisou-color-text-note);
 	font-size: 24px;
 	cursor: pointer;
 	width: 32px;
@@ -51,17 +38,17 @@
 	align-items: center;
 	justify-content: center;
 	border-radius: var(--suisou-radius-pill);
-	transition: background var(--suisou-motion-fast) var(--suisou-ease),
-	            color var(--suisou-motion-fast) var(--suisou-ease);
+	transition: background var(--suisou-duration-fast) var(--suisou-ease),
+	            color var(--suisou-duration-fast) var(--suisou-ease);
 }
 
 .ytaq-popup-close:hover {
-	background: var(--suisou-hover-surface);
-	color: var(--suisou-text-main);
+	background: var(--suisou-color-hover);
+	color: var(--suisou-color-text);
 }
 
 .ytaq-popup-title {
-	color: var(--suisou-text-main);
+	color: var(--suisou-color-text);
 	font-size: 16px;
 	font-weight: bold;
 	margin-bottom: 12px;
@@ -69,8 +56,6 @@
 	line-height: 1.4;
 }
 
-/* --- YouTube IFrame Player API用のプレイヤーコンテナ ---
- * 動画まわりの #000 はテーマ色ではなくレターボックス（映像の黒）なので残す */
 .ytaq-popup-iframe-container {
 	width: 80vw;
 	max-width: 1280px;
@@ -80,7 +65,6 @@
 	background: #000;
 }
 
-/* ローディングスケルトン */
 .ytaq-popup-loading-skeleton {
 	position: absolute;
 	top: 0;
@@ -94,10 +78,9 @@
 	transition: opacity 0.3s ease;
 	z-index: 2;
 	pointer-events: none;
-	/* 透明時に操作を阻害しない */
+
 }
 
-/* 代替サムネイル */
 .ytaq-popup-thumbnail {
 	position: absolute;
 	top: 0;
@@ -108,13 +91,12 @@
 	opacity: 0.6;
 }
 
-/* ローディングスピナー（Suisou spinner と同じ作り: 弱い罫の輪 + アクセントの頭） */
 .ytaq-popup-spinner {
 	position: relative;
 	width: 60px;
 	height: 60px;
-	border: 6px solid var(--suisou-line-weak);
-	border-top-color: var(--suisou-accent);
+	border: 6px solid var(--suisou-color-line-weak);
+	border-top-color: var(--suisou-color-accent);
 	border-radius: var(--suisou-radius-pill);
 	animation: ytaq-spin 0.8s linear infinite;
 	z-index: 3;
@@ -126,7 +108,6 @@
 	}
 }
 
-/* iframe */
 .ytaq-popup-iframe {
 	position: absolute;
 	top: 0;
@@ -135,17 +116,15 @@
 	height: 100%;
 	border: none;
 	opacity: 1;
-	/* 最初から表示（スケルトンの裏でロード） */
+
 	z-index: 1;
 }
 
-/* スケルトンフェードアウト用 */
 .ytaq-popup-loading-skeleton.fade-out {
 	opacity: 0;
 	pointer-events: none;
 }
 
-/* --- Shorts用の縦長レイアウト --- */
 .ytaq-popup-iframe-container.ytaq-popup-shorts {
 	width: 50vh;
 	max-width: 500px;
@@ -155,22 +134,16 @@
 	aspect-ratio: 9/16;
 }
 
-/* Shorts用のコンテンツコンテナ調整 */
 .ytaq-popup-content.ytaq-popup-shorts {
 	max-width: 540px;
 	max-height: 95vh;
 }
 
-/* iframe 内の /watch を整形していた html.ytaq-popup-iframe ブロックは削除。
-   ポップアップは /embed/ を読むようになり、そもそも masthead も #related も
-   コメントも存在しないため不要になった。 */
-
-/* 埋め込み禁止動画などのための脱出口 */
 .ytaq-popup-open-original {
 	float: right;
 	font-size: 12px;
 	font-weight: normal;
-	color: var(--suisou-accent);
+	color: var(--suisou-color-accent);
 	text-decoration: none;
 	margin-left: 12px;
 }
@@ -179,16 +152,14 @@
 	text-decoration: underline;
 }
 
-/* 埋め込み不可で /watch にフォールバックしたときの表示 */
 .ytaq-popup-notice {
 	float: right;
 	font-size: 12px;
 	font-weight: normal;
-	color: var(--suisou-warning);
+	color: var(--suisou-color-warning);
 	margin-left: 12px;
 }
 
-/* 埋め込み再生に失敗したときの表示。コードを画面に出して切り分けに使う */
 .ytaq-popup-error {
 	position: absolute;
 	inset: 0;
@@ -199,25 +170,21 @@
 	justify-content: center;
 	gap: 16px;
 	background: #000;
-	color: var(--suisou-text-main);
+	color: var(--suisou-color-text);
 	text-align: center;
 	padding: 24px;
 }
 
-/* 脱出ボタン = outline ボタン（塗らない） */
 .ytaq-popup-error-btn {
 	padding: 8px 20px;
 	background: transparent;
-	color: var(--suisou-accent);
-	border: 1px solid var(--suisou-accent);
+	color: var(--suisou-color-accent);
+	border: 1px solid var(--suisou-color-accent);
 	border-radius: var(--suisou-radius);
 	cursor: pointer;
 	font-size: 14px;
 }
 
-/* 再生速度コントロール。iframe の中ではなくポップアップ側に置いてあるので、
-   プレイヤーの DOM 構造に依存せず nocookie モードでも表示される。
-   みためは Suisou の plain ボタン（強い罫 + 沈むホバー）。 */
 .ytaq-popup-rate {
 	float: right;
 	display: inline-flex;
@@ -229,16 +196,16 @@
 .ytaq-popup-rate-btn,
 .ytaq-popup-rate-display {
 	background: transparent;
-	color: var(--suisou-text-sub);
-	border: 1px solid var(--suisou-line-strong-overlay);
+	color: var(--suisou-color-text-note);
+	border: 1px solid var(--suisou-color-line-strong);
 	border-radius: var(--suisou-radius-small);
 	cursor: pointer;
 	font-size: 12px;
 	font-weight: normal;
 	line-height: 1;
 	padding: 5px 8px;
-	transition: background var(--suisou-motion-fast) var(--suisou-ease),
-	            color var(--suisou-motion-fast) var(--suisou-ease);
+	transition: background var(--suisou-duration-fast) var(--suisou-ease),
+	            color var(--suisou-duration-fast) var(--suisou-ease);
 }
 
 .ytaq-popup-rate-display {
@@ -248,6 +215,6 @@
 
 .ytaq-popup-rate-btn:hover,
 .ytaq-popup-rate-display:hover {
-	background: var(--suisou-hover-surface);
-	color: var(--suisou-text-main);
+	background: var(--suisou-color-hover);
+	color: var(--suisou-color-text);
 }

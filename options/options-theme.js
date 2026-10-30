@@ -1,97 +1,65 @@
-// YTaq 設定画面 - テーマ設定モジュール
+const THEME_STORAGE_KEY = 'ytaq_theme';
+const DEFAULT_THEME = globalThis.YTaqDefaults.theme;
 
-const STORAGE_KEY = 'ytaq_colors';
+const THEME_BLOCK = /^\[data-suisou-theme~="([a-z]+)"\] \{/gm;
+const ACCENT_BLOCK = /^\[data-suisou-theme~="([a-z]+)"\]\[data-suisou-theme~="([a-z]+)"\] \{/gm;
 
-// デフォルトの色設定
-const DEFAULT_COLORS = {
-  bg: '#4c566a',
-  sd: '#434c5e',
-  fg: '#3b4252',
-  ub: '#2e3440',
-  bd: 'rgba(255,255,255,0.2)'
-};
+let themeAccents = new Map();
 
-// カラーピッカーとテキスト入力を同期
-function setupColorInputSync(colorId, textId) {
-  const colorInput = document.getElementById(colorId);
-  const textInput = document.getElementById(textId);
-
-  // カラーピッカー変更時
-  colorInput.addEventListener('input', () => {
-    textInput.value = colorInput.value;
-  });
-
-  // テキスト入力変更時
-  textInput.addEventListener('input', () => {
-    const value = textInput.value.trim();
-    // HEXカラーの場合のみカラーピッカーに反映
-    if (/^#[0-9A-Fa-f]{6}$/.test(value)) {
-      colorInput.value = value;
-    }
-  });
+async function loadPalette() {
+  const res = await fetch(chrome.runtime.getURL('suisou-palette.css'));
+  const css = await res.text();
+  const map = new Map();
+  for (const m of css.matchAll(THEME_BLOCK)) map.set(m[1], []);
+  for (const m of css.matchAll(ACCENT_BLOCK)) {
+    if (map.has(m[1])) map.get(m[1]).push(m[2]);
+  }
+  return map;
 }
 
-// 保存された設定を読み込み
+function themeSelect() {
+  return document.querySelector('.ytaq-theme-name');
+}
+
+function accentSelect() {
+  return document.querySelector('.ytaq-theme-accent');
+}
+
+function fillSelect(select, values, selected) {
+  select.replaceChildren(...values.map(v => {
+    const option = document.createElement('option');
+    option.value = v;
+    option.textContent = v;
+    return option;
+  }));
+  select.value = values.includes(selected) ? selected : values[0];
+}
+
+function renderTheme(value) {
+  const t = Object.assign({}, DEFAULT_THEME, value || {});
+  fillSelect(themeSelect(), [...themeAccents.keys()], t.theme);
+  fillSelect(accentSelect(), themeAccents.get(themeSelect().value) || [], t.accent);
+}
+
 function loadThemeSettings() {
-  chrome.storage.local.get([STORAGE_KEY], (result) => {
-    const colors = result[STORAGE_KEY] || DEFAULT_COLORS;
-
-    document.getElementById('color-bg').value = hexOnly(colors.bg);
-    document.getElementById('text-bg').value = colors.bg;
-
-    document.getElementById('color-sd').value = hexOnly(colors.sd);
-    document.getElementById('text-sd').value = colors.sd;
-
-    document.getElementById('color-fg').value = hexOnly(colors.fg);
-    document.getElementById('text-fg').value = colors.fg;
-
-    document.getElementById('color-ub').value = hexOnly(colors.ub);
-    document.getElementById('text-ub').value = colors.ub;
-
-    document.getElementById('color-bd').value = hexOnly(colors.bd);
-    document.getElementById('text-bd').value = colors.bd;
-  });
+  chrome.storage.local.get([THEME_STORAGE_KEY], result => renderTheme(result[THEME_STORAGE_KEY]));
 }
 
-// HEX形式のみ抽出（カラーピッカー用）
-function hexOnly(colorValue) {
-  // rgba()などの場合はデフォルトの#ffffffを返す
-  if (colorValue.startsWith('#')) {
-    return colorValue;
-  }
-  return '#ffffff';
-}
-
-// 設定を保存
 function saveThemeSettings() {
-  const colors = {
-    bg: document.getElementById('text-bg').value.trim() || DEFAULT_COLORS.bg,
-    sd: document.getElementById('text-sd').value.trim() || DEFAULT_COLORS.sd,
-    fg: document.getElementById('text-fg').value.trim() || DEFAULT_COLORS.fg,
-    ub: document.getElementById('text-ub').value.trim() || DEFAULT_COLORS.ub,
-    bd: document.getElementById('text-bd').value.trim() || DEFAULT_COLORS.bd
-  };
-
-  chrome.storage.local.set({ [STORAGE_KEY]: colors }, () => {
-    showThemeMessage('設定を保存しました！YouTubeページを再読み込みしてください。', 'success');
-    console.log('[YTaq Theme] 色設定を保存:', colors);
+  const value = { theme: themeSelect().value, accent: accentSelect().value };
+  chrome.storage.local.set({ [THEME_STORAGE_KEY]: value }, () => {
+    showThemeMessage('設定を保存しました。', 'success');
   });
 }
 
-// デフォルトに戻す
 function resetThemeToDefault() {
-  if (!confirm('デフォルト設定に戻しますか？')) {
-    return;
-  }
-
-  chrome.storage.local.set({ [STORAGE_KEY]: DEFAULT_COLORS }, () => {
-    loadThemeSettings();
+  if (!confirm('デフォルト設定に戻しますか？')) return;
+  chrome.storage.local.set({ [THEME_STORAGE_KEY]: DEFAULT_THEME }, () => {
+    renderTheme(DEFAULT_THEME);
     showThemeMessage('デフォルト設定に戻しました。', 'success');
-    console.log('[YTaq Theme] デフォルト設定に戻しました');
   });
 }
 
-// メッセージ表示
 function showThemeMessage(text, type = 'success') {
   const messageEl = document.getElementById('message');
   messageEl.textContent = text;
@@ -103,26 +71,18 @@ function showThemeMessage(text, type = 'success') {
   }, 3000);
 }
 
-// 初期化関数（options-main.jsから呼び出される）
-function initThemeSettings() {
-  // 色入力の同期設定
-  setupColorInputSync('color-bg', 'text-bg');
-  setupColorInputSync('color-sd', 'text-sd');
-  setupColorInputSync('color-fg', 'text-fg');
-  setupColorInputSync('color-ub', 'text-ub');
-  setupColorInputSync('color-bd', 'text-bd');
-
-  // 保存された設定を読み込み
+async function initThemeSettings() {
+  themeAccents = await loadPalette();
   loadThemeSettings();
 
-  // ボタンイベント
+  themeSelect().addEventListener('change', () => {
+    fillSelect(accentSelect(), themeAccents.get(themeSelect().value) || [], accentSelect().value);
+  });
+
   document.getElementById('save-btn').addEventListener('click', saveThemeSettings);
   document.getElementById('reset-btn').addEventListener('click', resetThemeToDefault);
-
-  console.log('[YTaq Theme] テーマ設定を初期化しました');
 }
 
-// グローバルに公開
 window.YTaqTheme = {
   init: initThemeSettings
 };

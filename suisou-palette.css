@@ -1,0 +1,268 @@
+[data-suisou-theme] {
+  --suisou-color-hover: oklch(55.00% 0.0000 0 / 0.1);
+  --suisou-color-line-weak: oklch(100.00% 0.0000 0 / 0.15);
+  --suisou-color-line-strong: oklch(100.00% 0.0000 0 / 0.25);
+  --suisou-color-field: oklch(100.00% 0.0000 0 / 0.07);
+  --suisou-color-backdrop: oklch(0.00% 0.0000 0 / 0.72);
+}
+
+[data-suisou-theme~="hadal"] {
+  --suisou-gray-hue: 286;
+  --suisou-gray-chroma: 0.006;
+  --suisou-text-chroma: 0.006;
+  --suisou-color-bg: oklch(21.00% var(--suisou-gray-chroma) var(--suisou-gray-hue));
+  --suisou-color-panel: oklch(25.00% var(--suisou-gray-chroma) var(--suisou-gray-hue));
+  --suisou-color-item: oklch(31.00% var(--suisou-gray-chroma) var(--suisou-gray-hue));
+  --suisou-color-tint: oklch(36.00% var(--suisou-gray-chroma) var(--suisou-gray-hue));
+  --suisou-color-text: oklch(94.00% var(--suisou-text-chroma) var(--suisou-gray-hue));
+  --suisou-color-text-control: oklch(86.00% var(--suisou-text-chroma) var(--suisou-gray-hue));
+  --suisou-color-text-note: oklch(78.00% var(--suisou-text-chroma) var(--suisou-gray-hue));
+  --suisou-color-text-disabled: oklch(62.00% var(--suisou-text-chroma) var(--suisou-gray-hue));
+  --suisou-color-error: oklch(73.00% 0.1580 22);
+  --suisou-color-warning: oklch(82.00% 0.1592 90);
+  --suisou-color-success: oklch(76.00% 0.1785 155);
+  --suisou-color-error-tint: oklch(36.00% 0.0700 15);
+  --suisou-color-warning-tint: oklch(36.00% 0.0500 90);
+  --suisou-color-success-tint: oklch(36.00% 0.0500 155);
+}
+
+[data-suisou-theme~="trench"] {
+  --suisou-gray-hue: 270;
+  --suisou-gray-chroma: 0.04;
+  --suisou-text-chroma: 0.015;
+  --suisou-color-bg: oklch(21.00% var(--suisou-gray-chroma) var(--suisou-gray-hue));
+  --suisou-color-panel: oklch(25.00% var(--suisou-gray-chroma) var(--suisou-gray-hue));
+  --suisou-color-item: oklch(31.00% var(--suisou-gray-chroma) var(--suisou-gray-hue));
+  --suisou-color-tint: oklch(36.00% var(--suisou-gray-chroma) var(--suisou-gray-hue));
+  --suisou-color-text: oklch(94.00% var(--suisou-text-chroma) var(--suisou-gray-hue));
+  --suisou-color-text-control: oklch(86.00% var(--suisou-text-chroma) var(--suisou-gray-hue));
+  --suisou-color-text-note: oklch(78.00% var(--suisou-text-chroma) var(--suisou-gray-hue));
+  --suisou-color-text-disabled: oklch(62.00% var(--suisou-text-chroma) var(--suisou-gray-hue));
+  --suisou-color-error: oklch(73.00% 0.1580 22);
+  --suisou-color-warning: oklch(82.00% 0.1592 90);
+  --suisou-color-success: oklch(76.00% 0.1785 155);
+  --suisou-color-error-tint: oklch(36.00% 0.0700 15);
+  --suisou-color-warning-tint: oklch(36.00% 0.0500 90);
+  --suisou-color-success-tint: oklch(36.00% 0.0500 155);
+}
+
+[data-suisou-theme~="fjord"] {
+  --suisou-gray-hue: 281;
+  --suisou-gray-chroma: 0.037;
+  --suisou-text-chroma: 0.025;
+  --suisou-color-bg: oklch(19.50% var(--suisou-gray-chroma) var(--suisou-gray-hue));
+  --suisou-color-panel: oklch(23.50% var(--suisou-gray-chroma) var(--suisou-gray-hue));
+  --suisou-color-item: oklch(29.50% var(--suisou-gray-chroma) var(--suisou-gray-hue));
+  --suisou-color-tint: oklch(34.50% var(--suisou-gray-chroma) var(--suisou-gray-hue));
+  --suisou-color-text: oklch(94.00% var(--suisou-text-chroma) var(--suisou-gray-hue));
+  --suisou-color-text-control: oklch(86.00% var(--suisou-text-chroma) var(--suisou-gray-hue));
+  --suisou-color-text-note: oklch(78.00% var(--suisou-text-chroma) var(--suisou-gray-hue));
+  --suisou-color-text-disabled: oklch(62.00% var(--suisou-text-chroma) var(--suisou-gray-hue));
+  --suisou-color-error: oklch(73.00% 0.1580 22);
+  --suisou-color-warning: oklch(82.00% 0.1592 90);
+  --suisou-color-success: oklch(76.00% 0.1785 155);
+  --suisou-color-error-tint: oklch(34.50% 0.0700 15);
+  --suisou-color-warning-tint: oklch(34.50% 0.0500 90);
+  --suisou-color-success-tint: oklch(34.50% 0.0500 155);
+}
+
+[data-suisou-theme~="shoal"] {
+  --suisou-gray-hue: 265;
+  --suisou-gray-chroma: 0.02;
+  --suisou-text-chroma: 0.02;
+  --suisou-color-bg: oklch(29.00% var(--suisou-gray-chroma) var(--suisou-gray-hue));
+  --suisou-color-panel: oklch(33.00% var(--suisou-gray-chroma) var(--suisou-gray-hue));
+  --suisou-color-item: oklch(39.00% var(--suisou-gray-chroma) var(--suisou-gray-hue));
+  --suisou-color-tint: oklch(44.00% var(--suisou-gray-chroma) var(--suisou-gray-hue));
+  --suisou-color-text: oklch(95.50% var(--suisou-text-chroma) var(--suisou-gray-hue));
+  --suisou-color-text-control: oklch(92.75% var(--suisou-text-chroma) var(--suisou-gray-hue));
+  --suisou-color-text-note: oklch(90.00% var(--suisou-text-chroma) var(--suisou-gray-hue));
+  --suisou-color-text-disabled: oklch(74.00% var(--suisou-text-chroma) var(--suisou-gray-hue));
+  --suisou-color-error: oklch(85.00% 0.0612 22);
+  --suisou-color-warning: oklch(85.00% 0.1303 90);
+  --suisou-color-success: oklch(83.00% 0.1539 155);
+  --suisou-color-error-tint: oklch(44.00% 0.0700 15);
+  --suisou-color-warning-tint: oklch(44.00% 0.0500 90);
+  --suisou-color-success-tint: oklch(44.00% 0.0500 155);
+}
+
+[data-suisou-theme~="hadal"][data-suisou-theme~="clown"] {
+  --suisou-color-accent: oklch(74.00% 0.1549 55);
+  --suisou-color-accent-tint: oklch(36.00% 0.0500 55);
+}
+
+[data-suisou-theme~="hadal"][data-suisou-theme~="turtle"] {
+  --suisou-color-accent: oklch(74.00% 0.1526 122);
+  --suisou-color-accent-tint: oklch(36.00% 0.0500 122);
+}
+
+[data-suisou-theme~="hadal"][data-suisou-theme~="konbu"] {
+  --suisou-color-accent: oklch(74.00% 0.1094 188);
+  --suisou-color-accent-tint: oklch(36.00% 0.0500 188);
+}
+
+[data-suisou-theme~="hadal"][data-suisou-theme~="jelly"] {
+  --suisou-color-accent: oklch(74.00% 0.1096 212);
+  --suisou-color-accent-tint: oklch(36.00% 0.0513 212);
+}
+
+[data-suisou-theme~="hadal"][data-suisou-theme~="blue"] {
+  --suisou-color-accent: oklch(74.00% 0.1159 255);
+  --suisou-color-accent-tint: oklch(36.00% 0.0550 255);
+}
+
+[data-suisou-theme~="hadal"][data-suisou-theme~="indigo"] {
+  --suisou-color-accent: oklch(74.00% 0.1171 282);
+  --suisou-color-accent-tint: oklch(36.00% 0.0560 282);
+}
+
+[data-suisou-theme~="hadal"][data-suisou-theme~="coral"] {
+  --suisou-color-accent: oklch(74.00% 0.1495 308);
+  --suisou-color-accent-tint: oklch(36.00% 0.0555 308);
+}
+
+[data-suisou-theme~="hadal"][data-suisou-theme~="magenta"] {
+  --suisou-color-accent: oklch(74.00% 0.2122 332);
+  --suisou-color-accent-tint: oklch(36.00% 0.0540 332);
+}
+
+[data-suisou-theme~="hadal"][data-suisou-theme~="seal"] {
+  --suisou-color-accent: oklch(74.00% 0.1535 355);
+  --suisou-color-accent-tint: oklch(36.00% 0.0518 355);
+}
+
+[data-suisou-theme~="trench"][data-suisou-theme~="clown"] {
+  --suisou-color-accent: oklch(74.00% 0.1549 55);
+  --suisou-color-accent-tint: oklch(36.00% 0.0500 55);
+}
+
+[data-suisou-theme~="trench"][data-suisou-theme~="turtle"] {
+  --suisou-color-accent: oklch(74.00% 0.1526 122);
+  --suisou-color-accent-tint: oklch(36.00% 0.0500 122);
+}
+
+[data-suisou-theme~="trench"][data-suisou-theme~="konbu"] {
+  --suisou-color-accent: oklch(74.00% 0.1094 188);
+  --suisou-color-accent-tint: oklch(36.00% 0.0500 188);
+}
+
+[data-suisou-theme~="trench"][data-suisou-theme~="jelly"] {
+  --suisou-color-accent: oklch(74.00% 0.1096 212);
+  --suisou-color-accent-tint: oklch(36.00% 0.0579 212);
+}
+
+[data-suisou-theme~="trench"][data-suisou-theme~="blue"] {
+  --suisou-color-accent: oklch(74.00% 0.1159 255);
+  --suisou-color-accent-tint: oklch(36.00% 0.0876 255);
+}
+
+[data-suisou-theme~="trench"][data-suisou-theme~="indigo"] {
+  --suisou-color-accent: oklch(74.00% 0.1171 282);
+  --suisou-color-accent-tint: oklch(36.00% 0.0884 282);
+}
+
+[data-suisou-theme~="trench"][data-suisou-theme~="coral"] {
+  --suisou-color-accent: oklch(74.00% 0.1495 308);
+  --suisou-color-accent-tint: oklch(36.00% 0.0750 308);
+}
+
+[data-suisou-theme~="trench"][data-suisou-theme~="magenta"] {
+  --suisou-color-accent: oklch(74.00% 0.2122 332);
+  --suisou-color-accent-tint: oklch(36.00% 0.0542 332);
+}
+
+[data-suisou-theme~="trench"][data-suisou-theme~="seal"] {
+  --suisou-color-accent: oklch(74.00% 0.1535 355);
+  --suisou-color-accent-tint: oklch(36.00% 0.0500 355);
+}
+
+[data-suisou-theme~="fjord"][data-suisou-theme~="clown"] {
+  --suisou-color-accent: oklch(74.00% 0.1549 55);
+  --suisou-color-accent-tint: oklch(34.50% 0.0500 55);
+}
+
+[data-suisou-theme~="fjord"][data-suisou-theme~="turtle"] {
+  --suisou-color-accent: oklch(74.00% 0.1526 122);
+  --suisou-color-accent-tint: oklch(34.50% 0.0500 122);
+}
+
+[data-suisou-theme~="fjord"][data-suisou-theme~="konbu"] {
+  --suisou-color-accent: oklch(74.00% 0.1094 188);
+  --suisou-color-accent-tint: oklch(34.50% 0.0500 188);
+}
+
+[data-suisou-theme~="fjord"][data-suisou-theme~="jelly"] {
+  --suisou-color-accent: oklch(74.00% 0.1096 212);
+  --suisou-color-accent-tint: oklch(34.50% 0.0500 212);
+}
+
+[data-suisou-theme~="fjord"][data-suisou-theme~="blue"] {
+  --suisou-color-accent: oklch(74.00% 0.1159 255);
+  --suisou-color-accent-tint: oklch(34.50% 0.0806 255);
+}
+
+[data-suisou-theme~="fjord"][data-suisou-theme~="indigo"] {
+  --suisou-color-accent: oklch(74.00% 0.1171 282);
+  --suisou-color-accent-tint: oklch(34.50% 0.0870 282);
+}
+
+[data-suisou-theme~="fjord"][data-suisou-theme~="coral"] {
+  --suisou-color-accent: oklch(74.00% 0.1495 308);
+  --suisou-color-accent-tint: oklch(34.50% 0.0801 308);
+}
+
+[data-suisou-theme~="fjord"][data-suisou-theme~="magenta"] {
+  --suisou-color-accent: oklch(74.00% 0.2122 332);
+  --suisou-color-accent-tint: oklch(34.50% 0.0642 332);
+}
+
+[data-suisou-theme~="fjord"][data-suisou-theme~="seal"] {
+  --suisou-color-accent: oklch(74.00% 0.1535 355);
+  --suisou-color-accent-tint: oklch(34.50% 0.0500 355);
+}
+
+[data-suisou-theme~="shoal"][data-suisou-theme~="clown"] {
+  --suisou-color-accent: oklch(80.00% 0.0797 55);
+  --suisou-color-accent-tint: oklch(44.00% 0.0500 55);
+}
+
+[data-suisou-theme~="shoal"][data-suisou-theme~="turtle"] {
+  --suisou-color-accent: oklch(80.00% 0.1165 122);
+  --suisou-color-accent-tint: oklch(44.00% 0.0500 122);
+}
+
+[data-suisou-theme~="shoal"][data-suisou-theme~="konbu"] {
+  --suisou-color-accent: oklch(80.00% 0.0835 188);
+  --suisou-color-accent-tint: oklch(44.00% 0.0505 188);
+}
+
+[data-suisou-theme~="shoal"][data-suisou-theme~="jelly"] {
+  --suisou-color-accent: oklch(80.00% 0.0837 212);
+  --suisou-color-accent-tint: oklch(44.00% 0.0594 212);
+}
+
+[data-suisou-theme~="shoal"][data-suisou-theme~="blue"] {
+  --suisou-color-accent: oklch(80.00% 0.0615 255);
+  --suisou-color-accent-tint: oklch(44.00% 0.0696 255);
+}
+
+[data-suisou-theme~="shoal"][data-suisou-theme~="indigo"] {
+  --suisou-color-accent: oklch(80.00% 0.0621 282);
+  --suisou-color-accent-tint: oklch(44.00% 0.0688 282);
+}
+
+[data-suisou-theme~="shoal"][data-suisou-theme~="coral"] {
+  --suisou-color-accent: oklch(80.00% 0.0791 308);
+  --suisou-color-accent-tint: oklch(44.00% 0.0627 308);
+}
+
+[data-suisou-theme~="shoal"][data-suisou-theme~="magenta"] {
+  --suisou-color-accent: oklch(80.00% 0.1079 332);
+  --suisou-color-accent-tint: oklch(44.00% 0.0543 332);
+}
+
+[data-suisou-theme~="shoal"][data-suisou-theme~="seal"] {
+  --suisou-color-accent: oklch(80.00% 0.0779 355);
+  --suisou-color-accent-tint: oklch(44.00% 0.0500 355);
+}
+

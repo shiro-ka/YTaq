@@ -6,13 +6,13 @@
   <link rel="stylesheet" href="options.css">
 </head>
 <body>
-  <!-- ヘッダー -->
+
   <header class="ytaq-header">
     <h1>YTaq setting</h1>
   </header>
 
   <div class="ytaq-layout">
-    <!-- サイドバー -->
+
     <aside class="ytaq-sidebar">
       <nav>
         <ul>
@@ -25,9 +25,8 @@
       </nav>
     </aside>
 
-    <!-- メインコンテンツ -->
     <main class="ytaq-main">
-      <!-- ホームセクション -->
+
       <div id="section-home" class="content-section active">
         <h2>ホーム</h2>
         <p>YTaq設定画面へようこそ！</p>
@@ -35,53 +34,18 @@
         <p style="margin-top: 20px; color: #888;">[Debug] Home section is working correctly.</p>
       </div>
 
-      <!-- テーマセクション -->
       <div id="section-theme" class="content-section">
         <h2>テーマ設定</h2>
 
-        <div class="color-item">
-          <input type="color" id="color-bg" />
-          <label for="color-bg">
-            <span class="var-name">--ytaq-bg</span>
-            <span class="var-desc">背景色（メイン）</span>
-          </label>
-          <input type="text" id="text-bg" maxlength="20" />
-        </div>
-
-        <div class="color-item">
-          <input type="color" id="color-sd" />
-          <label for="color-sd">
-            <span class="var-name">--ytaq-sd</span>
-            <span class="var-desc">サイドバー色</span>
-          </label>
-          <input type="text" id="text-sd" maxlength="20" />
-        </div>
-
-        <div class="color-item">
-          <input type="color" id="color-fg" />
-          <label for="color-fg">
-            <span class="var-name">--ytaq-fg</span>
-            <span class="var-desc">前景色（カラム背景）</span>
-          </label>
-          <input type="text" id="text-fg" maxlength="20" />
-        </div>
-
-        <div class="color-item">
-          <input type="color" id="color-ub" />
-          <label for="color-ub">
-            <span class="var-name">--ytaq-ub</span>
-            <span class="var-desc">アッパーバー色</span>
-          </label>
-          <input type="text" id="text-ub" maxlength="20" />
-        </div>
-
-        <div class="color-item">
-          <input type="color" id="color-bd" />
-          <label for="color-bd">
-            <span class="var-name">--ytaq-bd</span>
-            <span class="var-desc">境界線色</span>
-          </label>
-          <input type="text" id="text-bd" maxlength="30" />
+        <div class="setting-group">
+          <div class="setting-item">
+            <label for="theme-name">テーマ</label>
+            <select id="theme-name" class="ytaq-theme-name"></select>
+          </div>
+          <div class="setting-item">
+            <label for="theme-accent">アクセント</label>
+            <select id="theme-accent" class="ytaq-theme-accent"></select>
+          </div>
         </div>
 
         <div class="button-group">
@@ -92,7 +56,6 @@
         <div class="message" id="message"></div>
       </div>
 
-      <!-- 軽量化セクション -->
       <div id="section-perf" class="content-section">
         <h2>軽量化</h2>
         <p style="color: #888; margin-bottom: 20px;">
@@ -245,12 +208,10 @@
         <div class="message" id="perf-message"></div>
       </div>
 
-      <!-- Antibiteセクション -->
       <div id="section-antibite" class="content-section">
         <h2>Antibite設定</h2>
         <p style="color: #888; margin-bottom: 20px;">YouTubeの不要な要素を除去する機能の設定</p>
 
-        <!-- 代替サムネイル設定 -->
         <div class="setting-group">
           <h3>代替サムネイル</h3>
           <p class="setting-description">YouTubeのデフォルトサムネイルを動画の実際のフレームに置き換えます。</p>
@@ -281,12 +242,10 @@
         <div class="message" id="antibite-message"></div>
       </div>
 
-      <!-- Playbackrateセクション -->
       <div id="section-playbackrate" class="content-section">
         <h2>Playbackrate設定</h2>
         <p style="color: #888; margin-bottom: 20px;">動画プレイヤーの再生速度コントロールの設定</p>
 
-        <!-- 増減量設定 -->
         <div class="setting-group">
           <h3>速度変更の増減量</h3>
           <p class="setting-description">+/-ボタンを押したときの速度変更量を設定します。</p>
@@ -298,7 +257,6 @@
           </div>
         </div>
 
-        <!-- プリセット速度設定 -->
         <div class="setting-group">
           <h3>プリセット速度</h3>
           <p class="setting-description">速度表示ボタンをクリックしたときに循環する速度のリストです。カンマ区切りで入力してください。</p>
@@ -320,6 +278,7 @@
     </main>
   </div>
 
+  <script src="../core/ytaq-defaults.js"></script>
   <script src="options-theme.js"></script>
   <script src="options-perf.js"></script>
   <script src="options-antibite.js"></script>

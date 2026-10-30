@@ -39,9 +39,10 @@
         "https://www.youtube.com/*"
       ],
       "js": [
+        "core/ytaq-defaults.js",
+        "theme/ytaq-theme.js",
         "core/ytaq-core.js",
         "perf/ytaq-perf.js",
-        "options/apply-options.js",
         "content.js",
         "folder/ytaq-folder-manager.js",
         "folder/ytaq-folder-ui.js",
@@ -54,6 +55,7 @@
         "title/ytaq-title.js"
       ],
       "css": [
+        "suisou-palette.css",
         "ytaq-variables.css",
         "ytaq-style.css",
         "perf/ytaq-perf.css",
@@ -71,11 +73,14 @@
         "https://www.youtube.com/watch*"
       ],
       "js": [
+        "core/ytaq-defaults.js",
+        "theme/ytaq-theme.js",
         "core/ytaq-core.js",
         "perf/ytaq-perf.js",
         "popup/ytaq-frame.js"
       ],
       "css": [
+        "suisou-palette.css",
         "ytaq-variables.css",
         "perf/ytaq-perf.css",
         "popup/ytaq-frame.css"

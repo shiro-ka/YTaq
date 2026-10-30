@@ -1,10 +1,3 @@
-/* --- 登録チャンネル画面 ---
- *
- * 面の割り当て: カラム = panel、中の行 = 罫だけ（面は持たない）。
- * ホバーは Suisou と同じで面を hover-surface に沈める。
- * 予定動画の箱はアクセント色の選択下地（selected-surface）。 */
-
-/* 余計なcssを破壊 */
 ytd-browse[page-subtype="subscriptions"] {
 	align-items: normal;
 }
@@ -15,18 +8,12 @@ ytd-two-column-browse-results-renderer[page-subtype="subscriptions"] {
 	--ytd-grid-6-columns-width: auto;
 }
 
-/* カラムを横並びにし、スクロール可能にする */
 #primary.ytd-two-column-browse-results-renderer[page-subtype="subscriptions"] {
 	display: flex;
 	padding-bottom: 16px;
 	overflow-y: auto;
 }
 
-/* - -
-	登録チャンネルカラム（Youtubeデフォルトのチャンネル登録欄を魔改造）
-- - */
-
-/* カラムのみため */
 ytd-section-list-renderer[page-subtype="subscriptions"] {
 	max-height: calc(100dvh - 88px);
 	min-width: 640px;
@@ -35,23 +22,22 @@ ytd-section-list-renderer[page-subtype="subscriptions"] {
 	margin-left: 24px;
 	padding: 0 16px;
 	overflow-y: auto;
-	background: var(--suisou-panel);
-	border: 1px solid var(--suisou-line-weak-panel);
+	background: var(--suisou-color-panel);
+	border: 1px solid var(--suisou-color-line-weak);
 	border-radius: var(--suisou-radius);
 }
 
-/* 動画のみため */
 ytd-item-section-renderer[page-subtype="subscriptions"]:has(ytd-shelf-renderer) {
 	margin-bottom: 8px;
 	padding: 8px;
 	border-radius: var(--suisou-radius);
-	border: 1px solid var(--suisou-line-weak-panel) !important;
+	border: 1px solid var(--suisou-color-line-weak) !important;
 	cursor: pointer;
-	transition: background var(--suisou-motion-fast) var(--suisou-ease);
+	transition: background var(--suisou-duration-fast) var(--suisou-ease);
 }
 
 ytd-item-section-renderer[page-subtype="subscriptions"]:has(ytd-shelf-renderer):hover {
-	background: var(--suisou-hover-surface);
+	background: var(--suisou-color-hover);
 }
 
 ytd-expanded-shelf-contents-renderer {
@@ -84,46 +70,35 @@ ytd-video-meta-block:not([rich-meta]) #byline-container.ytd-video-meta-block {
 	display: none !important;
 }
 
-/* ショートコンテナのみため */
 ytd-item-section-renderer[page-subtype="subscriptions"]:has(ytd-reel-shelf-renderer) {
 	margin-bottom: 8px;
 	padding: 8px;
 	border-radius: var(--suisou-radius);
-	border: 1px solid var(--suisou-line-weak-panel);
+	border: 1px solid var(--suisou-color-line-weak);
 }
-
-
-
 
 ytd-item-section-renderer[page-subtype="subscriptions"] ytd-video-renderer {
 	padding-right: 0 !important;
 	max-width: none;
 }
 
-
-/* - -
-	フォルダカラム
-- - */
-
-/* カラムコンテナ（iframe内では適用しない）。影は使わない（線形） */
 html:not(.ytaq-popup-iframe) .ytaq-list-column {
 	margin-left: 2rem;
-	background: var(--suisou-panel);
-	color: var(--suisou-text-main);
+	background: var(--suisou-color-panel);
+	color: var(--suisou-color-text);
 	padding: 12px 0 0 16px;
-	border: 1px solid var(--suisou-line-weak-panel);
+	border: 1px solid var(--suisou-color-line-weak);
 	border-radius: var(--suisou-radius);
 	min-width: 640px;
 	max-width: 640px;
 	font-weight: bold;
 }
 
-/* カラムヘッダー（iframe内では適用しない） */
 html:not(.ytaq-popup-iframe) .ytaq-header {
 	font-size: 18px;
 	margin-bottom: 8px;
 	padding-bottom: 4px;
-	border-bottom: 1px solid var(--suisou-line-weak-panel);
+	border-bottom: 1px solid var(--suisou-color-line-weak);
 }
 
 html:not(.ytaq-popup-iframe) .ytaq-list-content {
@@ -133,21 +108,18 @@ html:not(.ytaq-popup-iframe) .ytaq-list-content {
 	padding-right: 16px;
 }
 
-
-
-/* --- 動画リストアイテム（iframe内では適用しない） --- */
 html:not(.ytaq-popup-iframe) .ytaq-video-item {
 	display: flex;
 	margin-bottom: 8px;
 	padding: 8px;
 	border-radius: var(--suisou-radius);
-	border: 1px solid var(--suisou-line-weak-panel);
+	border: 1px solid var(--suisou-color-line-weak);
 	cursor: pointer;
-	transition: background var(--suisou-motion-fast) var(--suisou-ease);
+	transition: background var(--suisou-duration-fast) var(--suisou-ease);
 }
 
 html:not(.ytaq-popup-iframe) .ytaq-video-item:hover {
-	background: var(--suisou-hover-surface);
+	background: var(--suisou-color-hover);
 }
 
 html:not(.ytaq-popup-iframe) .ytaq-video-item img {
@@ -161,7 +133,7 @@ html:not(.ytaq-popup-iframe) .ytaq-video-item img {
 html:not(.ytaq-popup-iframe) .ytaq-video-item .ytaq-video-title {
 	font-size: 16px;
 	font-weight: 500;
-	color: var(--suisou-text-main);
+	color: var(--suisou-color-text);
 	line-height: 1.3;
 	margin-bottom: 6px;
 	overflow: hidden;
@@ -174,37 +146,35 @@ html:not(.ytaq-popup-iframe) .ytaq-video-item .ytaq-video-title {
 
 html:not(.ytaq-popup-iframe) .ytaq-video-item .ytaq-video-channel {
 	font-size: 12px;
-	color: var(--suisou-text-sub);
+	color: var(--suisou-color-text-note);
 	margin-bottom: 1px;
 }
 
 html:not(.ytaq-popup-iframe) .ytaq-video-item .ytaq-video-date {
 	font-size: 10px;
-	color: var(--suisou-text-disabled);
+	color: var(--suisou-color-text-disabled);
 }
 
-/* --- 予定動画アイテム（プレミア公開・ライブ予定）---
- * アクセント寄りの箱 = Suisou の選択下地。罫も selected 面用の弱い罫 */
 html:not(.ytaq-popup-iframe) .ytaq-upcoming-item {
 	display: flex;
 	flex-direction: column;
 	margin-bottom: 6px;
 	padding: 6px 8px;
 	border-radius: var(--suisou-radius-small);
-	border: 1px solid var(--suisou-line-weak-selected);
-	background: var(--suisou-selected-surface);
+	border: 1px solid var(--suisou-color-line-weak);
+	background: var(--suisou-color-accent-tint);
 	cursor: pointer;
-	transition: background var(--suisou-motion-fast) var(--suisou-ease);
+	transition: background var(--suisou-duration-fast) var(--suisou-ease);
 }
 
 html:not(.ytaq-popup-iframe) .ytaq-upcoming-item:hover {
-	background: var(--suisou-hover-surface);
+	background-image: linear-gradient(var(--suisou-color-hover), var(--suisou-color-hover));
 }
 
 html:not(.ytaq-popup-iframe) .ytaq-upcoming-item .ytaq-video-title {
 	font-size: 13px;
 	font-weight: 500;
-	color: var(--suisou-accent);
+	color: var(--suisou-color-accent);
 	line-height: 1.2;
 	margin-bottom: 4px;
 	overflow: hidden;
@@ -216,7 +186,7 @@ html:not(.ytaq-popup-iframe) .ytaq-upcoming-item .ytaq-video-meta {
 	display: flex;
 	justify-content: space-between;
 	font-size: 10px;
-	color: var(--suisou-text-sub);
+	color: var(--suisou-color-text-note);
 }
 
 html:not(.ytaq-popup-iframe) .ytaq-upcoming-item .ytaq-video-channel {
@@ -231,22 +201,20 @@ html:not(.ytaq-popup-iframe) .ytaq-upcoming-item .ytaq-video-date {
 	white-space: nowrap;
 }
 
-/* 予定動画セクションタイトル */
 html:not(.ytaq-popup-iframe) .ytaq-upcoming-section {
 	font-size: 12px;
 	font-weight: bold;
-	color: var(--suisou-accent);
+	color: var(--suisou-color-accent);
 	padding: 8px;
 	margin-bottom: 4px;
-	border-bottom: 1px solid var(--suisou-line-weak-panel);
+	border-bottom: 1px solid var(--suisou-color-line-weak);
 }
 
-/* 公開済み動画セクションタイトル */
 html:not(.ytaq-popup-iframe) .ytaq-published-section {
 	font-size: 12px;
 	font-weight: bold;
-	color: var(--suisou-text-main);
+	color: var(--suisou-color-text);
 	padding: 8px;
 	margin: 12px 0 4px 0;
-	border-bottom: 1px solid var(--suisou-line-weak-panel);
+	border-bottom: 1px solid var(--suisou-color-line-weak);
 }
