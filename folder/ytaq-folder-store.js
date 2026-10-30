@@ -26,7 +26,11 @@
 		try {
 			const page = window.wrappedJSObject;
 			if (page && page.ytcfg && typeof page.ytcfg.get === 'function') {
-				return { clientVersion: String(page.ytcfg.get('INNERTUBE_CLIENT_VERSION')), hl: String(page.ytcfg.get('HL') || 'ja') };
+				return {
+					clientVersion: String(page.ytcfg.get('INNERTUBE_CLIENT_VERSION')),
+					hl: String(page.ytcfg.get('HL') || 'ja'),
+					gl: String(page.ytcfg.get('GL') || 'JP')
+				};
 			}
 		} catch (e) {
 			window.YTaq.warn('folder: ytcfg', e);
@@ -168,6 +172,10 @@
 			if (area === 'local' && changes[KEY]) cb(changes[KEY].newValue || empty());
 		});
 	}
+
+	waitConfig().then(cfg => {
+		if (cfg) write({ ytaq_innertube: cfg });
+	});
 
 	window.YTaqFolders = { get, watch, createFolder, toggle, foldersOf, resolveChannel };
 })();

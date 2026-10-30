@@ -149,69 +149,27 @@
   }
 
   async function getChannelRecentVideos(channelId, channelName = null) {
-    try {
-      window.YTaq.log(`[${channelId}] RSS Feedから動画取得開始`);
-
-      if (channelId.startsWith('@')) {
-        window.YTaq.warn(`[${channelId}] @形式のチャンネルIDはRSS Feedで使用できません。UC形式のIDが必要です。`);
-        return [];
-      }
-
-      const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
-
-      const response = await fetch(rssUrl);
-      if (!response.ok) {
-        window.YTaq.warn(`[${channelId}] RSS Fetch失敗: ${response.status}`);
-        return [];
-      }
-
-      const xmlText = await response.text();
-
-      const parser = new DOMParser();
-      const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
-
-      const parserError = xmlDoc.querySelector('parsererror');
-      if (parserError) {
-        console.error(`[${channelId}] XML解析エラー:`, parserError.textContent);
-        return [];
-      }
-
-      const entries = xmlDoc.querySelectorAll('entry');
-      const videos = [];
-
-      for (const entry of entries) {
-        try {
-          const videoId = entry.querySelector('yt\\:videoId, videoId')?.textContent;
-          const title = entry.querySelector('title')?.textContent;
-          const published = entry.querySelector('published')?.textContent;
-          const author = entry.querySelector('author name')?.textContent || channelName || 'Unknown';
-
-          if (!videoId) continue;
-
-          videos.push({
-            videoId: videoId,
-            title: title || 'Untitled',
-            url: `https://www.youtube.com/watch?v=${videoId}`,
-            thumbnail: `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
-            channel: author,
-            publishedDate: published ? new Date(published) : new Date(),
-            publishedText: published ? formatDate(new Date(published)) : '不明',
-            isLive: false,
-            isPremiere: false,
-            isUpcoming: false
-          });
-        } catch (error) {
-          window.YTaq.warn(`[${channelId}] 動画エントリ解析エラー:`, error);
-        }
-      }
-
-      window.YTaq.log(`[${channelId}] RSS Feedから ${videos.length}件の動画を取得`);
-      return videos;
-
-    } catch (error) {
-      console.error(`[${channelId}] RSS取得エラー:`, error);
-      return [];
-    }
+    const feed = await window.YTaq.getStorage('ytaq_feed', null);
+    if (!feed) return [];
+    return Object.keys(feed.videos)
+      .filter(id => feed.videos[id].channel === channelId && feed.videos[id].published)
+      .map(id => {
+        const v = feed.videos[id];
+        const d = v.detail || {};
+        const date = new Date(v.published);
+        return {
+          videoId: id,
+          title: v.title || 'Untitled',
+          url: `https://www.youtube.com/watch?v=${id}`,
+          thumbnail: `https://i.ytimg.com/vi/${id}/hqdefault.jpg`,
+          channel: channelName || '',
+          publishedDate: date,
+          publishedText: d.upcoming ? '配信予定' : formatDate(date),
+          isLive: !!d.liveNow,
+          isPremiere: false,
+          isUpcoming: !!d.upcoming
+        };
+      });
   }
 
   function formatDate(date) {
@@ -344,6 +302,7 @@
   function setup() {
     if (!location.pathname.startsWith('/feed/subscriptions')) return;
     if (!location.hash.includes('ytaq')) return;
+    chrome.runtime.sendMessage({ type: 'ytaq-feed-refresh' });
     window.YTaq.waitFor(
       'ytd-browse[page-subtype="subscriptions"] #primary.ytd-two-column-browse-results-renderer',
       createListColumns
@@ -353,6 +312,13 @@
   window.YTaq.ready(setup);
   window.YTaq.onNavigate(setup);
   window.YTaq.onStorageChange('ytaq_folders', setup);
+  window.YTaq.onStorageChange('ytaq_feed', () => {
+    for (const content of document.querySelectorAll('.ytaq-list-column .ytaq-list-content')) {
+      const name = content.closest('.ytaq-list-column').dataset.listHash;
+      content.replaceChildren();
+      renderListMovies(name, content);
+    }
+  });
 
   window.YTaq.onMutation(() => {
     if (!location.pathname.startsWith('/feed/subscriptions')) return;
