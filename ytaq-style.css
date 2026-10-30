@@ -12,6 +12,14 @@ html[data-suisou-theme] .ytSearchboxComponentSearchButtonDark {
   border-color: var(--suisou-color-line-strong) !important;
 }
 
+html[data-suisou-theme] .ytSearchboxComponentInputBox {
+  border-radius: var(--suisou-radius) 0 0 var(--suisou-radius) !important;
+}
+
+html[data-suisou-theme] .ytSearchboxComponentSearchButton {
+  border-radius: 0 var(--suisou-radius) var(--suisou-radius) 0 !important;
+}
+
 html[data-suisou-theme] tp-yt-app-drawer[persistent] {
   background: var(--suisou-color-bg) !important;
 }
