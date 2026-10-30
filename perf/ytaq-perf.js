@@ -4,16 +4,6 @@
 	if (window.__ytaqPerfLoaded) return;
 	window.__ytaqPerfLoaded = true;
 
-	const KEY = 'ytaq_perf';
-
-	const DEFAULTS = {
-		hoverPreview: true,
-		lazyOffscreen: false,
-		ambient: true,
-		animations: false,
-		hideShorts: false
-	};
-
 	const CLASS_MAP = {
 		hoverPreview: 'ytaq-no-hover-preview',
 		lazyOffscreen: 'ytaq-lazy-offscreen',
@@ -22,7 +12,7 @@
 		hideShorts: 'ytaq-no-shorts'
 	};
 
-	let settings = DEFAULTS;
+	let settings = YTaqSettings.defaults('perf');
 
 	function applyClasses() {
 		const root = document.documentElement;
@@ -91,13 +81,13 @@
 
 	applyClasses();
 
-	window.YTaq.getStorage(KEY, null).then(stored => {
-		settings = Object.assign({}, DEFAULTS, stored || {});
+	YTaqSettings.get('perf').then(v => {
+		settings = v;
 		start();
 	});
 
-	window.YTaq.onStorageChange(KEY, next => {
-		settings = Object.assign({}, DEFAULTS, next || {});
+	YTaqSettings.onChange('perf', v => {
+		settings = v;
 		applyClasses();
 		sweep(document);
 	});

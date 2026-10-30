@@ -1,6 +1,3 @@
-const THEME_STORAGE_KEY = 'ytaq_theme';
-const DEFAULT_THEME = globalThis.YTaqDefaults.theme;
-
 const THEME_BLOCK = /^\[data-suisou-theme~="([a-z]+)"\] \{/gm;
 const ACCENT_BLOCK = /^\[data-suisou-theme~="([a-z]+)"\]\[data-suisou-theme~="([a-z]+)"\] \{/gm;
 
@@ -35,27 +32,24 @@ function fillSelect(select, values, selected) {
   select.value = values.includes(selected) ? selected : values[0];
 }
 
-function renderTheme(value) {
-  const t = Object.assign({}, DEFAULT_THEME, value || {});
+function renderTheme(t) {
   fillSelect(themeSelect(), [...themeAccents.keys()], t.theme);
   fillSelect(accentSelect(), themeAccents.get(themeSelect().value) || [], t.accent);
 }
 
 function loadThemeSettings() {
-  chrome.storage.local.get([THEME_STORAGE_KEY], result => renderTheme(result[THEME_STORAGE_KEY]));
+  YTaqSettings.get('theme').then(renderTheme);
 }
 
 function saveThemeSettings() {
   const value = { theme: themeSelect().value, accent: accentSelect().value };
-  chrome.storage.local.set({ [THEME_STORAGE_KEY]: value }, () => {
-    showThemeMessage('設定を保存しました。', 'success');
-  });
+  YTaqSettings.set('theme', value).then(() => showThemeMessage('設定を保存しました。', 'success'));
 }
 
 function resetThemeToDefault() {
   if (!confirm('デフォルト設定に戻しますか？')) return;
-  chrome.storage.local.set({ [THEME_STORAGE_KEY]: DEFAULT_THEME }, () => {
-    renderTheme(DEFAULT_THEME);
+  YTaqSettings.reset(['theme']).then(() => {
+    renderTheme(YTaqSettings.defaults('theme'));
     showThemeMessage('デフォルト設定に戻しました。', 'success');
   });
 }

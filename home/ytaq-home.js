@@ -3,11 +3,8 @@
 
 	const YTaq = window.YTaq;
 
-	const CLICK_KEY = 'ytaq_click';
-	let clickAction = 'popup';
-
-	YTaq.getStorage(CLICK_KEY, null).then(v => { clickAction = v || 'popup'; });
-	YTaq.onStorageChange(CLICK_KEY, v => { clickAction = v || 'popup'; });
+	let clickAction = YTaqSettings.defaults('click');
+	YTaqSettings.watch('click', v => { clickAction = v; });
 
 	const VIDEO_ID_PATTERNS = [
 		/[?&]v=([\w-]{11})/,

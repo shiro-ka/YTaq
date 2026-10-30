@@ -6,11 +6,8 @@
 	const note = YTaq.log;
 	const noteWarn = console.warn.bind(console, '[YTaq history]');
 
-	const HISTORY_KEY = 'ytaq_watch_history';
 	let enabled = false;
-
-	YTaq.getStorage(HISTORY_KEY, true).then(v => { enabled = !!v; });
-	YTaq.onStorageChange(HISTORY_KEY, v => { enabled = !!v; });
+	YTaqSettings.watch('watchHistory', v => { enabled = !!v; });
 
 	const MIN_SECONDS = 5;
 

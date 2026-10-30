@@ -3,27 +3,15 @@
 
 	const YTaq = window.YTaq;
 
-	const ANTIBITE_KEY = 'ytaq_antibite';
-	const DEFAULT_ANTIBITE = { thumbnailEnabled: true, thumbnailFrame: 'hq1' };
-
-	let thumbSettings = DEFAULT_ANTIBITE;
-
-	YTaq.getStorage(ANTIBITE_KEY, null).then(v => {
-		thumbSettings = Object.assign({}, DEFAULT_ANTIBITE, v);
-	});
-	YTaq.onStorageChange(ANTIBITE_KEY, v => {
-		thumbSettings = Object.assign({}, DEFAULT_ANTIBITE, v);
-	});
+	let thumbSettings = YTaqSettings.defaults('antibite');
+	YTaqSettings.watch('antibite', v => { thumbSettings = v; });
 
 	function thumbnailUrl(videoId) {
-		return `https://i.ytimg.com/vi/${videoId}/${thumbSettings.thumbnailFrame || 'hq1'}.jpg`;
+		return `https://i.ytimg.com/vi/${videoId}/${thumbSettings.thumbnailFrame}.jpg`;
 	}
 
-	const LOGIN_KEY = 'ytaq_embed_login';
-	let useLoggedInEmbed = true;
-
-	YTaq.getStorage(LOGIN_KEY, true).then(v => { useLoggedInEmbed = !!v; });
-	YTaq.onStorageChange(LOGIN_KEY, v => { useLoggedInEmbed = !!v; });
+	let useLoggedInEmbed = YTaqSettings.defaults('embedLogin');
+	YTaqSettings.watch('embedLogin', v => { useLoggedInEmbed = !!v; });
 
 	function embedHost() {
 		return useLoggedInEmbed ? 'https://www.youtube.com' : 'https://www.youtube-nocookie.com';
@@ -43,12 +31,6 @@
 	function watchUrl(videoId) {
 		return `https://www.youtube.com/watch?v=${videoId}`;
 	}
-
-	const RATE_SETTINGS_KEY = 'ytaq_playbackrate_settings';
-	const DEFAULT_RATE_SETTINGS = {
-		speedStep: 0.25,
-		speedPresets: [1.0, 1.25, 1.5, 1.75, 2.0, 4.0]
-	};
 
 	const RATE_MIN = 0.25;
 	const RATE_MAX = 16.0;
@@ -195,7 +177,7 @@
 			iframeContainer.appendChild(box);
 		}
 
-		let rateSettings = DEFAULT_RATE_SETTINGS;
+		let rateSettings = YTaqSettings.defaults('playbackrate');
 		let channel = null;
 		let currentRate = 1;
 		let appliedStoredRate = false;
@@ -242,8 +224,8 @@
 			changeRate(presets[(i + 1) % presets.length]);
 		});
 
-		YTaq.getStorage(RATE_SETTINGS_KEY, null).then(v => {
-			rateSettings = Object.assign({}, DEFAULT_RATE_SETTINGS, v);
+		YTaqSettings.get('playbackrate').then(v => {
+			rateSettings = v;
 			rateMinus.title = `再生速度を下げる（-${rateSettings.speedStep}）`;
 			ratePlus.title = `再生速度を上げる（+${rateSettings.speedStep}）`;
 		});

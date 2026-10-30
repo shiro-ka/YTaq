@@ -28,6 +28,7 @@
   ],
   "background": {
     "scripts": [
+      "core/ytaq-settings.js",
       "background/ytaq-main.js",
       "background/ytaq-embed-referer.js",
       "background/ytaq-thumbnail-replace.js"
@@ -39,7 +40,7 @@
         "https://www.youtube.com/*"
       ],
       "js": [
-        "core/ytaq-defaults.js",
+        "core/ytaq-settings.js",
         "theme/ytaq-theme.js",
         "core/ytaq-core.js",
         "perf/ytaq-perf.js",
@@ -73,7 +74,7 @@
         "https://www.youtube.com/watch*"
       ],
       "js": [
-        "core/ytaq-defaults.js",
+        "core/ytaq-settings.js",
         "theme/ytaq-theme.js",
         "core/ytaq-core.js",
         "perf/ytaq-perf.js",

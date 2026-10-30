@@ -3,12 +3,6 @@
 
 	const YTaq = window.YTaq;
 
-	const KEY = 'ytaq_playbackrate_settings';
-	const DEFAULTS = {
-		speedStep: 0.25,
-		speedPresets: [1.0, 1.25, 1.5, 1.75, 2.0, 4.0]
-	};
-
 	function hideNativeSpeedMenu(root) {
 		const scope = root && root.querySelectorAll ? root : document;
 		const items = scope.querySelectorAll('.ytp-menuitem:not(.ytaq-hide-playback-rate)');
@@ -29,7 +23,7 @@
 		if (!rightControls) return;
 		if (document.querySelector('.ytaq-rate-controls')) return;
 
-		const settings = Object.assign({}, DEFAULTS, await YTaq.getStorage(KEY, null));
+		const settings = await YTaqSettings.get('playbackrate');
 		const { speedStep, speedPresets } = settings;
 
 		if (document.querySelector('.ytaq-rate-controls')) return;
