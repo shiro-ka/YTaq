@@ -9,7 +9,8 @@ ytd-two-column-browse-results-renderer[page-subtype="home"] #chips-wrapper {
 
 ytd-rich-item-renderer.style-scope.ytd-rich-grid-renderer {
   background: var(--suisou-color-panel) !important;
-  margin-top: 2rem;
+  margin-top: 0;
+  margin-bottom: 16px !important;
   border: 1px solid var(--suisou-color-line-weak) !important;
   border-radius: var(--suisou-radius);
   overflow: clip;
