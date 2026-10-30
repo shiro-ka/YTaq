@@ -4,7 +4,7 @@
 	const YTaq = window.YTaq;
 
 	const TARGET_SELECTOR = [
-		'h3.yt-lockup-metadata-view-model__heading-reset span.yt-core-attributed-string',
+		'.ytLockupMetadataViewModelTitle',
 		'#video-title'
 	].join(',');
 

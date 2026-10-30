@@ -8,33 +8,41 @@ ytd-two-column-browse-results-renderer[page-subtype="home"] #chips-wrapper {
 }
 
 ytd-rich-item-renderer.style-scope.ytd-rich-grid-renderer {
-  background: var(--suisou-color-item) !important;
+  background: var(--suisou-color-panel) !important;
   margin-top: 2rem;
   border: 1px solid var(--suisou-color-line-weak) !important;
   border-radius: var(--suisou-radius);
+  overflow: clip;
+}
+
+ytd-rich-item-renderer.style-scope.ytd-rich-grid-renderer:hover {
+  background-image: linear-gradient(var(--suisou-color-hover), var(--suisou-color-hover)) !important;
+}
+
+ytd-rich-item-renderer.style-scope.ytd-rich-grid-renderer yt-thumbnail-view-model {
+  border-radius: 0 !important;
+}
+
+ytd-rich-item-renderer.style-scope.ytd-rich-grid-renderer yt-touch-feedback-shape {
+  display: none !important;
 }
 
 ytd-two-column-browse-results-renderer[page-subtype="home"] #content.ytd-rich-section-renderer {
   margin: 0 36px 0 8px !important;
 }
 
-ytd-two-column-browse-results-renderer[page-subtype="home"] yt-touch-feedback-shape {
-  display: none !important;
-}
-
-.yt-lockup-view-model--vertical.yt-lockup-view-model--rich-grid-legacy-margin .yt-lockup-view-model__content-image {
-  padding: 0 !important;
-}
-
 ytd-rich-item-renderer[rendered-from-rich-grid][is-in-first-column] {
   margin-left: 8px !important;
 }
 
-yt-lockup-metadata-view-model.yt-lockup-metadata-view-model.yt-lockup-metadata-view-model--vertical.yt-lockup-metadata-view-model--standard.yt-lockup-metadata-view-model--typography-bump.yt-lockup-metadata-view-model--rich-grid-legacy-typography {
-  padding: 1rem 2rem 1rem 1rem;
+ytd-rich-item-renderer.style-scope.ytd-rich-grid-renderer .ytLockupViewModelContentImage {
+  padding-bottom: 8px !important;
 }
 
-.yt-lockup-metadata-view-model__menu-button {
-  top: 6px !important;
-  right: 4px !important;
+ytd-rich-item-renderer.style-scope.ytd-rich-grid-renderer yt-lockup-metadata-view-model {
+  padding: 0 8px 8px !important;
+}
+
+ytd-rich-item-renderer.style-scope.ytd-rich-grid-renderer .ytLockupMetadataViewModelMenuButton {
+  right: 0 !important;
 }

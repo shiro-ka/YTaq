@@ -26,7 +26,7 @@
 
 	const TITLE_SELECTORS = [
 		'#video-title',
-		'.yt-lockup-metadata-view-model__title',
+		'.ytLockupMetadataViewModelTitle',
 		'h3 a',
 		'yt-formatted-string'
 	].join(',');
