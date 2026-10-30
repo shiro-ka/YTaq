@@ -650,6 +650,32 @@
 [data-suisou-tray="link"]:hover {
   background-image: linear-gradient(var(--suisou-color-hover), var(--suisou-color-hover));
 }
+:where([data-suisou-tray="link"]:has([data-suisou-tray="stretch"])) { position: relative; }
+[data-suisou-tray="stretch"]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+:where([data-suisou-tray="link"]:has([data-suisou-tray="stretch"]) :is(a, button, input, select, textarea, summary, label):not([data-suisou-tray="stretch"])) {
+  position: relative;
+  z-index: 1;
+}
+[data-suisou-tray="link"]:has(:is(a, button, input, select, textarea, summary, label):not([data-suisou-tray="stretch"]):hover) { background-image: none; }
+[data-suisou-tray="link"]:has([data-suisou-tray="stretch"]:focus-visible) {
+  outline: 2px solid var(--suisou-color-accent);
+  outline-offset: 2px;
+}
+[data-suisou-tray="stretch"]:focus-visible { outline: none; }
+:is([data-suisou-tray=""], [data-suisou-tray="link"]):has(> [data-suisou-tray="bleed"]) { overflow: clip; }
+:is([data-suisou-tray=""], [data-suisou-tray="link"]) > [data-suisou-tray="bleed"] {
+  inline-size: calc(100% + 2 * var(--suisou-space-2));
+  max-inline-size: none;
+  margin-inline: calc(-1 * var(--suisou-space-2));
+}
+:is([data-suisou-tray=""], [data-suisou-tray="link"]) > [data-suisou-tray="bleed"]:first-child { margin-block-start: calc(-1 * var(--suisou-space-2)); }
+:is([data-suisou-tray=""], [data-suisou-tray="link"]) > [data-suisou-tray="bleed"]:last-child { margin-block-end: calc(-1 * var(--suisou-space-2)); }
+:is([data-suisou-tray=""], [data-suisou-tray="link"]) > [data-suisou-tray="bleed"]:first-child:not(:last-child) { margin-block-end: var(--suisou-space-2); }
+:is([data-suisou-tray=""], [data-suisou-tray="link"]) > [data-suisou-tray="bleed"]:last-child:not(:first-child) { margin-block-start: var(--suisou-space-2); }
 :where(dialog)[data-suisou-tray]::backdrop { background: var(--suisou-color-backdrop); }
 :where(dialog, [popover])[data-suisou-tray] { color: var(--suisou-color-text); }
 :where(dialog)[data-suisou-tray] {
