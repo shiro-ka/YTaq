@@ -5,6 +5,7 @@
 
 	const TARGET_SELECTOR = [
 		'.ytLockupMetadataViewModelTitle',
+		'.ytaq-feed-title',
 		'#video-title'
 	].join(',');
 

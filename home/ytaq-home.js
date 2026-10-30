@@ -77,7 +77,7 @@
 		const t = e.target;
 		if (!t || !t.closest) return;
 
-		if (t.closest('#ytaq-popup, #ytaq-channel-modal, .ytaq-list-column')) return;
+		if (t.closest('#ytaq-popup')) return;
 
 		const a = findAnchor(e, t);
 		if (!a) return;

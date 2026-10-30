@@ -48,7 +48,7 @@
         "content.js",
         "folder/ytaq-folder-store.js",
         "folder/ytaq-folder-ui.js",
-        "subscriptions/ytaq-subs-folder.js",
+        "subscriptions/ytaq-feed-view.js",
         "popup/ytaq-history.js",
         "popup/ytaq-popup.js",
         "home/ytaq-home.js",
@@ -63,7 +63,7 @@
         "perf/ytaq-perf.css",
         "popup/ytaq-popup.css",
         "home/ytaq-home.css",
-        "subscriptions/ytaq-subs.css",
+        "subscriptions/ytaq-feed-view.css",
         "folder/ytaq-folder.css",
         "rate/ytaq-rate-manager.css"
       ],

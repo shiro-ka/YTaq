@@ -56,24 +56,6 @@ html[data-suisou-theme] ytd-guide-entry-renderer[active] {
   background: var(--suisou-color-accent-tint) !important;
 }
 
-html[data-suisou-theme] .ytaq-custom-sidebar-btn {
-  margin: 8px 0 8px 40px;
-  padding: 6px 12px;
-  background: transparent;
-  color: var(--suisou-color-accent);
-  border: 1px solid var(--suisou-color-accent);
-  border-radius: var(--suisou-radius);
-  cursor: pointer;
-  font-size: 14px;
-  transition: color var(--suisou-duration-fast) var(--suisou-ease),
-              border-color var(--suisou-duration-fast) var(--suisou-ease);
-}
-
-html[data-suisou-theme] .ytaq-custom-sidebar-btn:active {
-  background: var(--suisou-color-accent-tint);
-}
-
-
 html[data-suisou-theme] ytd-tabbed-page-header tp-yt-app-toolbar {
   background: var(--suisou-color-bg) !important;
 }
