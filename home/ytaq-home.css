@@ -5,7 +5,6 @@ ytd-two-column-browse-results-renderer[page-subtype="home"] #contents.ytd-rich-g
 ytd-two-column-browse-results-renderer[page-subtype="home"] #chips-wrapper {
   background: var(--suisou-color-bg) !important;
   box-shadow: none;
-  border-bottom: 1px solid var(--suisou-color-line-weak);
 }
 
 ytd-rich-item-renderer.style-scope.ytd-rich-grid-renderer {

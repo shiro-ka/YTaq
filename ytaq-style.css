@@ -3,7 +3,7 @@ html[data-suisou-theme] ytd-app {
 }
 
 html[data-suisou-theme] ytd-masthead {
-  background: var(--suisou-color-panel) !important;
+  background: var(--suisou-color-bg) !important;
 }
 
 html[data-suisou-theme] .ytSearchboxComponentInputBoxDark,
@@ -12,9 +12,24 @@ html[data-suisou-theme] .ytSearchboxComponentSearchButtonDark {
   border-color: var(--suisou-color-line-strong) !important;
 }
 
-html[data-suisou-theme] tp-yt-app-drawer {
+html[data-suisou-theme] tp-yt-app-drawer[persistent] {
+  background: var(--suisou-color-bg) !important;
+}
+
+html[data-suisou-theme] tp-yt-app-drawer:not([persistent]) {
+  background: transparent !important;
+}
+
+html[data-suisou-theme] tp-yt-app-drawer:not([persistent]) #contentContainer {
   background: var(--suisou-color-panel) !important;
-  border-right: 1px solid var(--suisou-color-line-weak);
+}
+
+html[data-suisou-theme] tp-yt-app-drawer #guide-content {
+  background: transparent !important;
+}
+
+html[data-suisou-theme] tp-yt-app-drawer #scrim {
+  background: var(--suisou-color-backdrop) !important;
 }
 
 html[data-suisou-theme] #sections.ytd-guide-renderer>.ytd-guide-renderer:not(:last-child) {
