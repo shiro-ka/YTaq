@@ -77,3 +77,7 @@ html[data-suisou-theme] .ytaq-custom-sidebar-btn:active {
 html[data-suisou-theme] ytd-tabbed-page-header tp-yt-app-toolbar {
   background: var(--suisou-color-bg) !important;
 }
+
+html[data-suisou-theme] ytd-tabbed-page-header #tabs-divider {
+  border-bottom: none !important;
+}
