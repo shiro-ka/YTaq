@@ -82,7 +82,7 @@ ytd-item-section-renderer[page-subtype="subscriptions"] ytd-video-renderer {
 	max-width: none;
 }
 
-html:not(.ytaq-popup-iframe) .ytaq-list-column {
+html[data-suisou-theme] .ytaq-list-column {
 	margin-left: 2rem;
 	background: var(--suisou-color-panel);
 	color: var(--suisou-color-text);
@@ -94,21 +94,21 @@ html:not(.ytaq-popup-iframe) .ytaq-list-column {
 	font-weight: bold;
 }
 
-html:not(.ytaq-popup-iframe) .ytaq-header {
+html[data-suisou-theme] .ytaq-header {
 	font-size: 18px;
 	margin-bottom: 8px;
 	padding-bottom: 4px;
 	border-bottom: 1px solid var(--suisou-color-line-weak);
 }
 
-html:not(.ytaq-popup-iframe) .ytaq-list-content {
+html[data-suisou-theme] .ytaq-list-content {
 	min-height: calc(100dvh - 128px);
 	max-height: calc(100dvh - 128px);
 	overflow-y: auto;
 	padding-right: 16px;
 }
 
-html:not(.ytaq-popup-iframe) .ytaq-video-item {
+html[data-suisou-theme] .ytaq-video-item {
 	display: flex;
 	margin-bottom: 8px;
 	padding: 8px;
@@ -118,11 +118,11 @@ html:not(.ytaq-popup-iframe) .ytaq-video-item {
 	transition: background var(--suisou-duration-fast) var(--suisou-ease);
 }
 
-html:not(.ytaq-popup-iframe) .ytaq-video-item:hover {
+html[data-suisou-theme] .ytaq-video-item:hover {
 	background: var(--suisou-color-hover);
 }
 
-html:not(.ytaq-popup-iframe) .ytaq-video-item img {
+html[data-suisou-theme] .ytaq-video-item img {
 	width: 180px;
 	height: 102px;
 	object-fit: cover;
@@ -130,7 +130,7 @@ html:not(.ytaq-popup-iframe) .ytaq-video-item img {
 	margin-right: 8px;
 }
 
-html:not(.ytaq-popup-iframe) .ytaq-video-item .ytaq-video-title {
+html[data-suisou-theme] .ytaq-video-item .ytaq-video-title {
 	font-size: 16px;
 	font-weight: 500;
 	color: var(--suisou-color-text);
@@ -144,18 +144,18 @@ html:not(.ytaq-popup-iframe) .ytaq-video-item .ytaq-video-title {
 	-webkit-box-orient: vertical;
 }
 
-html:not(.ytaq-popup-iframe) .ytaq-video-item .ytaq-video-channel {
+html[data-suisou-theme] .ytaq-video-item .ytaq-video-channel {
 	font-size: 12px;
 	color: var(--suisou-color-text-note);
 	margin-bottom: 1px;
 }
 
-html:not(.ytaq-popup-iframe) .ytaq-video-item .ytaq-video-date {
+html[data-suisou-theme] .ytaq-video-item .ytaq-video-date {
 	font-size: 10px;
 	color: var(--suisou-color-text-disabled);
 }
 
-html:not(.ytaq-popup-iframe) .ytaq-upcoming-item {
+html[data-suisou-theme] .ytaq-upcoming-item {
 	display: flex;
 	flex-direction: column;
 	margin-bottom: 6px;
@@ -167,11 +167,11 @@ html:not(.ytaq-popup-iframe) .ytaq-upcoming-item {
 	transition: background var(--suisou-duration-fast) var(--suisou-ease);
 }
 
-html:not(.ytaq-popup-iframe) .ytaq-upcoming-item:hover {
+html[data-suisou-theme] .ytaq-upcoming-item:hover {
 	background-image: linear-gradient(var(--suisou-color-hover), var(--suisou-color-hover));
 }
 
-html:not(.ytaq-popup-iframe) .ytaq-upcoming-item .ytaq-video-title {
+html[data-suisou-theme] .ytaq-upcoming-item .ytaq-video-title {
 	font-size: 13px;
 	font-weight: 500;
 	color: var(--suisou-color-accent);
@@ -182,26 +182,26 @@ html:not(.ytaq-popup-iframe) .ytaq-upcoming-item .ytaq-video-title {
 	white-space: nowrap;
 }
 
-html:not(.ytaq-popup-iframe) .ytaq-upcoming-item .ytaq-video-meta {
+html[data-suisou-theme] .ytaq-upcoming-item .ytaq-video-meta {
 	display: flex;
 	justify-content: space-between;
 	font-size: 10px;
 	color: var(--suisou-color-text-note);
 }
 
-html:not(.ytaq-popup-iframe) .ytaq-upcoming-item .ytaq-video-channel {
+html[data-suisou-theme] .ytaq-upcoming-item .ytaq-video-channel {
 	flex: 1;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
 
-html:not(.ytaq-popup-iframe) .ytaq-upcoming-item .ytaq-video-date {
+html[data-suisou-theme] .ytaq-upcoming-item .ytaq-video-date {
 	margin-left: 8px;
 	white-space: nowrap;
 }
 
-html:not(.ytaq-popup-iframe) .ytaq-upcoming-section {
+html[data-suisou-theme] .ytaq-upcoming-section {
 	font-size: 12px;
 	font-weight: bold;
 	color: var(--suisou-color-accent);
@@ -210,7 +210,7 @@ html:not(.ytaq-popup-iframe) .ytaq-upcoming-section {
 	border-bottom: 1px solid var(--suisou-color-line-weak);
 }
 
-html:not(.ytaq-popup-iframe) .ytaq-published-section {
+html[data-suisou-theme] .ytaq-published-section {
 	font-size: 12px;
 	font-weight: bold;
 	color: var(--suisou-color-text);

@@ -68,26 +68,6 @@
       ],
       "all_frames": false,
       "run_at": "document_start"
-    },
-    {
-      "matches": [
-        "https://www.youtube.com/watch*"
-      ],
-      "js": [
-        "core/ytaq-settings.js",
-        "theme/ytaq-theme.js",
-        "core/ytaq-core.js",
-        "perf/ytaq-perf.js",
-        "popup/ytaq-frame.js"
-      ],
-      "css": [
-        "suisou-palette.css",
-        "ytaq-variables.css",
-        "perf/ytaq-perf.css",
-        "popup/ytaq-frame.css"
-      ],
-      "all_frames": true,
-      "run_at": "document_start"
     }
   ],
   "browser_action": {

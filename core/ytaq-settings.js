@@ -1,8 +1,6 @@
 (function () {
 	'use strict';
 
-	if (globalThis.YTaqSettings) return;
-
 	const TABLE = {
 		theme: { key: 'ytaq_theme', value: { theme: 'trench', accent: 'blue' } },
 		perf: {

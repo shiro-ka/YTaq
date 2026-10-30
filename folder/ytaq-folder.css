@@ -1,4 +1,4 @@
-html:not(.ytaq-popup-iframe) .ytaq-channel-action-btn {
+html[data-suisou-theme] .ytaq-channel-action-btn {
   margin: 0 8px;
   padding: 6px 16px;
   background: transparent;
@@ -11,11 +11,11 @@ html:not(.ytaq-popup-iframe) .ytaq-channel-action-btn {
               border-color var(--suisou-duration-fast) var(--suisou-ease);
 }
 
-html:not(.ytaq-popup-iframe) .ytaq-channel-action-btn:active {
+html[data-suisou-theme] .ytaq-channel-action-btn:active {
   background: var(--suisou-color-accent-tint);
 }
 
-html:not(.ytaq-popup-iframe) #ytaq-channel-modal {
+html[data-suisou-theme] #ytaq-channel-modal {
   position: fixed;
   top: 0;
   left: 0;
@@ -28,7 +28,7 @@ html:not(.ytaq-popup-iframe) #ytaq-channel-modal {
   justify-content: center;
 }
 
-html:not(.ytaq-popup-iframe) .ytaq-folder-modal {
+html[data-suisou-theme] .ytaq-folder-modal {
   background: var(--suisou-color-panel);
   color: var(--suisou-color-text);
   border: 1px solid var(--suisou-color-line-strong);
@@ -39,13 +39,13 @@ html:not(.ytaq-popup-iframe) .ytaq-folder-modal {
   position: relative;
 }
 
-html:not(.ytaq-popup-iframe) .ytaq-folder-input-wrap {
+html[data-suisou-theme] .ytaq-folder-input-wrap {
   display: flex;
   align-items: center;
   margin-bottom: 16px;
 }
 
-html:not(.ytaq-popup-iframe) .ytaq-folder-input-wrap input {
+html[data-suisou-theme] .ytaq-folder-input-wrap input {
   flex: 1;
   padding: 6px 10px;
   border-radius: var(--suisou-radius);
@@ -56,7 +56,7 @@ html:not(.ytaq-popup-iframe) .ytaq-folder-input-wrap input {
   color: var(--suisou-color-text);
 }
 
-html:not(.ytaq-popup-iframe) .ytaq-folder-input-wrap button {
+html[data-suisou-theme] .ytaq-folder-input-wrap button {
   padding: 6px 16px;
   background: transparent;
   color: var(--suisou-color-accent);
@@ -68,42 +68,42 @@ html:not(.ytaq-popup-iframe) .ytaq-folder-input-wrap button {
               border-color var(--suisou-duration-fast) var(--suisou-ease);
 }
 
-html:not(.ytaq-popup-iframe) .ytaq-folder-input-wrap button:active {
+html[data-suisou-theme] .ytaq-folder-input-wrap button:active {
   background: var(--suisou-color-accent-tint);
 }
 
-html:not(.ytaq-popup-iframe) .ytaq-folder-title {
+html[data-suisou-theme] .ytaq-folder-title {
   font-weight: bold;
   font-size: 1.2em;
   margin-bottom: 12px;
   color: var(--suisou-color-text);
 }
 
-html:not(.ytaq-popup-iframe) .ytaq-folder-list-wrap {
+html[data-suisou-theme] .ytaq-folder-list-wrap {
   margin-top: 10px;
   display: flex;
   flex-direction: column;
 }
 
-html:not(.ytaq-popup-iframe) .ytaq-folder-list-row {
+html[data-suisou-theme] .ytaq-folder-list-row {
   display: flex;
   align-items: center;
   margin-bottom: 6px;
 }
 
-html:not(.ytaq-popup-iframe) .ytaq-folder-list-row label {
+html[data-suisou-theme] .ytaq-folder-list-row label {
   flex: 1;
   cursor: pointer;
   color: var(--suisou-color-text);
 }
 
-html:not(.ytaq-popup-iframe) .ytaq-folder-list-row input[type="checkbox"] {
+html[data-suisou-theme] .ytaq-folder-list-row input[type="checkbox"] {
   margin-left: 12px;
   cursor: pointer;
   accent-color: var(--suisou-color-accent);
 }
 
-html:not(.ytaq-popup-iframe) .ytaq-folder-close-btn {
+html[data-suisou-theme] .ytaq-folder-close-btn {
   position: absolute;
   top: 8px;
   right: 12px;
@@ -122,7 +122,7 @@ html:not(.ytaq-popup-iframe) .ytaq-folder-close-btn {
               color var(--suisou-duration-fast) var(--suisou-ease);
 }
 
-html:not(.ytaq-popup-iframe) .ytaq-folder-close-btn:hover {
+html[data-suisou-theme] .ytaq-folder-close-btn:hover {
   background: var(--suisou-color-hover);
   color: var(--suisou-color-text);
 }

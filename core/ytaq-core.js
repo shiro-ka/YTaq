@@ -1,8 +1,6 @@
 (function () {
 	'use strict';
 
-	if (window.YTaq) return;
-
 	const DEBUG = false;
 
 	const noop = function () {};

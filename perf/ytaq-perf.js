@@ -1,9 +1,6 @@
 (function () {
 	'use strict';
 
-	if (window.__ytaqPerfLoaded) return;
-	window.__ytaqPerfLoaded = true;
-
 	const CLASS_MAP = {
 		hoverPreview: 'ytaq-no-hover-preview',
 		lazyOffscreen: 'ytaq-lazy-offscreen',
