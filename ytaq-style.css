@@ -73,3 +73,7 @@ html[data-suisou-theme] .ytaq-custom-sidebar-btn:active {
   background: var(--suisou-color-accent-tint);
 }
 
+
+html[data-suisou-theme] ytd-tabbed-page-header tp-yt-app-toolbar {
+  background: var(--suisou-color-bg) !important;
+}
