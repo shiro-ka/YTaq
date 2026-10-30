@@ -3,11 +3,8 @@
 
 	const YTaq = window.YTaq;
 
-	let thumbSettings = YTaqSettings.defaults('antibite');
-	YTaqSettings.watch('antibite', v => { thumbSettings = v; });
-
 	function thumbnailUrl(videoId) {
-		return `https://i.ytimg.com/vi/${videoId}/${thumbSettings.thumbnailFrame}.jpg`;
+		return `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
 	}
 
 	let useLoggedInEmbed = YTaqSettings.defaults('embedLogin');

@@ -2,6 +2,7 @@
 	'use strict';
 
 	const S = YTaqSettings;
+	const FIRST = 'theme';
 	const PERF_KEYS = Object.keys(S.defaults('perf'));
 	const THEME_BLOCK = /^\[data-suisou-theme~="([a-z]+)"\] \{/gm;
 	const ACCENT_BLOCK = /^\[data-suisou-theme~="([a-z]+)"\]\[data-suisou-theme~="([a-z]+)"\] \{/gm;
@@ -171,7 +172,7 @@
 		for (const b of document.querySelectorAll('.ytaq-nav')) {
 			b.addEventListener('click', () => show(b.value));
 		}
-		show('home');
+		show(FIRST);
 
 		for (const section of Object.keys(SECTIONS)) {
 			const def = SECTIONS[section];
