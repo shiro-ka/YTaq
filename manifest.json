@@ -45,7 +45,7 @@
         "core/ytaq-core.js",
         "perf/ytaq-perf.js",
         "content.js",
-        "folder/ytaq-folder-manager.js",
+        "folder/ytaq-folder-store.js",
         "folder/ytaq-folder-ui.js",
         "subscriptions/ytaq-subs-folder.js",
         "popup/ytaq-history.js",

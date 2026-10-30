@@ -1,106 +1,126 @@
 (function () {
-  function tryInsertButton() {
-    const parent = document.querySelector('yt-flexible-actions-view-model');
-    if (!parent) return;
-    if (parent.querySelector('.ytaq-channel-action-btn')) return;
-    const btn = document.createElement('button');
-    btn.textContent = 'YTaqボタン';
-    btn.className = 'ytaq-channel-action-btn';
+	'use strict';
 
-    function openYTaqModal() {
-      const old = document.getElementById('ytaq-channel-modal');
-      if (old) old.remove();
-      const overlay = document.createElement('div');
-      overlay.id = 'ytaq-channel-modal';
+	const YTaq = window.YTaq;
+	const Folders = window.YTaqFolders;
 
-      const modal = document.createElement('div');
-      modal.className = 'ytaq-folder-modal';
+	const SHOWN_NAMES = 2;
 
-      const inputWrap = document.createElement('div');
-      inputWrap.className = 'ytaq-folder-input-wrap';
+	const widget = document.createElement('div');
+	widget.className = 'ytaq-folder';
 
-      const input = document.createElement('input');
-      input.type = 'text';
-      input.placeholder = '新しいリスト名';
+	const button = document.createElement('button');
+	button.className = 'ytaq-folder-btn';
+	button.type = 'button';
 
-      const addBtn = document.createElement('button');
-      addBtn.textContent = '+';
-      addBtn.addEventListener('click', async () => {
-        const name = input.value.trim();
-        if (!name) return;
-        if (!window.YTaqListManager) return;
-        await window.YTaqListManager.addList(name);
-        input.value = '';
-        await renderLists();
-      });
-      inputWrap.appendChild(input);
-      inputWrap.appendChild(addBtn);
-      modal.appendChild(inputWrap);
+	const menu = document.createElement('div');
+	menu.className = 'ytaq-folder-menu';
 
-      const title = document.createElement('div');
-      title.className = 'ytaq-folder-title';
-      title.textContent = 'リストに追加/削除';
-      modal.appendChild(title);
+	widget.append(button, menu);
 
-      const listWrap = document.createElement('div');
-      listWrap.className = 'ytaq-folder-list-wrap';
-      modal.appendChild(listWrap);
+	let channel = null;
+	let data = { folders: [], channels: {} };
+	let currentHref = null;
 
-      async function renderLists() {
-        listWrap.innerHTML = '';
-        if (!window.YTaqListManager) return;
-        const lists = await window.YTaqListManager.getLists();
-        const channelId = window.YTaqListManager.getChannelId();
-        lists.forEach(list => {
-          const row = document.createElement('div');
-          row.className = 'ytaq-folder-list-row';
+	function target() {
+		if (location.pathname.startsWith('/watch')) {
+			const host = document.querySelector('ytd-watch-metadata #owner');
+			const link = document.querySelector('ytd-watch-metadata ytd-channel-name a');
+			return host && link ? { host, href: link.getAttribute('href'), name: link.textContent.trim() } : null;
+		}
+		const host = document.querySelector('yt-flexible-actions-view-model');
+		if (!host || !/^\/(@|channel\/|c\/|user\/)/.test(location.pathname)) return null;
+		const h1 = document.querySelector('yt-page-header-view-model h1');
+		return { host, href: location.pathname, name: h1 ? h1.textContent.trim() : document.title.replace(/ - YouTube$/, '') };
+	}
 
-          const label = document.createElement('label');
-          label.textContent = list.name;
+	function render() {
+		const inFolders = channel ? Folders.foldersOf(data, channel.id) : [];
+		button.classList.toggle('ytaq-folder-in', inFolders.length > 0);
+		const names = inFolders.map(f => f.name);
+		const label = names.length === 0
+			? '＋ フォルダ'
+			: '✓ ' + names.slice(0, SHOWN_NAMES).join('・') + (names.length > SHOWN_NAMES ? '　＋' + (names.length - SHOWN_NAMES) : '');
+		button.textContent = label;
+		button.title = names.length ? names.join('・') : 'フォルダに入れる';
+		button.disabled = !channel;
 
-          const cb = document.createElement('input');
-          cb.type = 'checkbox';
-          const isChannelInList = channelId && list.channels.some(ch =>
-            (typeof ch === 'string' ? ch : ch.id) === channelId
-          );
-          cb.checked = !!isChannelInList;
+		const rows = data.folders.map(f => {
+			const row = document.createElement('label');
+			row.className = 'ytaq-folder-row';
+			const cb = document.createElement('input');
+			cb.type = 'checkbox';
+			cb.checked = !!channel && f.channels.includes(channel.id);
+			cb.addEventListener('change', () => {
+				if (channel) Folders.toggle(f.id, channel);
+			});
+			row.append(cb, document.createTextNode(f.name));
+			return row;
+		});
 
-          cb.addEventListener('change', async () => {
-            if (!window.YTaqListManager) return;
-            if (!channelId) return;
-            if (cb.checked) {
-              await window.YTaqListManager.addChannelToList(list.name, channelId);
-            } else {
-              await window.YTaqListManager.removeChannelFromList(list.name, channelId);
-            }
-            await renderLists();
-          });
-          row.appendChild(label);
-          row.appendChild(cb);
-          listWrap.appendChild(row);
-        });
-      }
+		const input = document.createElement('input');
+		input.className = 'ytaq-folder-new';
+		input.type = 'text';
+		input.placeholder = '＋ 新しいフォルダ';
+		input.addEventListener('keydown', async e => {
+			if (e.key !== 'Enter' || e.isComposing) return;
+			const name = input.value.trim();
+			if (!name || !channel) return;
+			input.value = '';
+			const id = await Folders.createFolder(name);
+			await Folders.toggle(id, channel);
+		});
 
-      addBtn.addEventListener('click', renderLists);
-      renderLists();
-      const closeBtn = document.createElement('button');
-      closeBtn.className = 'ytaq-folder-close-btn';
-      closeBtn.textContent = '×';
-      closeBtn.addEventListener('click', () => overlay.remove());
-      modal.appendChild(closeBtn);
-      overlay.appendChild(modal);
-      overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
-      document.body.appendChild(overlay);
-    }
+		menu.replaceChildren(...rows, input);
+	}
 
-    btn.addEventListener('click', openYTaqModal);
-    parent.appendChild(btn);
-  }
+	async function place() {
+		const t = target();
+		if (!t) {
+			widget.remove();
+			currentHref = null;
+			return;
+		}
+		if (widget.parentElement !== t.host) t.host.appendChild(widget);
+		if (t.href === currentHref) return;
+		currentHref = t.href;
+		channel = null;
+		render();
+		const id = await Folders.resolveChannel(t.href);
+		if (currentHref !== t.href) return;
+		channel = id ? { id, name: t.name } : null;
+		render();
+	}
 
-  function setup() {
-    window.YTaq.waitFor('yt-flexible-actions-view-model', tryInsertButton);
-  }
+	let scheduled = false;
+	function schedule() {
+		if (scheduled) return;
+		scheduled = true;
+		requestAnimationFrame(() => {
+			scheduled = false;
+			place();
+		});
+	}
 
-  window.YTaq.ready(setup);
-  window.YTaq.onNavigate(setup);
+	const WATCH = 'ytd-watch-metadata, ytd-channel-name, yt-flexible-actions-view-model, yt-page-header-view-model';
+
+	Folders.watch(next => {
+		data = next;
+		render();
+	});
+
+	YTaq.ready(() => {
+		schedule();
+		YTaq.onNavigate(schedule);
+		YTaq.onMutation(added => {
+			for (let i = 0; i < added.length; i++) {
+				const n = added[i];
+				if (n === widget || widget.contains(n)) continue;
+				if ((n.matches && n.matches(WATCH)) || (n.closest && n.closest(WATCH))) {
+					schedule();
+					return;
+				}
+			}
+		});
+	});
 })();

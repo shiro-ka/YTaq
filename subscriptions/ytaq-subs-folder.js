@@ -1,9 +1,16 @@
 (function() {
+
+  async function getLists() {
+    const data = await window.YTaqFolders.get();
+    return data.folders.map(f => ({
+      name: f.name,
+      channels: f.channels.map(id => ({ id, name: (data.channels[id] || {}).name || null }))
+    }));
+  }
   async function getListDebugInfo(listName) {
-    if (!window.YTaqListManager) return 'ListManagerなし';
 
     try {
-      const lists = await window.YTaqListManager.getLists();
+      const lists = await getLists();
       const list = lists.find(l => l.name === listName);
 
       if (!list) return 'リストが存在しません';
@@ -91,13 +98,9 @@
   }
 
   async function getListChannelVideos(listName) {
-    if (!window.YTaqListManager) {
-      window.YTaq.warn(`[${listName}] YTaqListManagerが利用できません`);
-      return [];
-    }
 
     try {
-      const lists = await window.YTaqListManager.getLists();
+      const lists = await getLists();
       window.YTaq.log(`[${listName}] 全リスト:`, lists);
 
       const list = lists.find(l => l.name === listName);
@@ -286,12 +289,7 @@
     try {
       isUpdating = true;
 
-      if (!window.YTaqListManager) {
-        window.YTaq.warn('[YTaq Folder] YTaqListManager が利用できません');
-        return;
-      }
-
-      const lists = await window.YTaqListManager.getLists();
+      const lists = await getLists();
       window.YTaq.log('[YTaq Folder] リスト:', lists);
 
       const existingColumns = primary.querySelectorAll('.ytaq-list-column');
@@ -354,7 +352,7 @@
 
   window.YTaq.ready(setup);
   window.YTaq.onNavigate(setup);
-  window.YTaq.onStorageChange('ytaq_channel_lists', setup);
+  window.YTaq.onStorageChange('ytaq_folders', setup);
 
   window.YTaq.onMutation(() => {
     if (!location.pathname.startsWith('/feed/subscriptions')) return;
