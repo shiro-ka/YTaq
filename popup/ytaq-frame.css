@@ -1,24 +1,9 @@
-/* YTaq: ポップアップ内 iframe（/watch）を「プレイヤーだけ」に削るスタイル
- *
- * /embed/ が使えない環境なので、代わりに /watch を iframe で開く。
- * そのままだと重い SPA が丸ごと乗るので、プレイヤー以外を全部落として
- * embed に近い見た目と負荷に寄せる。
- *
- * すべて html.ytaq-popup-iframe（ytaq-frame.js が付与）でゲートしてあるので、
- * トップレベルの /watch には一切影響しない。
- *
- * 注意: display:none は「描画しない」だけで、YouTube が初回の /next 応答で
- * 取ってくる関連動画のデータ自体は止められない。コメントはスクロールされる
- * まで読み込まれないので、隠しておけば実際に取得されない。
- */
-
 html.ytaq-popup-iframe,
 html.ytaq-popup-iframe body {
 	overflow: hidden !important;
 	background: #000 !important;
 }
 
-/* ヘッダー・サイドバー */
 html.ytaq-popup-iframe #masthead-container,
 html.ytaq-popup-iframe ytd-masthead,
 html.ytaq-popup-iframe tp-yt-app-drawer,
@@ -27,7 +12,6 @@ html.ytaq-popup-iframe ytd-mini-guide-renderer {
 	display: none !important;
 }
 
-/* 関連動画・コメント・動画下のメタ情報 */
 html.ytaq-popup-iframe #secondary,
 html.ytaq-popup-iframe #related,
 html.ytaq-popup-iframe ytd-watch-next-secondary-results-renderer,
@@ -42,7 +26,6 @@ html.ytaq-popup-iframe ytd-merch-shelf-renderer {
 	display: none !important;
 }
 
-/* プレイヤーをビューポート一杯に */
 html.ytaq-popup-iframe ytd-app,
 html.ytaq-popup-iframe #page-manager,
 html.ytaq-popup-iframe ytd-page-manager {

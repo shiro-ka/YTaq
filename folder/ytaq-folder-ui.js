@@ -1,8 +1,3 @@
-// YTaq: チャンネルページにリスト管理ボタンを追加するUI
-// 依存: ytaq-folder-manager.js (YTaqListManager)
-
-// === UI: チャンネルページにボタン追加 ===
-// SPA対応: URL変化を監視してボタン生成処理を再実行
 (function () {
   function tryInsertButton() {
     const parent = document.querySelector('yt-flexible-actions-view-model');
@@ -12,20 +7,15 @@
     btn.textContent = 'YTaqボタン';
     btn.className = 'ytaq-channel-action-btn';
 
-    // モーダル生成関数
     function openYTaqModal() {
-      // 既存モーダル削除
       const old = document.getElementById('ytaq-channel-modal');
       if (old) old.remove();
-      // オーバーレイ
       const overlay = document.createElement('div');
       overlay.id = 'ytaq-channel-modal';
 
-      // モーダル本体
       const modal = document.createElement('div');
       modal.className = 'ytaq-folder-modal';
 
-      // 入力欄＋追加ボタン
       const inputWrap = document.createElement('div');
       inputWrap.className = 'ytaq-folder-input-wrap';
 
@@ -41,20 +31,17 @@
         if (!window.YTaqListManager) return;
         await window.YTaqListManager.addList(name);
         input.value = '';
-        // リスト表示を更新
         await renderLists();
       });
       inputWrap.appendChild(input);
       inputWrap.appendChild(addBtn);
       modal.appendChild(inputWrap);
 
-      // タイトル
       const title = document.createElement('div');
       title.className = 'ytaq-folder-title';
       title.textContent = 'リストに追加/削除';
       modal.appendChild(title);
 
-      // リスト一覧＋チェックボックス
       const listWrap = document.createElement('div');
       listWrap.className = 'ytaq-folder-list-wrap';
       modal.appendChild(listWrap);
@@ -73,7 +60,6 @@
 
           const cb = document.createElement('input');
           cb.type = 'checkbox';
-          // 新形式（オブジェクト）と旧形式（文字列）の両方をサポート
           const isChannelInList = channelId && list.channels.some(ch =>
             (typeof ch === 'string' ? ch : ch.id) === channelId
           );
@@ -87,7 +73,6 @@
             } else {
               await window.YTaqListManager.removeChannelFromList(list.name, channelId);
             }
-            // 変更後にリストを再描画して状態を正しく反映
             await renderLists();
           });
           row.appendChild(label);
@@ -96,11 +81,8 @@
         });
       }
 
-      // リスト追加時に再描画
       addBtn.addEventListener('click', renderLists);
-      // モーダル表示時に初回描画
       renderLists();
-      // 閉じるボタン
       const closeBtn = document.createElement('button');
       closeBtn.className = 'ytaq-folder-close-btn';
       closeBtn.textContent = '×';
@@ -115,9 +97,6 @@
     parent.appendChild(btn);
   }
 
-  // 挿入先はチャンネルページにしか存在しない。500ms ポーリングと
-  // （Firefox では効かない）pushState フックをやめ、core の遷移イベント＋
-  // 要素が現れるまでの rAF 待ちに置き換えた。
   function setup() {
     window.YTaq.waitFor('yt-flexible-actions-view-model', tryInsertButton);
   }

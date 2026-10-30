@@ -1,10 +1,4 @@
-/* * *
-  リスト（フォルダ）機能: 登録したチャンネルの動画をリスト別に表示
- * * */
-
 (function() {
-
-  // リストのデバッグ情報を取得
   async function getListDebugInfo(listName) {
     if (!window.YTaqListManager) return 'ListManagerなし';
 
@@ -21,10 +15,8 @@
     }
   }
 
-  // 動画要素を作成してコンテナに追加（共通処理）
   function appendVideoElement(container, video) {
     if (video.isUpcoming || video.isPremiere || video.isLive) {
-      // 予定動画（コンパクト表示）
       const videoDiv = document.createElement('div');
       videoDiv.className = 'ytaq-upcoming-item';
 
@@ -58,7 +50,6 @@
 
       container.appendChild(videoDiv);
     } else {
-      // 公開済み動画（サムネイル付き）
       const videoDiv = document.createElement('div');
       videoDiv.className = 'ytaq-video-item';
 
@@ -99,7 +90,6 @@
     }
   }
 
-  // リスト内チャンネルの新着動画を取得
   async function getListChannelVideos(listName) {
     if (!window.YTaqListManager) {
       window.YTaq.warn(`[${listName}] YTaqListManagerが利用できません`);
@@ -107,7 +97,6 @@
     }
 
     try {
-      // リスト情報を取得
       const lists = await window.YTaqListManager.getLists();
       window.YTaq.log(`[${listName}] 全リスト:`, lists);
 
@@ -126,17 +115,14 @@
 
       const allVideos = [];
 
-      // 各チャンネルの動画を取得
       for (const channelEntry of list.channels) {
         try {
-          // 旧形式（文字列）と新形式（オブジェクト）の両方をサポート
           const channelId = typeof channelEntry === 'string' ? channelEntry : channelEntry.id;
           const channelName = typeof channelEntry === 'string' ? null : channelEntry.name;
 
           window.YTaq.log(`[${channelId}] 動画取得開始`, channelName ? `(表示名: ${channelName})` : '');
           const channelVideos = await getChannelRecentVideos(channelId, channelName);
 
-          // 全動画を追加（予定動画も含める）
           if (channelVideos.length > 0) {
             window.YTaq.log(`[${channelId}] ${channelVideos.length}件の動画を取得`);
             allVideos.push(...channelVideos);
@@ -148,7 +134,6 @@
         }
       }
 
-      // 投稿日時でソート（新しい順）
       allVideos.sort((a, b) => b.publishedDate - a.publishedDate);
 
       window.YTaq.log(`[${listName}] 合計 ${allVideos.length}件の動画`);
@@ -160,21 +145,17 @@
     }
   }
 
-  // 指定チャンネルの最近の動画を取得（RSS Feed使用）
   async function getChannelRecentVideos(channelId, channelName = null) {
     try {
       window.YTaq.log(`[${channelId}] RSS Feedから動画取得開始`);
 
-      // @形式のチャンネルIDはRSS Feedで使えないため、スキップ
       if (channelId.startsWith('@')) {
         window.YTaq.warn(`[${channelId}] @形式のチャンネルIDはRSS Feedで使用できません。UC形式のIDが必要です。`);
         return [];
       }
 
-      // YouTube RSS FeedのURL
       const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
 
-      // RSSをfetch
       const response = await fetch(rssUrl);
       if (!response.ok) {
         window.YTaq.warn(`[${channelId}] RSS Fetch失敗: ${response.status}`);
@@ -183,18 +164,15 @@
 
       const xmlText = await response.text();
 
-      // XMLをパース
       const parser = new DOMParser();
       const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
 
-      // エラーチェック
       const parserError = xmlDoc.querySelector('parsererror');
       if (parserError) {
         console.error(`[${channelId}] XML解析エラー:`, parserError.textContent);
         return [];
       }
 
-      // <entry>要素から動画情報を抽出
       const entries = xmlDoc.querySelectorAll('entry');
       const videos = [];
 
@@ -233,7 +211,6 @@
     }
   }
 
-  // 日付フォーマット関数
   function formatDate(date) {
     const now = new Date();
     const diff = now - date;
@@ -245,23 +222,20 @@
     return '1時間以内';
   }
 
-  // リスト用の動画リストを描画
   async function renderListChannelVideos(listName, container) {
     window.YTaq.log(`[${listName}] リスト動画描画開始`);
 
-    // 既に描画済みかチェック
     if (container.children.length > 0 && !container.innerHTML.includes('取得中')) {
       window.YTaq.log(`[${listName}] 既に描画済み、スキップ`);
       return;
     }
 
-    // ローディング表示
     container.innerHTML = '<div style="padding: 12px; color: #ccc;">リスト動画を取得中...</div>';
 
     try {
       const videos = await getListChannelVideos(listName);
 
-      container.innerHTML = ''; // クリア
+      container.innerHTML = '';
 
       if (videos.length === 0) {
         const debugInfo = await getListDebugInfo(listName);
@@ -273,11 +247,9 @@
         return;
       }
 
-      // 予定動画と公開済み動画を分離
       const upcomingVideos = videos.filter(v => v.isUpcoming || v.isPremiere || v.isLive);
       const publishedVideos = videos.filter(v => !v.isUpcoming && !v.isPremiere && !v.isLive);
 
-      // 予定動画と公開済み動画を順に追加
       [...upcomingVideos, ...publishedVideos].forEach(video => {
         appendVideoElement(container, video);
       });
@@ -288,28 +260,23 @@
     }
   }
 
-  // 指定リストの動画を取得してカラムに描画する関数
   async function renderListMovies(listName, container) {
     await renderListChannelVideos(listName, container);
   }
 
-  // グローバル公開
   window.YTaqListMovie = {
     renderListMovies,
   };
 
-  // === リストカラムを #primary に追加 ===
   let isUpdating = false;
 
   async function createListColumns() {
     if (isUpdating) return;
 
-    // 登録チャンネル画面かつ #ytaq ハッシュがある場合のみ実行
     const browse = document.querySelector('ytd-browse[page-subtype="subscriptions"]');
     if (!browse) return;
     if (!location.hash.includes('ytaq')) return;
 
-    // YouTubeの#primary要素を探す
     const primary = browse.querySelector('#primary.ytd-two-column-browse-results-renderer');
     if (!primary) {
       window.YTaq.log('[YTaq Folder] #primary not found');
@@ -324,19 +291,15 @@
         return;
       }
 
-      // リスト一覧を取得
       const lists = await window.YTaqListManager.getLists();
       window.YTaq.log('[YTaq Folder] リスト:', lists);
 
-      // 既存のカラムを取得
       const existingColumns = primary.querySelectorAll('.ytaq-list-column');
       const existingListNames = new Set(
         Array.from(existingColumns).map(col => col.dataset.listHash)
       );
 
-      // 各リストのカラムを作成（まだ存在しないもののみ）
       for (const list of lists) {
-        // 既に存在するカラムはスキップ
         if (existingListNames.has(list.name)) {
           window.YTaq.log(`[YTaq Folder] カラム "${list.name}" は既に存在します`);
           continue;
@@ -355,12 +318,10 @@
         content.className = 'ytaq-list-content';
         column.appendChild(content);
 
-        // #primaryに追加
         primary.appendChild(column);
 
         window.YTaq.log(`[YTaq Folder] カラム "${list.name}" を追加しました`);
 
-        // 動画リストを描画
         setTimeout(() => {
           if (!content.dataset.rendered) {
             content.dataset.rendered = 'true';
@@ -369,7 +330,6 @@
         }, 100);
       }
 
-      // 削除されたリストのカラムを削除
       for (const column of existingColumns) {
         const listName = column.dataset.listHash;
         if (!lists.find(l => l.name === listName)) {
@@ -383,8 +343,6 @@
     }
   }
 
-  // カラムを作り直す必要があるのは「登録チャンネル画面に来たとき」と
-  // 「リスト定義が変わったとき」だけ。1.5秒ポーリングは不要。
   function setup() {
     if (!location.pathname.startsWith('/feed/subscriptions')) return;
     if (!location.hash.includes('ytaq')) return;
@@ -395,12 +353,9 @@
   }
 
   window.YTaq.ready(setup);
-  window.YTaq.onNavigate(setup);  // hashchange も core が拾う
+  window.YTaq.onNavigate(setup);
   window.YTaq.onStorageChange('ytaq_channel_lists', setup);
 
-  // ポーリングをやめた分、YouTube 側の再描画でカラムごと消された場合に
-  // 復帰できなくなる。pathname の文字列比較（ほぼ無料）で弾いてから
-  // 消滅時だけ作り直す。
   window.YTaq.onMutation(() => {
     if (!location.pathname.startsWith('/feed/subscriptions')) return;
     if (!location.hash.includes('ytaq')) return;

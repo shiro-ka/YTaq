@@ -1,8 +1,3 @@
-// YTaq: チャンネルごとに再生速度を記憶・自動適用する
-// データ管理のみ（UI は ytaq-rate-ui.js）
-//
-// 以前は 1秒ごとに location.href を比較していたが、遷移検知は core に集約した。
-
 (function () {
 	'use strict';
 
@@ -25,7 +20,6 @@
 		await YTaq.setStorage(KEY, map);
 	}
 
-	// 同じ video 要素に何度も listener を付けないよう印を付ける
 	function observeRateChanges(video, channel) {
 		if (video.dataset.ytaqRateWatched === channel) return;
 		video.dataset.ytaqRateWatched = channel;
@@ -51,8 +45,6 @@
 		observeRateChanges(video, channel);
 	}
 
-	// 遷移直後はチャンネル名も video 要素もまだ無いことが多いので、
-	// 揃うまで数フレーム粘る（タイマーではなく rAF）。
 	function applyWhenReady() {
 		if (!location.pathname.startsWith('/watch')) return;
 		YTaq.waitFor('ytd-channel-name a, #owner-name a', () => {
@@ -63,9 +55,5 @@
 	YTaq.ready(applyWhenReady);
 	YTaq.onNavigate(applyWhenReady);
 
-	// ポップアップ（/embed/）からも同じ記憶を読み書きするための公開口。
-	// あちらは content script を注入できないので DOM からチャンネル名を取れず、
-	// IFrame API の infoDelivery が返す videoData.author を使う。
-	// 保存先が同じなので、/watch で付けた速度がポップアップでも効く。
 	window.YTaqRate = { getStoredRate, setStoredRate };
 })();

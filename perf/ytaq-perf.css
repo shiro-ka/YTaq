@@ -1,10 +1,3 @@
-/* YTaq Perf: 軽量化用スタイル
- *
- * すべて <html> のクラスでゲートしてあり、ytaq-perf.js が設定に応じて付け外しする。
- * CSS を常時当てっぱなしにせず、設定 OFF 時は完全に無効化できるようにするため。
- */
-
-/* --- ホバープレビュー（サムネに乗せると別 video がデコードを始める） ------- */
 html.ytaq-no-hover-preview ytd-video-preview,
 html.ytaq-no-hover-preview #video-preview,
 html.ytaq-no-hover-preview #mouseover-overlay,
@@ -13,10 +6,6 @@ html.ytaq-no-hover-preview yt-inline-player-controls-view-model {
 	display: none !important;
 }
 
-/* --- アニメーション/トランジション ---------------------------------------
- * YouTube は hover / ripple / スクロールで大量のコンポジットを起こす。
- * ローディングスピナーだけは回っていないと状態が分からないので除外する。
- */
 html.ytaq-no-anim *:not(.ytp-spinner):not(.ytp-spinner-circle):not(.ytaq-popup-spinner) {
 	animation-duration: 0s !important;
 	animation-delay: 0s !important;
@@ -30,11 +19,6 @@ html.ytaq-no-anim tp-yt-paper-ripple {
 	display: none !important;
 }
 
-/* --- 画面外要素のレンダリングをスキップ -----------------------------------
- * 無限スクロールで DOM は単調増加するが、content-visibility:auto なら
- * 画面外のサブツリーはレイアウト/ペイントされない。
- * contain-intrinsic-size を付けないとスクロールバーが暴れるので必須。
- */
 html.ytaq-lazy-offscreen ytd-rich-item-renderer,
 html.ytaq-lazy-offscreen ytd-video-renderer,
 html.ytaq-lazy-offscreen ytd-grid-video-renderer,
@@ -50,10 +34,6 @@ html.ytaq-lazy-offscreen ytd-comment-thread-renderer {
 	contain-intrinsic-size: auto 120px;
 }
 
-/* --- シネマティック（アンビエント）照明 -----------------------------------
- * 動画の縮小フレームを canvas に描いて常時ぼかす。watch ページの
- * 常時 CPU 消費として無視できない。
- */
 html.ytaq-no-ambient #cinematics,
 html.ytaq-no-ambient .ytp-cinematics,
 html.ytaq-no-ambient yt-cinematic-container-view-model,
@@ -61,7 +41,6 @@ html.ytaq-no-ambient #cinematics-container {
 	display: none !important;
 }
 
-/* --- Shorts 棚（複数 video を同時に抱える） ------------------------------- */
 html.ytaq-no-shorts ytd-rich-shelf-renderer[is-shorts],
 html.ytaq-no-shorts ytd-reel-shelf-renderer,
 html.ytaq-no-shorts ytm-shorts-lockup-view-model,

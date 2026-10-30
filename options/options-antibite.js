@@ -1,14 +1,10 @@
-// YTaq 設定画面 - Antibite設定モジュール
-
 const ANTIBITE_STORAGE_KEY = 'ytaq_antibite';
 
-// デフォルトのAntibite設定
 const DEFAULT_ANTIBITE = {
   thumbnailEnabled: true,
   thumbnailFrame: 'hq1'
 };
 
-// Antibite設定を読み込み
 function loadAntibiteSettings() {
   chrome.storage.local.get([ANTIBITE_STORAGE_KEY], (result) => {
     const antibite = result[ANTIBITE_STORAGE_KEY] || DEFAULT_ANTIBITE;
@@ -16,12 +12,10 @@ function loadAntibiteSettings() {
     document.getElementById('thumbnail-enabled').checked = antibite.thumbnailEnabled;
     document.getElementById('thumbnail-frame').value = antibite.thumbnailFrame;
 
-    // チェックボックスの状態に応じてフレーム選択を有効/無効化
     updateThumbnailFrameSetting();
   });
 }
 
-// Antibite設定を保存
 function saveAntibiteSettings() {
   const antibite = {
     thumbnailEnabled: document.getElementById('thumbnail-enabled').checked,
@@ -34,7 +28,6 @@ function saveAntibiteSettings() {
   });
 }
 
-// Antibite設定をデフォルトに戻す
 function resetAntibiteToDefault() {
   if (!confirm('Antibite設定をデフォルトに戻しますか？')) {
     return;
@@ -47,7 +40,6 @@ function resetAntibiteToDefault() {
   });
 }
 
-// サムネイルフレーム設定の有効/無効化
 function updateThumbnailFrameSetting() {
   const enabled = document.getElementById('thumbnail-enabled').checked;
   const frameSelect = document.getElementById('thumbnail-frame');
@@ -62,7 +54,6 @@ function updateThumbnailFrameSetting() {
   }
 }
 
-// メッセージ表示
 function showAntibiteMessage(text, type = 'success') {
   const messageEl = document.getElementById('antibite-message');
   messageEl.textContent = text;
@@ -74,22 +65,17 @@ function showAntibiteMessage(text, type = 'success') {
   }, 3000);
 }
 
-// 初期化関数（options-main.jsから呼び出される）
 function initAntibiteSettings() {
-  // 保存された設定を読み込み
   loadAntibiteSettings();
 
-  // ボタンイベント
   document.getElementById('antibite-save-btn').addEventListener('click', saveAntibiteSettings);
   document.getElementById('antibite-reset-btn').addEventListener('click', resetAntibiteToDefault);
 
-  // サムネイル有効/無効チェックボックスの変更イベント
   document.getElementById('thumbnail-enabled').addEventListener('change', updateThumbnailFrameSetting);
 
   console.log('[YTaq Antibite] Antibite設定を初期化しました');
 }
 
-// グローバルに公開
 window.YTaqAntibite = {
   init: initAntibiteSettings
 };

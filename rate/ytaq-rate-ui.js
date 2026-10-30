@@ -1,13 +1,3 @@
-// YTaq: プレイヤーの再生速度 UI
-//   - YouTube ネイティブの「再生速度」メニュー項目を隠す
-//   - 右下コントロールに −／表示／＋ を追加する
-//
-// 以前は setInterval 2本（2秒間隔）で常時 querySelector していた。
-// プレイヤーの DOM が変わるのは遷移時とメニューを開いた時だけなので、
-// core の遷移イベント＋メニュー開閉の検知で十分。
-// history.pushState のフックは Firefox の isolated world ではページ側の
-// 呼び出しを捕捉できない（expando になるだけ）ため削除した。
-
 (function () {
 	'use strict';
 
@@ -19,8 +9,6 @@
 		speedPresets: [1.0, 1.25, 1.5, 1.75, 2.0, 4.0]
 	};
 
-	// --- ネイティブの再生速度メニューを隠す ---------------------------------
-
 	function hideNativeSpeedMenu(root) {
 		const scope = root && root.querySelectorAll ? root : document;
 		const items = scope.querySelectorAll('.ytp-menuitem:not(.ytaq-hide-playback-rate)');
@@ -31,8 +19,6 @@
 			}
 		}
 	}
-
-	// --- 速度コントロールボタン ---------------------------------------------
 
 	function video() {
 		return document.querySelector('video');
@@ -46,7 +32,6 @@
 		const settings = Object.assign({}, DEFAULTS, await YTaq.getStorage(KEY, null));
 		const { speedStep, speedPresets } = settings;
 
-		// 非同期で設定を読む間に別の呼び出しが追加済みかもしれない
 		if (document.querySelector('.ytaq-rate-controls')) return;
 
 		const container = document.createElement('div');
@@ -68,7 +53,6 @@
 			updateDisplay();
 		}
 
-		// クリックでプリセットを循環
 		display.addEventListener('click', () => setRate(current => {
 			const i = speedPresets.findIndex(s => Math.abs(s - current) < 0.01);
 			return speedPresets[(i + 1) % speedPresets.length];
@@ -88,7 +72,6 @@
 
 		container.append(minus, display, plus);
 
-		// #startSegmentButton（他拡張）があればその後ろ、無ければ先頭
 		const anchor = document.getElementById('startSegmentButton');
 		if (anchor && anchor.parentElement === rightControls) {
 			rightControls.insertBefore(container, anchor.nextSibling);
@@ -105,8 +88,6 @@
 		}
 	}
 
-	// --- 起動 ---------------------------------------------------------------
-
 	function setup() {
 		if (!location.pathname.startsWith('/watch')) return;
 		YTaq.waitFor('.ytp-right-controls', addSpeedControls);
@@ -118,8 +99,6 @@
 
 		YTaq.onNavigate(setup);
 
-		// 設定メニューは開いた瞬間に生成される。追加ノードにメニュー項目が
-		// 含まれるときだけ処理するので、閉じている間のコストはゼロ。
 		YTaq.onMutation(added => {
 			for (let i = 0; i < added.length; i++) {
 				const n = added[i];

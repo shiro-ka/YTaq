@@ -1,14 +1,3 @@
-// YTaq: 動画ポップアップ
-//
-// 以前は iframe に youtube.com/watch をそのまま読み込んでいた。これは
-// 「重い SPA をもう1枚起動する」だけで、軽量化どころか二重に重い。
-// /embed/ は Polymer アプリもサイドバーもコメントも関連動画も持たない
-// 別実装のページなので、同じ再生を桁違いに軽く行える。
-//
-// 代償は「投稿者が埋め込みを禁止している動画は再生できない」こと。
-// 検出は cross-origin では確実にできないので、常に脱出口（YouTubeで開く）を
-// ヘッダに置いてある。
-
 (function () {
 	'use strict';
 
@@ -30,28 +19,6 @@
 		return `https://i.ytimg.com/vi/${videoId}/${thumbSettings.thumbnailFrame || 'hq1'}.jpg`;
 	}
 
-	// 埋め込み方式の経緯:
-	//   www.youtube.com/embed/ を親 www.youtube.com から開くと全動画が
-	//   onError(152) で落ちる。第三者サイトの iframe からは通るので、
-	//   YouTube が「youtube.com が youtube.com を埋め込むこと」を弾いている。
-	//
-	//   同一オリジンだと埋め込み側から window.top.location が読めてしまい、
-	//   親が youtube.com だと即座に分かる。youtube-nocookie.com にすると
-	//   クロスオリジンになり、それが読めなくなる。ドメインも別なので判定が変わる。
-	//
-	//   代償: nocookie はログインセッションを持たない。
-	//   年齢制限・メンバー限定の動画は再生できない。
-	//   Referer さえ通れば www.youtube.com/embed/ でも再生できる可能性があり、
-	//   そちらなら Cookie が飛ぶのでログイン状態を保てる。設定で切り替える。
-	// Referer 差し替えが効いているので www.youtube.com/embed/ でも再生できることを確認済み。
-	// nocookie より Cookie のぶんだけ重いが、年齢制限・メンバー限定が使えて、
-	// 同一オリジンなので playbackRate を直接書ける。よって既定はこちら。
-	// 塞がれたら設定で OFF にすれば nocookie に戻る。
-	//
-	// 視聴履歴には残らない（2026-08-15 実測）。ログイン埋め込みでも同じで、
-	// 埋め込みプレイヤーからの再生は再生回数には入るが watch history には載らない。
-	// 埋め込みという再生経路そのものの仕様なので、iframe 側では変えられない。
-	// 履歴が要る場合は popup/ytaq-history.js が /watch 用の再生ログを代わりに送る。
 	const LOGIN_KEY = 'ytaq_embed_login';
 	let useLoggedInEmbed = true;
 
@@ -67,7 +34,7 @@
 			autoplay: '1',
 			playsinline: '1',
 			rel: '0',
-			enablejsapi: '1',   // onError を受け取るため
+			enablejsapi: '1',
 			origin: location.origin
 		});
 		return `${embedHost()}/embed/${videoId}?${params}`;
@@ -76,15 +43,6 @@
 	function watchUrl(videoId) {
 		return `https://www.youtube.com/watch?v=${videoId}`;
 	}
-
-	// --- 再生速度 -------------------------------------------------------------
-	// 公式 IFrame API の setPlaybackRate は「サポート外の値は 1 に近い方向へ
-	// 丸める」仕様で、実質 2.0 が上限になる。標準の速度メニューも 0.25 刻み・2.0 まで。
-	//
-	// ログイン埋め込み（www.youtube.com/embed/）なら親と iframe が同一オリジンなので、
-	// contentDocument から生の <video> を掴んで playbackRate を直接書ける。
-	// これは HTML5 のプロパティなので YouTube の UI 制限とは無関係で、上限を超えられる。
-	// nocookie モードではクロスオリジンになって触れないので、その場合だけ API に落ちる。
 
 	const RATE_SETTINGS_KEY = 'ytaq_playbackrate_settings';
 	const DEFAULT_RATE_SETTINGS = {
@@ -106,17 +64,15 @@
 		}
 	}
 
-	/** 同一オリジンなら iframe 内の video 要素。無理なら null。 */
 	function embeddedVideo(iframe) {
 		try {
 			const doc = iframe.contentDocument;
 			return (doc && doc.querySelector('video')) || null;
 		} catch (e) {
-			return null; // nocookie（クロスオリジン）
+			return null;
 		}
 	}
 
-	/** @returns {boolean} 生の video を直接書けたか（false なら API 経由＝2.0 上限） */
 	function applyRate(iframe, rate) {
 		const v = embeddedVideo(iframe);
 		if (v) {
@@ -132,14 +88,12 @@
 	let historyStop = null;
 
 	function hideVideoPopup() {
-		// iframe を消す前に呼ぶこと。中の <video> から実際の再生位置を読むので、
-		// 先に remove すると最後の報告が 0 秒になる。
 		if (historyStop) {
 			historyStop();
 			historyStop = null;
 		}
 		const popup = document.getElementById('ytaq-popup');
-		if (popup) popup.remove();  // iframe ごと落として再生とネットワークを止める
+		if (popup) popup.remove();
 		if (escHandler) {
 			document.removeEventListener('keydown', escHandler);
 			escHandler = null;
@@ -170,7 +124,6 @@
 		title.className = 'ytaq-popup-title';
 		title.textContent = videoTitle || '';
 
-		// 埋め込み禁止動画などのための脱出口
 		const openLink = document.createElement('a');
 		openLink.className = 'ytaq-popup-open-original';
 		openLink.textContent = 'YouTubeで開く';
@@ -179,8 +132,6 @@
 		openLink.rel = 'noopener';
 		title.appendChild(openLink);
 
-		// 速度コントロールは iframe の中ではなくポップアップ側（親ドキュメント）に置く。
-		// 中に注入するとプレイヤーの DOM 構造に依存するうえ、nocookie では触れない。
 		const rateBox = document.createElement('div');
 		rateBox.className = 'ytaq-popup-rate';
 		title.appendChild(rateBox);
@@ -189,7 +140,6 @@
 		iframeContainer.className = 'ytaq-popup-iframe-container';
 		if (isShorts) iframeContainer.classList.add('ytaq-popup-shorts');
 
-		// ローディング中はサムネ＋スピナーを重ねておく
 		const skeleton = document.createElement('div');
 		skeleton.className = 'ytaq-popup-loading-skeleton';
 
@@ -205,8 +155,6 @@
 		const iframe = document.createElement('iframe');
 		iframe.className = 'ytaq-popup-iframe';
 		iframe.src = embedUrl(videoId);
-		// autoplay / encrypted-media は Firefox が Permissions Policy として
-		// 未実装で警告が出るだけ。同一オリジンなので既定 allowlist の self で足りる。
 		iframe.allow = 'fullscreen';
 		iframe.allowFullscreen = true;
 		iframe.setAttribute('frameborder', '0');
@@ -217,21 +165,16 @@
 			skeletonGone = true;
 			skeleton.classList.add('fade-out');
 			skeleton.addEventListener('transitionend', () => skeleton.remove(), { once: true });
-			// アニメーション無効設定だと transitionend が来ないことがある
 			setTimeout(() => skeleton.remove(), 600);
 		}
 
-		// --- 埋め込み失敗の表示 ---------------------------------------------
-		// enablejsapi=1 のプレイヤーは listening ハンドシェイクを送ると
-		// onError を返す。cross-origin で取れる情報はこれだけ。
-		// 自動遷移はしない（全動画で失敗する状況だと拡張が無いのと同じになる）。
 		let failed = false;
 
 		function showEmbedError(code) {
 			if (failed) return;
 			failed = true;
 			skeleton.remove();
-			iframe.src = 'about:blank';  // 失敗した埋め込みの通信を止める
+			iframe.src = 'about:blank';
 
 			const box = document.createElement('div');
 			box.className = 'ytaq-popup-error';
@@ -252,17 +195,10 @@
 			iframeContainer.appendChild(box);
 		}
 
-		// --- 再生速度コントロール -------------------------------------------
-		// チャンネル名は /watch のように DOM から取れないので、
-		// listening ハンドシェイク後に流れてくる infoDelivery の
-		// videoData.author を使う。保存先は /watch 側と同じ ytaq_playbackrate。
 		let rateSettings = DEFAULT_RATE_SETTINGS;
 		let channel = null;
 		let currentRate = 1;
 		let appliedStoredRate = false;
-		// 自分で適用した直後は onPlaybackRateChange が返ってくる。それを
-		// 「ユーザーが変えた」と誤認して保存すると、API 側で丸められた値
-		// （nocookie の 2.0 上限など）で記憶を上書きしてしまう。
 		let suppressSaveUntil = 0;
 
 		const rateDisplay = document.createElement('button');
@@ -289,11 +225,7 @@
 			const direct = applyRate(iframe, rate);
 			currentRate = rate;
 			renderRate();
-			// 直接書けた場合は丸められないので、その値をそのまま記憶してよい。
-			// API 経由のときは丸められた実値が後から infoDelivery で返ってくる。
 			if (channel) YTaqRateSave(channel, rate);
-			// 直接書けた場合でもプレイヤーが自分の値を報告し返してくるので、
-			// 明示保存を済ませたあとの報告はすべて無視する。
 			suppressSaveUntil = performance.now() + 1500;
 			if (!direct) YTaq.log('popup: API 経由のため 2.0 に丸められる可能性あり');
 		}
@@ -316,8 +248,6 @@
 			ratePlus.title = `再生速度を上げる（+${rateSettings.speedStep}）`;
 		});
 
-		// チャンネルが判明した時点で記憶していた速度を適用する。
-		// 動画のロードで速度は 1 にリセットされるので、ready 後でないと効かない。
 		async function applyStoredRateOnce() {
 			if (appliedStoredRate || !channel || !window.YTaqRate) return;
 			appliedStoredRate = true;
@@ -330,8 +260,6 @@
 			YTaq.log('popup: rate applied', channel, stored);
 		}
 
-		// プレイヤー側から報告された速度を取り込む（ユーザーが標準メニューで
-		// 変えた場合もここに来る）。自分で適用した直後の分は保存しない。
 		function onReportedRate(rate) {
 			if (!(rate > 0) || Math.abs(rate - currentRate) < 0.01) return;
 			currentRate = rate;
@@ -359,18 +287,12 @@
 					applyStoredRateOnce();
 				}
 				if (typeof data.info.playbackRate === 'number') onReportedRate(data.info.playbackRate);
-				// nocookie では contentDocument が読めないので、履歴に送る秒数はこれが頼り
 				if (typeof data.info.currentTime === 'number') lastTime = data.info.currentTime;
 			}
 		};
 		window.addEventListener('message', messageHandler);
 
-		// --- 視聴履歴 --------------------------------------------------------
-		// 埋め込み経路は watch history を書かないので、/watch 用の再生ログを
-		// popup/ytaq-history.js から自前で送る。秒数はプレイヤーの実測値で、
-		// 同一オリジン（ログイン埋め込み）なら <video> から直接、nocookie なら
-		// infoDelivery の currentTime から拾う。
-		const HISTORY_MIN_SECONDS = 5;  // ytaq-history.js の MIN_SECONDS と合わせる
+		const HISTORY_MIN_SECONDS = 5;
 		let lastTime = 0;
 		let historySession = null;
 		let historyTimer = null;
@@ -392,7 +314,6 @@
 
 			historySession = window.YTaqHistory.begin(videoId);
 			reportHistory(false);
-			// 開始待ちの間だけ 5 秒刻み。始まったら本家と同じくらいまで落とす。
 			clearInterval(historyTimer);
 			historyTimer = setInterval(() => reportHistory(false), 30000);
 		}
@@ -410,8 +331,6 @@
 
 			historyTimer = setInterval(tickHistory, 5000);
 
-			// 同一オリジン（ログイン埋め込み）なら video の ratechange を直接聞ける。
-			// infoDelivery より正確で、標準メニューでの変更も即座に拾える。
 			const v = embeddedVideo(iframe);
 			if (v) {
 				v.addEventListener('ratechange', () => onReportedRate(v.playbackRate));
@@ -426,7 +345,7 @@
 				YTaq.warn('popup: listening handshake failed:', err);
 			}
 		});
-		setTimeout(dropSkeleton, 5000); // 保険
+		setTimeout(dropSkeleton, 5000);
 
 		iframeContainer.append(iframe, skeleton);
 		content.append(closeBtn, title, iframeContainer);

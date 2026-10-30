@@ -1,6 +1,3 @@
-// YTaq: チャンネルリスト管理ユーティリティ
-// 設定画面やコンテンツスクリプトから共通で使用可能
-
 const YTaqListManager = {
   STORAGE_KEY: 'ytaq_channel_lists',
 
@@ -96,7 +93,6 @@ const YTaqListManager = {
     });
   },
 
-  // 現在のチャンネルIDを取得（URLから）
   getChannelId() {
     const patterns = [
       /\/channel\/([\w-]+)/,
@@ -119,7 +115,6 @@ const YTaqListManager = {
     return null;
   },
 
-  // チャンネル名を取得（表示名）
   getChannelName() {
     const selectors = [
       'yt-formatted-string#text.ytd-channel-name',
@@ -150,5 +145,4 @@ const YTaqListManager = {
   },
 };
 
-// グローバルに公開
 window.YTaqListManager = YTaqListManager;

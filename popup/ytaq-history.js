@@ -1,42 +1,8 @@
-// YTaq: ポップアップ再生を視聴履歴に載せる
-//
-// 埋め込みプレイヤー（/embed/）からの再生は、ログインしていても watch history に
-// 載らない（2026-08-15 実測）。再生ログの送り先そのものが違うため。
-//
-//     /watch  のプレイヤー → s.youtube.com/api/stats/watchtime?...&el=detailpage
-//     /embed/ のプレイヤー → 同じエンドポイントに &el=embedded
-//
-// 履歴に反映されるのは el=detailpage の方だけ。埋め込み側は再生回数にしか効かない。
-// iframe の URL やパラメータをいじっても el は変えられない（プレイヤー側が
-// 自分の playerResponse に入っている baseUrl をそのまま使うため）。
-//
-// そこで、/watch 用の playerResponse を自分で取得して、その中の
-// videostatsPlaybackUrl / videostatsWatchtimeUrl を自前で叩く。
-// 送る秒数は iframe の <video>.currentTime から取った実値なので、
-// 「見ていないものを見たことにする」わけではなく、実際の視聴を
-// 埋め込み経路の代わりに報告しているだけ。
-//
-// 注意: YouTube の内部エンドポイントなので、Referer 差し替えと同じく
-// 黙って効かなくなる類。壊れても再生自体には影響しない（iframe とは独立で、
-// 失敗しても /watch の取得1回分を捨てるだけ）ので、既定 ON で持っている。
-//
-// 送信先の取得は InnerTube（/youtubei/v1/player）から。/watch の HTML でも
-// 取れるが 1MB 級あるので、そちらは InnerTube が使えないときのフォールバック。
-// 詳細は fetchTrackingFromInnertube() のコメント。
-
 (function () {
 	'use strict';
 
 	const YTaq = window.YTaq;
 
-	// --- ログ ---------------------------------------------------------------
-	// 成功時は DEBUG 任せでいい（2026-08-23 に経路が通ることを確認済み）。
-	// ただし失敗だけは DEBUG に関係なく出す。この機能は壊れても再生に影響しないので、
-	// 黙って効かなくなると「最近おすすめが変わらないな」まで誰も気付けない。
-	// YouTube 側の仕様変更で死ぬ前提の回避策なので、死ぬときは声を上げさせる。
-	//
-	// なお devtools のコンソールはページ側の world なので、ここのグローバルは
-	// 触れない（YTaqHistory is not defined になる）。確認はこのログでやること。
 	const note = YTaq.log;
 	const noteWarn = console.warn.bind(console, '[YTaq history]');
 
@@ -46,15 +12,10 @@
 	YTaq.getStorage(HISTORY_KEY, true).then(v => { enabled = !!v; });
 	YTaq.onStorageChange(HISTORY_KEY, v => { enabled = !!v; });
 
-	// 一瞬開いて閉じただけのものを履歴に積まない。ここを過ぎてから初めて
-	// /watch の取得（重い）に入るので、誤爆のコストもゼロになる。
 	const MIN_SECONDS = 5;
 
-	// 再生中の定期報告の間隔。本家プレイヤーも同程度の間隔で送っている。
 	const PING_INTERVAL_MS = 30000;
 
-	// cpn（client playback nonce）は1回の再生を識別する 16 文字。
-	// playback ping と watchtime ping で同じ値を使わないと繋がらない。
 	const CPN_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
 
 	function newCpn() {
@@ -65,7 +26,6 @@
 		return out;
 	}
 
-	// HTML に埋まっている JSON 内の URL は & や \/ でエスケープされている
 	function unescapeUrl(s) {
 		return s.replace(/\\u0026/g, '&').replace(/\\\//g, '/');
 	}
@@ -75,14 +35,6 @@
 		return m ? unescapeUrl(m[1]) : null;
 	}
 
-	/**
-	 * /watch の HTML から再生ログの送信先を取り出す（フォールバック経路）。
-	 *
-	 * 確実だが 1MB 級を1本取る。InnerTube が使えるならそちらを先に試し、
-	 * 失敗したときだけここへ落ちる。ページの HTML は SAPISIDHASH のような
-	 * 追加の仕掛けが要らず document GET の Cookie だけで通るので、
-	 * 「重いが壊れにくい」側として残す価値がある。
-	 */
 	async function fetchTrackingFromWatchPage(videoId) {
 		const res = await fetch('https://www.youtube.com/watch?v=' + encodeURIComponent(videoId), {
 			credentials: 'include',
@@ -96,24 +48,10 @@
 		const loggedIn = /"LOGGED_IN"\s*:\s*true/.test(html);
 
 		if (!playback || !watchtime) throw new Error('playbackTracking が見つからない');
-		// ログアウト状態で取った URL では当然どのアカウントにも紐づかない
 		if (!loggedIn) throw new Error('取得した /watch がログアウト状態');
 
 		return { playback, watchtime };
 	}
-
-	// --- InnerTube 経路 ------------------------------------------------------
-	// /watch の HTML は 1MB 級あるのに、要るのは playbackTracking の2本の URL だけ。
-	// /youtubei/v1/player なら同じものが数十 KB で返る。軽量化が看板の拡張で
-	// 再生のたびに1MB 引くのは筋が通らないので、こちらを既定の経路にする。
-	//
-	// 代償は認証を自分で組む必要があること。Cookie を送るだけではログアウト扱いになり、
-	// 返ってくる URL がどのアカウントにも紐づかない（ping は 204 で通るのに履歴に
-	// 載らない、という一番気付きにくい壊れ方をする）。Google の web クライアントは
-	//     Authorization: SAPISIDHASH <ts>_<sha1(ts + " " + SAPISID + " " + origin)>
-	// を付けており、SAPISID は JS から読める Cookie なので同じものを組める。
-	//
-	// ここが壊れたら /watch の HTML に落ちる。重いが動く方を残しておく。
 
 	const ORIGIN = 'https://www.youtube.com';
 
@@ -133,20 +71,12 @@
 	}
 
 	async function sapisidHash() {
-		// 通常セッションは SAPISID、3rd-party cookie 制限下だと __Secure-3PAPISID になる
 		const sapisid = readCookie('SAPISID') || readCookie('__Secure-3PAPISID') || readCookie('__Secure-1PAPISID');
 		if (!sapisid) return null;
 		const ts = Math.floor(Date.now() / 1000);
 		return 'SAPISIDHASH ' + ts + '_' + await sha1Hex(ts + ' ' + sapisid + ' ' + ORIGIN);
 	}
 
-	/**
-	 * InnerTube に必要な諸元（API キー・クライアント版・visitor 等）を集める。
-	 *
-	 * ページ側の ytcfg から読むのが正確。content script は isolated world なので
-	 * そのままでは見えないが、Firefox なら wrappedJSObject で辿れる。
-	 * それも駄目なら ytcfg.set(...) を吐いているインラインスクリプトから拾う。
-	 */
 	function readConfig() {
 		if (cfgCache) return cfgCache;
 		cfgCache = fromYtcfg() || fromInlineScripts();
@@ -216,12 +146,9 @@
 			'X-Youtube-Client-Name': '1',
 			'X-Youtube-Client-Version': cfg.clientVersion
 		};
-		// 複数アカウント時、これが無いと別のアカウントの履歴に積まれる
 		if (cfg.pageId) headers['X-Goog-PageId'] = cfg.pageId;
 		if (cfg.visitorData) headers['X-Goog-Visitor-Id'] = cfg.visitorData;
 
-		// 絶対 URL で組むこと。content script の fetch は相対 URL をドキュメントの
-		// ベース URI で解決しないので、'/youtubei/...' だと URL として弾かれる。
 		const url = ORIGIN + '/youtubei/v1/player?prettyPrint=false' +
 			(cfg.apiKey ? '&key=' + encodeURIComponent(cfg.apiKey) : '');
 
@@ -232,7 +159,6 @@
 			headers: headers,
 			body: JSON.stringify({
 				videoId: videoId,
-				// 年齢制限つきでも playbackTracking を返させる
 				contentCheckOk: true,
 				racyCheckOk: true,
 				context: {
@@ -250,7 +176,6 @@
 
 		const json = await res.json();
 		const ctx = json.responseContext && json.responseContext.mainAppWebResponseContext;
-		// ここを見落とすと「ping は 204 なのに履歴に載らない」で延々悩むことになる
 		if (ctx && ctx.loggedOut) throw new Error('ログアウト扱いで返ってきた');
 
 		const tracking = json.playbackTracking || {};
@@ -258,8 +183,6 @@
 		const watchtime = tracking.videostatsWatchtimeUrl && tracking.videostatsWatchtimeUrl.baseUrl;
 		if (!playback || !watchtime) throw new Error('playbackTracking が無い');
 
-		// 履歴に効くのは el=detailpage だけ。WEB クライアントで頼んでいるのに
-		// embedded が返ってきたら、この経路を使う意味そのものが無い。
 		if (/[?&]el=embedded/.test(watchtime)) throw new Error('el=embedded が返ってきた');
 
 		return { playback: playback, watchtime: watchtime };
@@ -271,7 +194,6 @@
 			note('送信先を取得（InnerTube）');
 			return urls;
 		} catch (e) {
-			// 黙って重い方に落ちると、劣化に気付けないまま毎回 1MB 引き続ける
 			noteWarn('InnerTube が使えないので /watch に落ちる:', e.message);
 			const urls = await fetchTrackingFromWatchPage(videoId);
 			note('送信先を取得（/watch）');
@@ -282,10 +204,6 @@
 	function ping(baseUrl, params) {
 		const url = new URL(baseUrl);
 		Object.keys(params).forEach(k => url.searchParams.set(k, params[k]));
-		// keepalive は付けないこと。content script のサンドボックスから投げると
-		// InvalidStateError（"no longer usable"）で即死する（2026-08-23 実測）。
-		// ポップアップを閉じてもページ自体はアンロードされないので、最後の ping も
-		// 普通の fetch でそのまま飛ぶ。keepalive が要る場面はここには無い。
 		return fetch(url.toString(), {
 			credentials: 'include',
 			cache: 'no-store'
@@ -298,10 +216,6 @@
 		});
 	}
 
-	/**
-	 * 1本の視聴セッション。report() を何度呼んでもよく、
-	 * 初回で playback ping、以降は前回からの区間を watchtime ping で送る。
-	 */
 	function begin(videoId) {
 		const cpn = newCpn();
 		const startedAt = performance.now();
@@ -338,7 +252,6 @@
 				await ping(urls.playback, { ver: 2, cpn: cpn, rt: elapsed() });
 			}
 
-			// 前回報告からの区間だけを送る。シークで巻き戻っていたら潰す。
 			const st = Math.min(lastEnd, t);
 			if (!final && t - lastEnd < 1) return true;
 			lastEnd = t;
@@ -364,12 +277,6 @@
 		get enabled() { return enabled; },
 		begin: begin,
 
-		/**
-		 * 検証用。コンソールから
-		 *     await YTaqHistory.mark('VIDEO_ID', 60)
-		 * で「60 秒見た」を1回だけ送る。true が返って履歴に出れば経路として成立。
-		 * DEBUG=false でも結果が分かるよう、戻り値で判定できるようにしてある。
-		 */
 		mark(videoId, seconds) {
 			return begin(videoId).report(seconds || 60, true);
 		}

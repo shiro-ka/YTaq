@@ -1,14 +1,7 @@
-/* YTaq: 再生速度メニュー項目を非表示
- *
- * ここの #fff や白アルファはテーマ色ではなくプレイヤー chrome の色。
- * 隣に並ぶ ytp ボタンと揃えるため Suisou トークンに寄せない。 */
-
-/* JavaScriptで.ytaq-hide-playback-rateクラスを追加した要素を非表示 */
 .ytp-menuitem.ytaq-hide-playback-rate {
   display: none !important;
 }
 
-/* 再生速度コントロールボタンのスタイル */
 .ytaq-rate-controls {
   display: inline-flex !important;
   align-items: center !important;
@@ -16,7 +9,6 @@
   gap: 4px !important;
 }
 
-/* ボタン共通スタイル - 文字を中央揃え */
 .ytaq-rate-minus,
 .ytaq-rate-display,
 .ytaq-rate-plus {
@@ -32,7 +24,6 @@
   vertical-align: middle !important;
 }
 
-/* マイナスボタン */
 .ytaq-rate-minus {
   width: 30px !important;
   height: 36px !important;
@@ -40,7 +31,6 @@
   font-weight: bold !important;
 }
 
-/* 速度表示 */
 .ytaq-rate-display {
   min-width: 50px !important;
   height: 36px !important;
@@ -48,7 +38,6 @@
   padding: 0 8px !important;
 }
 
-/* プラスボタン */
 .ytaq-rate-plus {
   width: 30px !important;
   height: 36px !important;
@@ -56,7 +45,6 @@
   font-weight: bold !important;
 }
 
-/* ホバー時のスタイル */
 .ytaq-rate-minus:hover,
 .ytaq-rate-display:hover,
 .ytaq-rate-plus:hover {

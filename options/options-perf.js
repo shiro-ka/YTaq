@@ -1,9 +1,5 @@
-// YTaq 設定画面 - 軽量化(Perf)設定モジュール
-// 保存先のキーと既定値は perf/ytaq-perf.js と一致させること。
-
 const PERF_STORAGE_KEY = 'ytaq_perf';
 
-// perf/ytaq-perf.js の DEFAULTS と必ず一致させること
 const DEFAULT_PERF = {
   hoverPreview: true,
   lazyOffscreen: false,
@@ -14,23 +10,18 @@ const DEFAULT_PERF = {
 
 const PERF_FIELDS = Object.keys(DEFAULT_PERF);
 
-// 動画クリック時の挙動。perf とは別キーで持つ（性能設定ではなく挙動設定のため）
 const CLICK_STORAGE_KEY = 'ytaq_click';
 const DEFAULT_CLICK = 'popup';
 
-// ポップアップの /embed/ に送る Referer。youtube.com のままだと 152 で弾かれる。
 const REFERER_STORAGE_KEY = 'ytaq_embed_referer';
 const DEFAULT_REFERER = 'https://example.com/';
 
-// ログイン状態で埋め込むか（true = www.youtube.com / false = nocookie）
 const LOGIN_STORAGE_KEY = 'ytaq_embed_login';
 const DEFAULT_LOGIN = true;
 
-// ポップアップ再生を視聴履歴に残すか。popup/ytaq-history.js と同じキー・既定値。
 const HISTORY_STORAGE_KEY = 'ytaq_watch_history';
 const DEFAULT_HISTORY = true;
 
-// 未保存（undefined）なら既定値、保存済みならその値
 function checkedOr(value, fallback) {
   return value === undefined ? fallback : !!value;
 }
@@ -51,9 +42,6 @@ function loadPerfSettings() {
   chrome.storage.local.get([
     CLICK_STORAGE_KEY, REFERER_STORAGE_KEY, LOGIN_STORAGE_KEY, HISTORY_STORAGE_KEY
   ], (result) => {
-    // 一度も保存していないキーは undefined で返る。!! で潰すと、既定が true の
-    // 項目が「未チェック表示なのに実際は有効」になる（2026-08-23 に踏んだ）。
-    // 既定値は content script 側と同じものをここで当てること。
     document.getElementById('perf-embedLogin').checked = checkedOr(result[LOGIN_STORAGE_KEY], DEFAULT_LOGIN);
     document.getElementById('perf-watchHistory').checked = checkedOr(result[HISTORY_STORAGE_KEY], DEFAULT_HISTORY);
     document.getElementById('perf-clickAction').value =
@@ -78,7 +66,6 @@ function savePerfSettings() {
     [LOGIN_STORAGE_KEY]: document.getElementById('perf-embedLogin').checked,
     [HISTORY_STORAGE_KEY]: document.getElementById('perf-watchHistory').checked
   }, () => {
-    // content script 側は storage.onChanged で即反映するので再読み込み不要
     showPerfMessage('保存しました。開いている YouTube のタブに即反映されます。', 'success');
   });
 }
