@@ -63,6 +63,14 @@
 		return target.closest ? target.closest('a[href]') : null;
 	}
 
+	function isChosenList(a, href) {
+		const params = new URL(href).searchParams;
+		const list = params.get('list');
+		if (!list) return false;
+		const autoMix = params.get('start_radio') === '1' && list === 'RD' + params.get('v');
+		return !(autoMix && a.closest('ytd-video-renderer, ytd-compact-video-renderer'));
+	}
+
 	function onClick(e) {
 		if (e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
 
@@ -75,7 +83,7 @@
 		if (!a) return;
 
 		const href = a.href;
-		if (href.includes('&list=') || href.includes('?list=')) {
+		if (isChosenList(a, href)) {
 			YTaq.log('home: skip (playlist)', href);
 			return;
 		}
