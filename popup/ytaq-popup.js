@@ -100,7 +100,9 @@
 
 		const closeBtn = document.createElement('button');
 		closeBtn.className = 'ytaq-popup-close';
-		closeBtn.textContent = '×';
+		closeBtn.append(YTaqIcons.create('close'));
+		closeBtn.title = '閉じる';
+		closeBtn.setAttribute('aria-label', '閉じる');
 		closeBtn.addEventListener('click', hideVideoPopup);
 
 		const meta = document.createElement('div');
@@ -213,11 +215,15 @@
 
 		const rateMinus = document.createElement('button');
 		rateMinus.className = 'ytaq-popup-rate-btn';
-		rateMinus.textContent = '−';
+		rateMinus.append(YTaqIcons.create('remove'));
+		rateMinus.title = '遅くする';
+		rateMinus.setAttribute('aria-label', '遅くする');
 
 		const ratePlus = document.createElement('button');
 		ratePlus.className = 'ytaq-popup-rate-btn';
-		ratePlus.textContent = '＋';
+		ratePlus.append(YTaqIcons.create('add'));
+		ratePlus.title = '速くする';
+		ratePlus.setAttribute('aria-label', '速くする');
 
 		rateBox.append(rateMinus, rateDisplay, ratePlus);
 

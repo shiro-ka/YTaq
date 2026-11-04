@@ -27,6 +27,22 @@
 		return b;
 	}
 
+	function iconButton(cls, label, icon, fn) {
+		const b = button(cls, null, fn);
+		b.classList.add('ytaq-popup-act-icon');
+		b.title = label;
+		b.setAttribute('aria-label', label);
+		b.append(YTaqIcons.create(icon));
+		return b;
+	}
+
+	function setIcon(b, icon, label, text) {
+		b.replaceChildren(YTaqIcons.create(icon));
+		if (text) b.append(el('span', null, text));
+		b.title = label;
+		b.setAttribute('aria-label', text ? label + ' ' + text : label);
+	}
+
 	function find(node, test, out) {
 		if (Array.isArray(node)) {
 			for (const n of node) find(n, test, out);
@@ -84,18 +100,18 @@
 			parts.channelRow.prepend(avatar);
 		}
 
-		const likeBtn = want('like') ? button('ytaq-popup-like', '高評価', () => rate('LIKE')) : null;
-		const dislikeBtn = want('dislike') ? button('ytaq-popup-dislike', '低評価', () => rate('DISLIKE')) : null;
+		const likeBtn = want('like') ? iconButton('ytaq-popup-like', '高評価', 'thumb_up', () => rate('LIKE')) : null;
+		const dislikeBtn = want('dislike') ? iconButton('ytaq-popup-dislike', '低評価', 'thumb_down', () => rate('DISLIKE')) : null;
 		const saveWrap = want('save') ? el('div', 'ytaq-popup-save') : null;
 		const subBtn = want('subscribe') ? button('ytaq-popup-sub', 'チャンネル登録', toggleSubscribe) : null;
-		const folderBtn = want('folder') && window.YTaqFolderButton ? window.YTaqFolderButton.create() : null;
+		const folderBtn = want('folder') && window.YTaqFolderButton ? window.YTaqFolderButton.create({ icon: true }) : null;
 		if (folderBtn && parts.onClose) parts.onClose(folderBtn.destroy);
 
 		for (const b of [likeBtn, dislikeBtn, subBtn]) if (b) b.disabled = true;
 		if (likeBtn) actions.append(likeBtn);
 		if (dislikeBtn) actions.append(dislikeBtn);
 		if (saveWrap) {
-			const saveBtn = button('ytaq-popup-save-btn', '保存', openSave);
+			const saveBtn = iconButton('ytaq-popup-save-btn', '保存', 'playlist_add', openSave);
 			const menu = el('div', 'ytaq-popup-save-menu');
 			menu.hidden = true;
 			saveWrap.append(saveBtn, menu);
@@ -108,12 +124,12 @@
 			const s = next ? next.likeStatus : 'INDIFFERENT';
 			if (likeBtn) {
 				likeBtn.classList.toggle('ytaq-popup-on', s === 'LIKE');
-				const count = want('likeCount') && next && next.likeCount ? ' ' + (s === 'LIKE' ? next.likeCount.on : next.likeCount.off) : '';
-				likeBtn.textContent = (s === 'LIKE' ? '高評価済み' : '高評価') + count;
+				const count = want('likeCount') && next && next.likeCount ? (s === 'LIKE' ? next.likeCount.on : next.likeCount.off) : '';
+				setIcon(likeBtn, s === 'LIKE' ? 'thumb_up_fill' : 'thumb_up', s === 'LIKE' ? '高評価を取り消す' : '高評価', count);
 			}
 			if (dislikeBtn) {
 				dislikeBtn.classList.toggle('ytaq-popup-on', s === 'DISLIKE');
-				dislikeBtn.textContent = s === 'DISLIKE' ? '低評価済み' : '低評価';
+				setIcon(dislikeBtn, s === 'DISLIKE' ? 'thumb_down_fill' : 'thumb_down', s === 'DISLIKE' ? '低評価を取り消す' : '低評価');
 			}
 		}
 

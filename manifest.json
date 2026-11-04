@@ -46,6 +46,7 @@
         "theme/ytaq-theme.js",
         "core/ytaq-core.js",
         "core/ytaq-innertube.js",
+        "core/ytaq-icons.js",
         "perf/ytaq-perf.js",
         "content.js",
         "folder/ytaq-folder-store.js",

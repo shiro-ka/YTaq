@@ -69,7 +69,6 @@
 	background: none;
 	border: none;
 	color: var(--suisou-color-text-note);
-	font-size: 20px;
 	cursor: pointer;
 	width: 28px;
 	height: 28px;
@@ -79,6 +78,11 @@
 	border-radius: var(--suisou-radius-pill);
 	transition: background var(--suisou-duration-fast) var(--suisou-ease),
 	            color var(--suisou-duration-fast) var(--suisou-ease);
+}
+
+.ytaq-popup-close .ytaq-icon {
+	width: 20px;
+	height: 20px;
 }
 
 .ytaq-popup-close:hover {
@@ -216,8 +220,20 @@
 	font-weight: normal;
 	line-height: 1;
 	padding: 5px 8px;
+	height: 24px;
 	transition: background var(--suisou-duration-fast) var(--suisou-ease),
 	            color var(--suisou-duration-fast) var(--suisou-ease);
+}
+
+.ytaq-popup-rate-btn {
+	display: inline-flex;
+	align-items: center;
+	padding: 0 3px;
+}
+
+.ytaq-popup-rate-btn .ytaq-icon {
+	width: 16px;
+	height: 16px;
 }
 
 .ytaq-popup-rate-display {
@@ -260,6 +276,25 @@ html[data-suisou-theme] .ytaq-popup-channel-row .ytaq-folder-btn,
 	font: 500 13px Roboto, Arial, sans-serif;
 	cursor: pointer;
 	white-space: nowrap;
+}
+
+html[data-suisou-theme] .ytaq-popup-channel-row .ytaq-folder-btn,
+.ytaq-popup-act-icon {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	padding: 0 6px;
+}
+
+.ytaq-icon {
+	flex: none;
+	fill: currentColor;
+}
+
+.ytaq-popup-act .ytaq-icon,
+.ytaq-popup-channel-row .ytaq-folder-btn .ytaq-icon {
+	width: 18px;
+	height: 18px;
 }
 
 .ytaq-popup-act:hover:not(:disabled) {
