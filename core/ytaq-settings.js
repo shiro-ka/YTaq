@@ -12,6 +12,17 @@
 		embedLogin: { key: 'ytaq_embed_login', value: true },
 		watchHistory: { key: 'ytaq_watch_history', value: true },
 		antibite: { key: 'ytaq_antibite', value: { thumbnailEnabled: true, thumbnailFrame: 'hq1' } },
+		titleClean: {
+			key: 'ytaq_title_clean',
+			value: {
+				places: { list: true, feed: true, popup: true, watch: false },
+				rules: [
+					{ pattern: '【(?![^】]*[#＃])[^】]*】', replace: '', on: true },
+					{ pattern: '\\[(?![^\\]]*[#＃])[^\\]]*\\]', replace: '', on: true },
+					{ pattern: '［(?![^］]*[#＃])[^］]*］', replace: '', on: true }
+				]
+			}
+		},
 		playbackrate: {
 			key: 'ytaq_playbackrate_settings',
 			value: { speedStep: 0.25, speedPresets: [1.0, 1.25, 1.5, 1.75, 2.0, 4.0] }

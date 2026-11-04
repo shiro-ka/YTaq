@@ -35,6 +35,45 @@
 
 	let palette = new Map();
 
+	function ruleRow(rule) {
+		const row = document.createElement('div');
+		row.className = 'ytaq-title-rule';
+		row.setAttribute('data-suisou-layout', 'row middle wrap');
+		const on = document.createElement('input');
+		on.type = 'checkbox';
+		on.className = 'ytaq-title-on';
+		on.checked = !!rule.on;
+		on.setAttribute('aria-label', 'このルールを使う');
+		const pattern = document.createElement('input');
+		pattern.type = 'text';
+		pattern.className = 'ytaq-title-pattern';
+		pattern.value = rule.pattern;
+		pattern.placeholder = '正規表現';
+		const replace = document.createElement('input');
+		replace.type = 'text';
+		replace.className = 'ytaq-title-replace';
+		replace.value = rule.replace;
+		replace.placeholder = '置き換え先（空なら消す）';
+		const remove = document.createElement('button');
+		remove.type = 'button';
+		remove.textContent = '削除';
+		remove.setAttribute('data-suisou-button', '');
+		remove.addEventListener('click', () => {
+			row.remove();
+			SECTIONS.antibite.test();
+		});
+		row.append(on, pattern, replace, remove);
+		return row;
+	}
+
+	function readRules() {
+		return [...document.querySelectorAll('.ytaq-section-antibite .ytaq-title-rule')].map(row => ({
+			pattern: row.querySelector('.ytaq-title-pattern').value,
+			replace: row.querySelector('.ytaq-title-replace').value,
+			on: row.querySelector('.ytaq-title-on').checked
+		}));
+	}
+
 	const SECTIONS = {
 		theme: {
 			names: ['theme'],
@@ -82,9 +121,31 @@
 		},
 
 		antibite: {
-			names: ['antibite'],
+			names: ['antibite', 'titleClean'],
 			init() {
 				$('antibite', 'thumbnailEnabled').addEventListener('change', () => this.sync());
+				$('antibite', 'title-add').addEventListener('click', () => {
+					$('antibite', 'title-rules').append(ruleRow({ pattern: '', replace: '', on: true }));
+				});
+				$('antibite', 'title-rules').addEventListener('input', () => this.test());
+				$('antibite', 'title-rules').addEventListener('change', () => this.test());
+				$('antibite', 'title-test').addEventListener('input', () => this.test());
+			},
+			test() {
+				const input = $('antibite', 'title-test');
+				const out = $('antibite', 'title-result');
+				const sample = input.value || input.placeholder;
+				let text = sample;
+				for (const r of readRules()) {
+					if (!r.on || !r.pattern) continue;
+					try {
+						text = text.replace(new RegExp(r.pattern, 'g'), r.replace);
+					} catch (e) {
+						out.textContent = '正規表現が正しくありません: ' + r.pattern;
+						return;
+					}
+				}
+				out.textContent = '→ ' + (text.trim() ? text.trim() : sample);
 			},
 			sync() {
 				$('antibite', 'thumbnailFrame').disabled = !$('antibite', 'thumbnailEnabled').checked;
@@ -93,13 +154,29 @@
 				$('antibite', 'thumbnailEnabled').checked = !!v.antibite.thumbnailEnabled;
 				$('antibite', 'thumbnailFrame').value = v.antibite.thumbnailFrame;
 				this.sync();
+				for (const cb of document.querySelectorAll('.ytaq-section-antibite .ytaq-title-place')) {
+					cb.checked = !!v.titleClean.places[cb.value];
+				}
+				$('antibite', 'title-rules').replaceChildren(...v.titleClean.rules.map(ruleRow));
+				this.test();
 			},
 			collect() {
+				const rules = readRules().filter(r => r.pattern);
+				for (const r of rules) {
+					try {
+						new RegExp(r.pattern, 'g');
+					} catch (e) {
+						return '正規表現が正しくありません: ' + r.pattern;
+					}
+				}
+				const places = {};
+				for (const cb of document.querySelectorAll('.ytaq-section-antibite .ytaq-title-place')) places[cb.value] = cb.checked;
 				return {
 					antibite: {
 						thumbnailEnabled: $('antibite', 'thumbnailEnabled').checked,
 						thumbnailFrame: $('antibite', 'thumbnailFrame').value
-					}
+					},
+					titleClean: { places, rules }
 				};
 			}
 		},

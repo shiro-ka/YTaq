@@ -152,6 +152,24 @@
       </label>
       <p data-suisou="note" data-suisou-text="fs-12">動画のどのフレームをサムネイルとして使用するか選択します。</p>
 
+      <h3 data-suisou="mt-3" data-suisou-text="fs-16 fw-700">タイトルの整形</h3>
+      <p>正規表現に当たった部分を、置き換え先の文字に置き換えます。置き換え先が空なら消します。整形するとタイトルが空になる場合は、そのままにします。</p>
+      <div data-suisou-layout="row wrap">
+        <label><input type="checkbox" class="ytaq-title-place" value="list"> 一覧（ホーム・検索・チャンネル・関連動画）</label>
+        <label><input type="checkbox" class="ytaq-title-place" value="feed"> フォルダの新着</label>
+        <label><input type="checkbox" class="ytaq-title-place" value="popup"> ポップアップの見出し</label>
+        <label><input type="checkbox" class="ytaq-title-place" value="watch"> 動画のページのタイトル</label>
+      </div>
+      <div class="ytaq-title-rules" data-suisou-layout="stack"></div>
+      <div data-suisou-layout="row">
+        <button class="ytaq-title-add" data-suisou-button="outline">ルールを足す</button>
+      </div>
+      <label data-suisou-layout="stack">
+        試す
+        <input type="text" class="ytaq-title-test" data-suisou="w-full" placeholder="【MV】曲名 / アーティスト [Official Video]">
+      </label>
+      <p class="ytaq-title-result" data-suisou="note"></p>
+
       <div data-suisou-layout="row" data-suisou="mt-3">
         <button class="ytaq-save" data-suisou="accent" data-suisou-button="outline">保存</button>
         <button class="ytaq-reset" data-suisou-button="outline">デフォルトに戻す</button>

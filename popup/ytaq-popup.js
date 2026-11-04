@@ -101,7 +101,10 @@
 
 		const title = document.createElement('div');
 		title.className = 'ytaq-popup-title';
-		title.textContent = videoTitle || '';
+		const titleText = document.createElement('span');
+		titleText.className = 'ytaq-popup-title-text';
+		titleText.textContent = videoTitle || '';
+		title.appendChild(titleText);
 
 		const openLink = document.createElement('a');
 		openLink.className = 'ytaq-popup-open-original';
