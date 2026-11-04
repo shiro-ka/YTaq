@@ -111,7 +111,7 @@
 }
 
 .ytaq-popup-iframe-container {
-	width: min(80vw, 1280px, calc((90vh - 170px) * 16 / 9));
+	width: round(down, min(80vw, 1280px, calc((90vh - 170px) * 16 / 9)), 64px);
 	aspect-ratio: 16/9;
 	position: relative;
 	overflow: hidden;
@@ -180,7 +180,7 @@
 
 .ytaq-popup-iframe-container.ytaq-popup-shorts {
 	flex: none;
-	width: min(500px, calc((90vh - 2px) * 9 / 16));
+	width: round(down, min(500px, calc((90vh - 2px) * 9 / 16)), 36px);
 	aspect-ratio: 9/16;
 }
 
