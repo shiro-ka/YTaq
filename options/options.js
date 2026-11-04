@@ -76,7 +76,7 @@
 
 	const SECTIONS = {
 		theme: {
-			names: ['theme'],
+			names: ['theme', 'searchGrid'],
 			async init() {
 				palette = await loadPalette();
 				const name = $('theme', 'theme-name');
@@ -91,10 +91,14 @@
 				const name = $('theme', 'theme-name');
 				fillSelect(name, [...palette.keys()], v.theme.theme);
 				fillSelect($('theme', 'theme-accent'), palette.get(name.value) || [], v.theme.accent);
+				$('theme', 'searchGrid').checked = !!v.searchGrid;
 				applyTheme(this.collect().theme);
 			},
 			collect() {
-				return { theme: { theme: $('theme', 'theme-name').value, accent: $('theme', 'theme-accent').value } };
+				return {
+					theme: { theme: $('theme', 'theme-name').value, accent: $('theme', 'theme-accent').value },
+					searchGrid: $('theme', 'searchGrid').checked
+				};
 			}
 		},
 

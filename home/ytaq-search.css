@@ -1,0 +1,53 @@
+html.ytaq-search-grid ytd-search ytd-item-section-renderer > #contents {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+html.ytaq-search-grid ytd-search ytd-item-section-renderer > #contents > * {
+  grid-column: 1 / -1;
+}
+
+html.ytaq-search-grid ytd-search ytd-item-section-renderer > #contents > ytd-video-renderer {
+  grid-column: auto;
+  margin: 0 !important;
+  max-width: none !important;
+  background: var(--suisou-color-panel);
+  border: 1px solid var(--suisou-color-line-weak);
+  border-radius: var(--suisou-radius);
+  overflow: clip;
+  box-sizing: border-box;
+}
+
+html.ytaq-search-grid ytd-search ytd-item-section-renderer > #contents > ytd-video-renderer:hover {
+  background-image: linear-gradient(var(--suisou-color-hover), var(--suisou-color-hover));
+}
+
+html.ytaq-search-grid ytd-search ytd-video-renderer #dismissible {
+  flex-direction: column !important;
+}
+
+html.ytaq-search-grid ytd-search ytd-video-renderer ytd-thumbnail {
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  flex: none !important;
+}
+
+html.ytaq-search-grid ytd-search ytd-video-renderer ytd-thumbnail a#thumbnail,
+html.ytaq-search-grid ytd-search ytd-video-renderer ytd-thumbnail yt-image img {
+  border-radius: 0 !important;
+}
+
+html.ytaq-search-grid ytd-search ytd-video-renderer .text-wrapper {
+  max-width: none !important;
+  padding: 8px 8px 8px !important;
+}
+
+html.ytaq-search-grid ytd-search ytd-video-renderer .metadata-snippet-container,
+html.ytaq-search-grid ytd-search ytd-video-renderer #description-text,
+html.ytaq-search-grid ytd-search ytd-video-renderer #expandable-metadata,
+html.ytaq-search-grid ytd-search ytd-video-renderer yt-interaction {
+  display: none !important;
+}

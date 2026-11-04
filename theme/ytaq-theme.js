@@ -7,4 +7,11 @@
 
 	apply(YTaqSettings.defaults('theme'));
 	YTaqSettings.watch('theme', apply);
+
+	function grid(on) {
+		document.documentElement.classList.toggle('ytaq-search-grid', !!on);
+	}
+
+	grid(YTaqSettings.defaults('searchGrid'));
+	YTaqSettings.watch('searchGrid', grid);
 })();
