@@ -151,7 +151,7 @@
 		col.dataset.folder = folder.id;
 		const ids = new Set(folder.channels);
 		const videos = feed ? Object.keys(feed.videos)
-			.filter(id => ids.has(feed.videos[id].channel) && feed.videos[id].published)
+			.filter(id => ids.has(feed.videos[id].channel) && feed.videos[id].published && visible(feed.videos[id]))
 			.sort((a, b) => feed.videos[b].published - feed.videos[a].published) : [];
 		if (!shown[folder.id]) shown[folder.id] = PAGE;
 
@@ -175,6 +175,12 @@
 	}
 
 	let pending = false;
+	let withShorts = YTaqSettings.defaults('feedShorts');
+
+	function visible(v) {
+		if (withShorts) return true;
+		return !!v.detail && !v.detail.short;
+	}
 	const shown = {};
 
 	function editing() {
@@ -243,6 +249,11 @@
 		toggle.textContent = native ? 'フォルダの新着に戻る' : 'YouTube の一覧を見る';
 		if (!native) chrome.runtime.sendMessage({ type: 'ytaq-feed-refresh' });
 	}
+
+	YTaqSettings.watch('feedShorts', v => {
+		withShorts = !!v;
+		render();
+	});
 
 	Folders.watch(next => {
 		folders = next;

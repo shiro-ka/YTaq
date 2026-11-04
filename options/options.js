@@ -260,6 +260,9 @@
 		}
 
 		YTaqFolders.watch(renderFolders);
+		const shortsBox = document.querySelector('.ytaq-feed-shorts');
+		S.watch('feedShorts', v => { shortsBox.checked = !!v; });
+		shortsBox.addEventListener('change', () => S.set('feedShorts', shortsBox.checked));
 	});
 
 	function button(label, attrs, fn) {

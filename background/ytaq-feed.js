@@ -16,8 +16,22 @@
 	const VIDEOS_TAB = 'EgZ2aWRlb3PyBgQKAjoA';
 	const STREAMS_TAB = 'EgdzdHJlYW1z8gYECgJ6AA==';
 	const SHORTS_TAB = 'EgZzaG9ydHPyBgUKA5oBAA==';
-	const BACKFILL_TABS = [VIDEOS_TAB, STREAMS_TAB];
-	const FALLBACK_TABS = [VIDEOS_TAB, STREAMS_TAB, SHORTS_TAB];
+	const BASE_TABS = [VIDEOS_TAB, STREAMS_TAB];
+
+	let withShorts = YTaqSettings.defaults('feedShorts');
+	let backfillAll = false;
+	YTaqSettings.onChange('feedShorts', v => {
+		withShorts = !!v;
+		if (withShorts) {
+			backfillAll = true;
+			refresh();
+		}
+	});
+	YTaqSettings.get('feedShorts').then(v => { withShorts = !!v; });
+
+	function tabs() {
+		return withShorts ? BASE_TABS.concat(SHORTS_TAB) : BASE_TABS;
+	}
 
 	function read(keys) {
 		return new Promise(ok => chrome.storage.local.get(keys, ok));
@@ -137,12 +151,12 @@
 		} catch (e) {
 			console.warn('[YTaq feed] rss', channelId, e.message);
 			rssFailed = true;
-			addUndated(feed, channelId, await readTabs(channelId, FALLBACK_TABS));
+			addUndated(feed, channelId, await readTabs(channelId, tabs()));
 			feed.channels[channelId] = { fetchedAt: Date.now(), newest: prev && prev.newest || 0 };
 			return;
 		}
 		const oldest = entries.length ? Math.min(...entries.map(e => e.published)) : 0;
-		const gap = !prev || (prev.newest && entries.length >= RSS_SIZE && oldest > prev.newest);
+		const gap = backfillAll || !prev || (prev.newest && entries.length >= RSS_SIZE && oldest > prev.newest);
 
 		for (const e of entries) {
 			const v = feed.videos[e.id];
@@ -153,7 +167,7 @@
 			}
 		}
 
-		if (gap) addUndated(feed, channelId, await readTabs(channelId, BACKFILL_TABS));
+		if (gap) addUndated(feed, channelId, await readTabs(channelId, tabs()));
 
 		const newest = Math.max(prev && prev.newest || 0, ...entries.map(e => e.published));
 		feed.channels[channelId] = { fetchedAt: Date.now(), newest };
@@ -209,6 +223,7 @@
 			}
 		}
 		if (targets.length) rssDown = rssFailed;
+		if (!only) backfillAll = false;
 
 		await write({ [FEED_KEY]: feed });
 
