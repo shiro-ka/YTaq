@@ -32,23 +32,11 @@
 	].join(',');
 
 	function extractTitle(a) {
-		let title = a.getAttribute('title') || a.getAttribute('aria-label') || '';
-
-		if (!title) {
-			const parent = a.closest(RENDERERS);
-			const el = (parent && parent.querySelector(TITLE_SELECTORS)) || a.querySelector(TITLE_SELECTORS);
-			if (el) {
-				title = el.getAttribute('title') || el.getAttribute('aria-label') ||
-					(el.textContent || '').trim();
-			}
-		}
-
-		const cleaned = title
-			.replace(/\s+\d+\s*(分|秒|時間)$/, '')
-			.replace(/\s+\d{1,2}:\d{2}(:\d{2})?\s*$/, '')
-			.trim();
-
-		return cleaned || title;
+		const parent = a.closest(RENDERERS);
+		const el = a.matches(TITLE_SELECTORS) ? a : (parent && parent.querySelector(TITLE_SELECTORS)) || a.querySelector(TITLE_SELECTORS);
+		return a.getAttribute('title') ||
+			(el && (el.getAttribute('title') || (el.textContent || '').trim())) ||
+			'';
 	}
 
 	function findAnchor(e, target) {
