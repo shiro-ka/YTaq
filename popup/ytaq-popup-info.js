@@ -5,7 +5,7 @@
 	const IT = () => window.YTaqInnertube;
 
 	const NEEDS_PLAYER = ['description', 'date', 'views', 'folder'];
-	const NEEDS_NEXT = ['like', 'dislike', 'subscribe', 'likeCount', 'comment'];
+	const NEEDS_NEXT = ['avatar', 'like', 'dislike', 'subscribe', 'likeCount', 'comment'];
 
 	let show = YTaqSettings.defaults('popupInfo');
 	YTaqSettings.watch('popupInfo', v => { show = v; });
@@ -51,6 +51,8 @@
 		const subRenderer = first(json, 'subscribeButtonRenderer') || {};
 		const subscribe = find(subRenderer, o => o.subscribeEndpoint, []).map(o => o.subscribeEndpoint)[0];
 		const unsubscribe = find(json, o => o.unsubscribeEndpoint, []).map(o => o.unsubscribeEndpoint)[0];
+		const owner = first(json, 'videoOwnerRenderer');
+		const avatars = owner && owner.thumbnail ? owner.thumbnail.thumbnails || [] : [];
 		const commentSection = find(json, o => o.itemSectionRenderer && o.itemSectionRenderer.sectionIdentifier === 'comment-item-section', [])[0];
 		const commentToken = commentSection ? (find(commentSection, o => o.continuationCommand && o.continuationCommand.token, [])[0] || {}).continuationCommand : null;
 		return {
@@ -62,7 +64,8 @@
 			subscribed: sub ? !!sub.subscribed : !!subRenderer.subscribed,
 			subscribe,
 			unsubscribe,
-			commentToken: commentToken ? commentToken.token : null
+			commentToken: commentToken ? commentToken.token : null,
+			avatar: (avatars.find(t => t.width >= 56) || avatars[avatars.length - 1] || {}).url || null
 		};
 	}
 
@@ -76,6 +79,14 @@
 
 		let next = null;
 		let channelId = null;
+
+		const avatar = want('avatar') ? el('img', 'ytaq-popup-avatar') : null;
+		if (avatar) {
+			avatar.alt = '';
+			avatar.hidden = true;
+			avatar.addEventListener('load', () => { avatar.hidden = false; });
+			parts.channelRow.prepend(avatar);
+		}
 
 		const likeBtn = want('like') ? button('ytaq-popup-like', '高評価', () => rate('LIKE')) : null;
 		const dislikeBtn = want('dislike') ? button('ytaq-popup-dislike', '低評価', () => rate('DISLIKE')) : null;
@@ -241,6 +252,7 @@
 		if (NEEDS_NEXT.some(want)) {
 			IT().call('next', { videoId }).then(json => {
 				next = parseNext(json);
+				if (avatar && next.avatar) avatar.src = next.avatar;
 				for (const b of [likeBtn, dislikeBtn, subBtn]) if (b) b.disabled = false;
 				if (commentBtn) commentBtn.disabled = !next.commentToken;
 				renderRating();

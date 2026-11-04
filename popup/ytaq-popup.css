@@ -238,6 +238,13 @@
 	min-width: 0;
 }
 
+.ytaq-popup-avatar {
+	flex: none;
+	width: 28px;
+	height: 28px;
+	border-radius: 50%;
+}
+
 .ytaq-popup-channel-row .ytaq-folder {
 	margin-left: 0;
 }
