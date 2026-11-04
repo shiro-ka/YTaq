@@ -318,16 +318,15 @@ html[data-suisou-theme] .ytaq-popup-channel-row .ytaq-folder-btn,
 }
 
 .ytaq-popup-actions-row:empty,
-.ytaq-popup-info:empty,
-.ytaq-popup-desc:empty {
+.ytaq-popup-info:empty {
 	display: none;
 }
 
-.ytaq-popup-save {
+.ytaq-popup-drop {
 	position: relative;
 }
 
-.ytaq-popup-save-menu {
+.ytaq-popup-drop-menu {
 	position: absolute;
 	bottom: 100%;
 	left: 0;
@@ -344,7 +343,18 @@ html[data-suisou-theme] .ytaq-popup-channel-row .ytaq-folder-btn,
 	border-radius: var(--suisou-radius);
 }
 
-.ytaq-popup-save-menu[hidden] {
+.ytaq-popup-drop-menu.ytaq-popup-desc {
+	display: block;
+	width: min(480px, 60vw);
+	padding: 8px 12px;
+	color: var(--suisou-color-text);
+	font-size: 13px;
+	line-height: 19px;
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+}
+
+.ytaq-popup-drop-menu[hidden] {
 	display: none;
 }
 
@@ -374,21 +384,3 @@ html[data-suisou-theme] .ytaq-popup-channel-row .ytaq-folder-btn,
 	font-size: 12px;
 }
 
-.ytaq-popup-desc {
-	color: var(--suisou-color-text);
-	font-size: 13px;
-	line-height: 19px;
-	white-space: pre-wrap;
-	display: -webkit-box;
-	-webkit-box-orient: vertical;
-	-webkit-line-clamp: 2;
-	line-clamp: 2;
-	overflow: hidden;
-	cursor: pointer;
-}
-
-.ytaq-popup-desc.ytaq-popup-desc-open {
-	display: block;
-	max-height: 200px;
-	overflow-y: auto;
-}

@@ -86,8 +86,7 @@
 		const want = k => !!show[k];
 		const actions = el('div', 'ytaq-popup-actions-row');
 		const info = el('div', 'ytaq-popup-info');
-		const desc = el('div', 'ytaq-popup-desc');
-		parts.meta.append(actions, info, desc);
+		parts.meta.append(actions, info);
 
 		let next = null;
 		let channelId = null;
@@ -102,21 +101,41 @@
 
 		const likeBtn = want('like') ? iconButton('ytaq-popup-like', '高評価', 'thumb_up', () => rate('LIKE')) : null;
 		const dislikeBtn = want('dislike') ? iconButton('ytaq-popup-dislike', '低評価', 'thumb_down', () => rate('DISLIKE')) : null;
-		const saveWrap = want('save') ? el('div', 'ytaq-popup-save') : null;
 		const subBtn = want('subscribe') ? button('ytaq-popup-sub', 'チャンネル登録', toggleSubscribe) : null;
 		const folderBtn = want('folder') && window.YTaqFolderButton ? window.YTaqFolderButton.create({ icon: true }) : null;
 		if (folderBtn && parts.onClose) parts.onClose(folderBtn.destroy);
 
+		const drops = [];
+		function dropdown(cls, label, icon, onOpen) {
+			const wrap = el('div', 'ytaq-popup-drop');
+			const menu = el('div', 'ytaq-popup-drop-menu ' + cls);
+			menu.hidden = true;
+			const btn = iconButton(cls + '-btn', label, icon, () => {
+				const opening = menu.hidden;
+				for (const d of drops) d.menu.hidden = true;
+				menu.hidden = !opening;
+				if (opening && onOpen) onOpen(menu);
+			});
+			wrap.append(btn, menu);
+			const d = { wrap, btn, menu };
+			drops.push(d);
+			return d;
+		}
+		function closeDrops(e) {
+			if (!drops.some(d => d.wrap.contains(e.target))) for (const d of drops) d.menu.hidden = true;
+		}
+		document.addEventListener('pointerdown', closeDrops, true);
+		if (parts.onClose) parts.onClose(() => document.removeEventListener('pointerdown', closeDrops, true));
+
+		const descDrop = want('description') ? dropdown('ytaq-popup-desc', '概要', 'notes') : null;
+		const saveDrop = want('save') ? dropdown('ytaq-popup-save', '保存', 'playlist_add', openSave) : null;
+
 		for (const b of [likeBtn, dislikeBtn, subBtn]) if (b) b.disabled = true;
+		if (descDrop) descDrop.btn.disabled = true;
 		if (likeBtn) actions.append(likeBtn);
 		if (dislikeBtn) actions.append(dislikeBtn);
-		if (saveWrap) {
-			const saveBtn = iconButton('ytaq-popup-save-btn', '保存', 'playlist_add', openSave);
-			const menu = el('div', 'ytaq-popup-save-menu');
-			menu.hidden = true;
-			saveWrap.append(saveBtn, menu);
-			actions.append(saveWrap);
-		}
+		if (saveDrop) actions.append(saveDrop.wrap);
+		if (descDrop) actions.append(descDrop.wrap);
 		if (subBtn) parts.channelRow.append(subBtn);
 		if (folderBtn) parts.channelRow.append(folderBtn.el);
 
@@ -175,13 +194,7 @@
 			renderSubscribe();
 		}
 
-		async function openSave() {
-			const menu = saveWrap.querySelector('.ytaq-popup-save-menu');
-			if (!menu.hidden) {
-				menu.hidden = true;
-				return;
-			}
-			menu.hidden = false;
+		async function openSave(menu) {
 			menu.replaceChildren(el('span', 'ytaq-popup-note', '読み込み中…'));
 			try {
 				const json = await IT().call('playlist/get_add_to_playlist', { videoIds: [videoId] });
@@ -222,9 +235,13 @@
 				if (want('date') && mf.publishDate) bits.push(dateFormat.format(new Date(mf.publishDate)));
 				if (want('views') && vd.viewCount) bits.push(numberFormat.format(Number(vd.viewCount)) + ' 回視聴');
 				info.textContent = bits.join(' · ');
-				if (want('description') && vd.shortDescription) {
-					desc.textContent = vd.shortDescription;
-					desc.addEventListener('click', () => desc.classList.toggle('ytaq-popup-desc-open'));
+				if (descDrop) {
+					if (vd.shortDescription) {
+						descDrop.menu.textContent = vd.shortDescription;
+						descDrop.btn.disabled = false;
+					} else {
+						descDrop.wrap.remove();
+					}
 				}
 			}).catch(e => YTaq.warn('popup info: player', e.message));
 		}
