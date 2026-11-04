@@ -70,7 +70,8 @@
 	font-size: 13px;
 }
 
-.ytaq-popup-actions {
+.ytaq-popup-actions,
+.ytaq-popup-tools {
 	display: flex;
 	align-items: center;
 	gap: 12px;
@@ -188,6 +189,7 @@
 }
 
 .ytaq-popup-shorts .ytaq-popup-meta {
+	position: relative;
 	flex: none;
 	width: 300px;
 	min-width: 0;
@@ -201,7 +203,36 @@
 	gap: 6px;
 }
 
+.ytaq-popup-shorts .ytaq-popup-head {
+	flex: 1;
+	min-height: 0;
+}
+
+.ytaq-popup-desc-inline {
+	flex: 1;
+	min-height: 0;
+	overflow-y: auto;
+	margin-top: 10px;
+	color: var(--suisou-color-text-note);
+	font-size: 13px;
+	line-height: 19px;
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+}
+
+.ytaq-popup-desc-inline:empty {
+	display: none;
+}
+
+.ytaq-popup-shorts .ytaq-popup-tools {
+	position: absolute;
+	top: 12px;
+	right: 12px;
+	gap: 4px;
+}
+
 .ytaq-popup-shorts .ytaq-popup-title {
+	padding-right: 64px;
 	flex: none;
 	-webkit-line-clamp: 4;
 	line-clamp: 4;
@@ -211,12 +242,12 @@
 	flex-direction: column;
 	flex-wrap: nowrap;
 	align-items: stretch;
-	gap: 12px;
+	gap: 8px;
 	margin-top: auto;
 }
 
 .ytaq-popup-shorts .ytaq-popup-channel-row {
-	row-gap: 12px;
+	row-gap: 8px;
 }
 
 .ytaq-popup-shorts .ytaq-popup-actions-row {
@@ -237,9 +268,6 @@
 	max-height: 50vh;
 }
 
-.ytaq-popup-shorts .ytaq-popup-actions {
-	justify-content: space-between;
-}
 
 
 .ytaq-popup-error {

@@ -127,7 +127,10 @@
 		document.addEventListener('pointerdown', closeDrops, true);
 		if (parts.onClose) parts.onClose(() => document.removeEventListener('pointerdown', closeDrops, true));
 
-		const descDrop = want('description') ? dropdown('ytaq-popup-desc', '概要', 'notes') : null;
+		const inline = parts.shorts && want('shortsDescInline');
+		const descDrop = want('description') && !inline ? dropdown('ytaq-popup-desc', '概要', 'notes') : null;
+		const descInline = want('description') && inline ? el('div', 'ytaq-popup-desc-inline') : null;
+		if (descInline) parts.head.append(descInline);
 		const saveDrop = want('save') ? dropdown('ytaq-popup-save', '保存', 'playlist_add', openSave) : null;
 
 		for (const b of [likeBtn, dislikeBtn, subBtn]) if (b) b.disabled = true;
@@ -236,6 +239,7 @@
 				if (want('date') && mf.publishDate) bits.push(dateFormat.format(new Date(mf.publishDate)));
 				if (want('views') && vd.viewCount) bits.push(numberFormat.format(Number(vd.viewCount)) + ' 回視聴');
 				info.textContent = bits.join(' · ');
+				if (descInline && vd.shortDescription) descInline.textContent = vd.shortDescription;
 				if (descDrop) {
 					if (vd.shortDescription) {
 						descDrop.menu.textContent = vd.shortDescription;

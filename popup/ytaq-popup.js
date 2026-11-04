@@ -144,10 +144,14 @@
 		channelRow.className = 'ytaq-popup-channel-row';
 		channelRow.append(channelName);
 
-		actions.append(rateBox, openLink, closeBtn);
+		const tools = document.createElement('div');
+		tools.className = 'ytaq-popup-tools';
+		tools.append(openLink, closeBtn);
+
+		actions.append(rateBox, tools);
 		bar.append(channelRow, actions);
 		meta.append(head, bar);
-		if (window.YTaqPopupInfo) window.YTaqPopupInfo.build(videoId, { head, channelRow, onClose: f => closers.push(f) });
+		if (window.YTaqPopupInfo) window.YTaqPopupInfo.build(videoId, { head, channelRow, shorts: isShorts, onClose: f => closers.push(f) });
 
 		const iframeContainer = document.createElement('div');
 		iframeContainer.className = 'ytaq-popup-iframe-container';
