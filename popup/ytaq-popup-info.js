@@ -5,7 +5,7 @@
 	const IT = () => window.YTaqInnertube;
 
 	const NEEDS_PLAYER = ['description', 'date', 'views', 'folder'];
-	const NEEDS_NEXT = ['avatar', 'like', 'dislike', 'subscribe', 'likeCount', 'comment'];
+	const NEEDS_NEXT = ['avatar', 'like', 'dislike', 'subscribe', 'likeCount'];
 
 	let show = YTaqSettings.defaults('popupInfo');
 	YTaqSettings.watch('popupInfo', v => { show = v; });
@@ -53,8 +53,6 @@
 		const unsubscribe = find(json, o => o.unsubscribeEndpoint, []).map(o => o.unsubscribeEndpoint)[0];
 		const owner = first(json, 'videoOwnerRenderer');
 		const avatars = owner && owner.thumbnail ? owner.thumbnail.thumbnails || [] : [];
-		const commentSection = find(json, o => o.itemSectionRenderer && o.itemSectionRenderer.sectionIdentifier === 'comment-item-section', [])[0];
-		const commentToken = commentSection ? (find(commentSection, o => o.continuationCommand && o.continuationCommand.token, [])[0] || {}).continuationCommand : null;
 		return {
 			likeStatus: like ? like.likeStatus : 'INDIFFERENT',
 			likeParams: params('likeParams'),
@@ -64,7 +62,6 @@
 			subscribed: sub ? !!sub.subscribed : !!subRenderer.subscribed,
 			subscribe,
 			unsubscribe,
-			commentToken: commentToken ? commentToken.token : null,
 			avatar: (avatars.find(t => t.width >= 56) || avatars[avatars.length - 1] || {}).url || null
 		};
 	}
@@ -74,8 +71,7 @@
 		const actions = el('div', 'ytaq-popup-actions-row');
 		const info = el('div', 'ytaq-popup-info');
 		const desc = el('div', 'ytaq-popup-desc');
-		const comment = el('div', 'ytaq-popup-comment');
-		parts.meta.append(actions, info, desc, comment);
+		parts.meta.append(actions, info, desc);
 
 		let next = null;
 		let channelId = null;
@@ -91,12 +87,11 @@
 		const likeBtn = want('like') ? button('ytaq-popup-like', '高評価', () => rate('LIKE')) : null;
 		const dislikeBtn = want('dislike') ? button('ytaq-popup-dislike', '低評価', () => rate('DISLIKE')) : null;
 		const saveWrap = want('save') ? el('div', 'ytaq-popup-save') : null;
-		const commentBtn = want('comment') ? button('ytaq-popup-comment-btn', 'コメントを書く', openComment) : null;
 		const subBtn = want('subscribe') ? button('ytaq-popup-sub', 'チャンネル登録', toggleSubscribe) : null;
 		const folderBtn = want('folder') && window.YTaqFolderButton ? window.YTaqFolderButton.create() : null;
 		if (folderBtn && parts.onClose) parts.onClose(folderBtn.destroy);
 
-		for (const b of [likeBtn, dislikeBtn, subBtn, commentBtn]) if (b) b.disabled = true;
+		for (const b of [likeBtn, dislikeBtn, subBtn]) if (b) b.disabled = true;
 		if (likeBtn) actions.append(likeBtn);
 		if (dislikeBtn) actions.append(dislikeBtn);
 		if (saveWrap) {
@@ -106,7 +101,6 @@
 			saveWrap.append(saveBtn, menu);
 			actions.append(saveWrap);
 		}
-		if (commentBtn) actions.append(commentBtn);
 		if (subBtn) parts.channelRow.append(subBtn);
 		if (folderBtn) parts.channelRow.append(folderBtn.el);
 
@@ -202,36 +196,6 @@
 			}
 		}
 
-		async function openComment() {
-			if (!next || !next.commentToken || comment.childElementCount) return;
-			commentBtn.disabled = true;
-			try {
-				const json = await IT().call('next', { continuation: next.commentToken });
-				const params = first(json, 'createCommentParams');
-				if (!params) throw new Error('no createCommentParams');
-				const box = el('textarea', 'ytaq-popup-comment-text');
-				box.rows = 3;
-				box.placeholder = 'コメントを入力';
-				const send = button('ytaq-popup-comment-send', '送信', async () => {
-					const text = box.value.trim();
-					if (!text) return;
-					send.disabled = true;
-					try {
-						await IT().call('comment/create_comment', { commentText: text, createCommentParams: params });
-						comment.replaceChildren(el('span', 'ytaq-popup-note', 'コメントを送信しました'));
-					} catch (e) {
-						send.disabled = false;
-						console.warn('[YTaq] comment', e.message);
-					}
-				});
-				comment.append(box, send);
-				box.focus();
-			} catch (e) {
-				comment.replaceChildren(el('span', 'ytaq-popup-note', 'コメント欄を読み込めませんでした'));
-			}
-			commentBtn.disabled = false;
-		}
-
 		if (NEEDS_PLAYER.some(want)) {
 			IT().call('player', { videoId, contentCheckOk: true, racyCheckOk: true }).then(json => {
 				const vd = json.videoDetails || {};
@@ -254,7 +218,6 @@
 				next = parseNext(json);
 				if (avatar && next.avatar) avatar.src = next.avatar;
 				for (const b of [likeBtn, dislikeBtn, subBtn]) if (b) b.disabled = false;
-				if (commentBtn) commentBtn.disabled = !next.commentToken;
 				renderRating();
 				renderSubscribe();
 			}).catch(e => YTaq.warn('popup info: next', e.message));

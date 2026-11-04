@@ -284,8 +284,7 @@ html[data-suisou-theme] .ytaq-popup-channel-row .ytaq-folder-btn,
 
 .ytaq-popup-actions-row:empty,
 .ytaq-popup-info:empty,
-.ytaq-popup-desc:empty,
-.ytaq-popup-comment:empty {
+.ytaq-popup-desc:empty {
 	display: none;
 }
 
@@ -357,26 +356,4 @@ html[data-suisou-theme] .ytaq-popup-channel-row .ytaq-folder-btn,
 	display: block;
 	max-height: 200px;
 	overflow-y: auto;
-}
-
-.ytaq-popup-comment {
-	display: flex;
-	flex-direction: column;
-	gap: 6px;
-}
-
-.ytaq-popup-comment-text {
-	width: 100%;
-	box-sizing: border-box;
-	padding: 6px 8px;
-	border: 1px solid var(--suisou-color-line-strong);
-	border-radius: var(--suisou-radius);
-	background: var(--suisou-color-field);
-	color: var(--suisou-color-text);
-	font: 13px Roboto, Arial, sans-serif;
-	resize: vertical;
-}
-
-.ytaq-popup-comment-send {
-	align-self: flex-end;
 }
