@@ -1,6 +1,7 @@
 html.ytaq-search-grid ytd-search ytd-item-section-renderer > #contents {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-auto-flow: dense;
   gap: 16px;
 }
 
