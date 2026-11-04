@@ -12,6 +12,7 @@
 	const SHORTS_MAX_SECONDS = 180;
 	const INTERVAL_MS = 30 * 60 * 1000;
 	const MIN_GAP_MS = 2 * 60 * 1000;
+	const RSS_DOWN_GAP_MS = 2 * 60 * 60 * 1000;
 	const VIDEOS_TAB = 'EgZ2aWRlb3PyBgQKAjoA';
 	const STREAMS_TAB = 'EgdzdHJlYW1z8gYECgJ6AA==';
 	const SHORTS_TAB = 'EgZzaG9ydHPyBgUKA5oBAA==';
@@ -135,6 +136,7 @@
 			entries = await fetchRss(channelId);
 		} catch (e) {
 			console.warn('[YTaq feed] rss', channelId, e.message);
+			rssFailed = true;
 			addUndated(feed, channelId, await readTabs(channelId, FALLBACK_TABS));
 			feed.channels[channelId] = { fetchedAt: Date.now(), newest: prev && prev.newest || 0 };
 			return;
@@ -176,8 +178,15 @@
 	let running = null;
 	let again = false;
 	let lastFull = 0;
+	let rssFailed = false;
+	let rssDown = false;
+
+	function minGap() {
+		return rssDown ? RSS_DOWN_GAP_MS : MIN_GAP_MS;
+	}
 
 	async function run(only) {
+		rssFailed = false;
 		const got = await read([FEED_KEY, FOLDERS_KEY]);
 		const feed = got[FEED_KEY] || emptyFeed();
 		const folders = (got[FOLDERS_KEY] && got[FOLDERS_KEY].folders) || [];
@@ -199,6 +208,7 @@
 				console.warn('[YTaq feed] channel', id, e.message);
 			}
 		}
+		if (targets.length) rssDown = rssFailed;
 
 		await write({ [FEED_KEY]: feed });
 
@@ -240,7 +250,7 @@
 
 	chrome.runtime.onMessage.addListener((msg, sender, reply) => {
 		if (!msg || msg.type !== 'ytaq-feed-refresh') return;
-		if (Date.now() - lastFull < MIN_GAP_MS) return reply(true);
+		if (Date.now() - lastFull < minGap()) return reply(true);
 		refresh().then(() => reply(true), () => reply(false));
 		return true;
 	});
@@ -256,6 +266,8 @@
 		if (added.length) refresh(added);
 	});
 
-	setInterval(() => refresh(), INTERVAL_MS);
+	setInterval(() => {
+		if (Date.now() - lastFull >= minGap()) refresh();
+	}, INTERVAL_MS);
 	refresh();
 })();

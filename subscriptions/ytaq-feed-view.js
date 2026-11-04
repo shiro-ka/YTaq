@@ -5,7 +5,7 @@
 	const Folders = window.YTaqFolders;
 
 	const PATH = '/feed/subscriptions';
-	const PER_COLUMN = 100;
+	const PAGE = 30;
 
 	let native = false;
 	let folders = { folders: [], channels: {} };
@@ -152,19 +152,30 @@
 		const ids = new Set(folder.channels);
 		const videos = feed ? Object.keys(feed.videos)
 			.filter(id => ids.has(feed.videos[id].channel) && feed.videos[id].published)
-			.sort((a, b) => feed.videos[b].published - feed.videos[a].published)
-			.slice(0, PER_COLUMN) : [];
+			.sort((a, b) => feed.videos[b].published - feed.videos[a].published) : [];
+		if (!shown[folder.id]) shown[folder.id] = PAGE;
 
 		const head = el('header', 'ytaq-feed-column-head');
 		head.append(el('span', 'ytaq-feed-column-name', folder.name), el('span', 'ytaq-feed-column-count', folder.channels.length + ' ch'), columnMenu(folder, head));
 		const list = el('div', 'ytaq-feed-list');
-		if (videos.length) list.append(...videos.map(id => item(id, feed.videos[id])));
+		const more = () => {
+			const have = list.querySelectorAll('.ytaq-feed-item').length;
+			if (have >= videos.length) return;
+			const next = videos.slice(have, have + PAGE);
+			list.append(...next.map(id => item(id, feed.videos[id])));
+			shown[folder.id] = have + next.length;
+		};
+		list.addEventListener('scroll', () => {
+			if (list.scrollTop + list.clientHeight >= list.scrollHeight - 200) more();
+		});
+		if (videos.length) list.append(...videos.slice(0, shown[folder.id]).map(id => item(id, feed.videos[id])));
 		else list.append(el('p', 'ytaq-feed-empty', folder.channels.length ? '読み込み中…' : 'チャンネルがまだ入っていません'));
 		col.append(head, list);
 		return col;
 	}
 
 	let pending = false;
+	const shown = {};
 
 	function editing() {
 		const a = document.activeElement;
