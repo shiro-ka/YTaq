@@ -15,6 +15,7 @@
     <button class="ytaq-nav" value="perf" data-suisou-button="block">軽量化</button>
     <button class="ytaq-nav" value="antibite" data-suisou-button="block">Antibite</button>
     <button class="ytaq-nav" value="playbackrate" data-suisou-button="block">Playbackrate</button>
+    <button class="ytaq-nav" value="folders" data-suisou-button="block">フォルダ</button>
   </nav>
 
   <main data-suisou="container-m">
@@ -184,9 +185,14 @@
       </div>
       <div class="ytaq-message"></div>
     </section>
+    <section class="ytaq-section ytaq-section-folders" data-suisou-layout="stack" hidden>
+      <h2 data-suisou-text="fs-24 fw-700">フォルダ</h2>
+      <div class="ytaq-folders" data-suisou-layout="stack"></div>
+    </section>
   </main>
 
   <script src="../core/ytaq-settings.js"></script>
+  <script src="../folder/ytaq-folder-store.js"></script>
   <script src="options.js"></script>
 </body>
 </html>

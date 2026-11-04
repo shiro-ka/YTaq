@@ -33,7 +33,7 @@
 				};
 			}
 		} catch (e) {
-			window.YTaq.warn('folder: ytcfg', e);
+			console.warn('[YTaq] folder: ytcfg', e);
 		}
 		return null;
 	}
@@ -97,7 +97,7 @@
 				return id;
 			}, e => {
 				pending.delete(key);
-				window.YTaq.warn('folder: resolve', path, e);
+				console.warn('[YTaq] folder: resolve', path, e);
 				return null;
 			}));
 		}
@@ -173,9 +173,45 @@
 		});
 	}
 
-	waitConfig().then(cfg => {
-		if (cfg) write({ ytaq_innertube: cfg });
-	});
+	function renameFolder(folderId, name) {
+		return update(d => {
+			const folder = d.folders.find(f => f.id === folderId);
+			if (folder && name) folder.name = name;
+		});
+	}
 
-	window.YTaqFolders = { get, watch, createFolder, toggle, foldersOf, resolveChannel };
+	function deleteFolder(folderId) {
+		return update(d => {
+			d.folders = d.folders.filter(f => f.id !== folderId);
+			const used = new Set(d.folders.flatMap(f => f.channels));
+			for (const id of Object.keys(d.channels)) {
+				if (!used.has(id)) delete d.channels[id];
+			}
+		});
+	}
+
+	function moveFolder(folderId, delta) {
+		return update(d => {
+			const i = d.folders.findIndex(f => f.id === folderId);
+			const j = i + delta;
+			if (i < 0 || j < 0 || j >= d.folders.length) return;
+			const [folder] = d.folders.splice(i, 1);
+			d.folders.splice(j, 0, folder);
+		});
+	}
+
+	function removeChannel(folderId, channelId) {
+		return update(d => {
+			const folder = d.folders.find(f => f.id === folderId);
+			if (folder) folder.channels = folder.channels.filter(id => id !== channelId);
+		});
+	}
+
+	if (location.hostname === 'www.youtube.com') {
+		waitConfig().then(cfg => {
+			if (cfg) write({ ytaq_innertube: cfg });
+		});
+	}
+
+	window.YTaqFolders = { get, watch, createFolder, toggle, foldersOf, resolveChannel, renameFolder, deleteFolder, moveFolder, removeChannel };
 })();

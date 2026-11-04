@@ -178,3 +178,92 @@ html.ytaq-feed-on .ytaq-feed-root {
 .ytaq-feed-toggle:hover {
   background-image: linear-gradient(var(--suisou-color-hover), var(--suisou-color-hover));
 }
+
+.ytaq-feed-column-head {
+  position: relative;
+}
+
+.ytaq-feed-column-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ytaq-feed-rename {
+  flex: 1;
+  min-width: 0;
+  height: 28px;
+  padding: 0 8px;
+  border: 1px solid var(--suisou-color-line-strong);
+  border-radius: var(--suisou-radius);
+  background: var(--suisou-color-field);
+  color: var(--suisou-color-text);
+  font: 700 16px Roboto, Arial, sans-serif;
+}
+
+.ytaq-feed-menu {
+  position: relative;
+  flex: none;
+}
+
+.ytaq-feed-menu-btn {
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: var(--suisou-radius-pill);
+  background: transparent;
+  color: var(--suisou-color-text-note);
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.ytaq-feed-menu-btn:hover {
+  background: var(--suisou-color-hover);
+  color: var(--suisou-color-text);
+}
+
+.ytaq-feed-menu-panel {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 10;
+  min-width: 160px;
+  margin-top: 4px;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  background: var(--suisou-color-panel);
+  border: 1px solid var(--suisou-color-line-strong);
+  border-radius: var(--suisou-radius);
+}
+
+.ytaq-feed-menu-panel[hidden] {
+  display: none;
+}
+
+.ytaq-feed-menu-item {
+  height: 32px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: var(--suisou-radius-small);
+  background: transparent;
+  color: var(--suisou-color-text);
+  font: 14px Roboto, Arial, sans-serif;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ytaq-feed-menu-item:hover:not(:disabled) {
+  background: var(--suisou-color-hover);
+}
+
+.ytaq-feed-menu-item:disabled {
+  color: var(--suisou-color-text-disabled);
+  cursor: default;
+}
+
+.ytaq-feed-menu-confirm {
+  color: var(--suisou-color-error);
+}

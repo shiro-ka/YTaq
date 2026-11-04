@@ -181,5 +181,80 @@
 			document.querySelector(`.ytaq-section-${section} .ytaq-save`).addEventListener('click', () => save(section));
 			document.querySelector(`.ytaq-section-${section} .ytaq-reset`).addEventListener('click', () => reset(section));
 		}
+
+		YTaqFolders.watch(renderFolders);
 	});
+
+	function button(label, attrs, fn) {
+		const b = document.createElement('button');
+		b.type = 'button';
+		b.textContent = label;
+		for (const k in attrs) b.setAttribute(k, attrs[k]);
+		b.addEventListener('click', fn);
+		return b;
+	}
+
+	function folderCard(data, folder, index) {
+		const card = document.createElement('div');
+		card.setAttribute('data-suisou-tray', '');
+		card.setAttribute('data-suisou-layout', 'stack');
+
+		const row = document.createElement('div');
+		row.setAttribute('data-suisou-layout', 'row middle wrap');
+		const name = document.createElement('input');
+		name.type = 'text';
+		name.value = folder.name;
+		name.setAttribute('aria-label', 'フォルダの名前');
+		const commit = () => {
+			const v = name.value.trim();
+			if (v && v !== folder.name) YTaqFolders.renameFolder(folder.id, v);
+			else name.value = folder.name;
+		};
+		name.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) name.blur(); });
+		name.addEventListener('blur', commit);
+
+		const up = button('上へ', { 'data-suisou-button': 'outline' }, () => YTaqFolders.moveFolder(folder.id, -1));
+		up.disabled = index === 0;
+		const down = button('下へ', { 'data-suisou-button': 'outline' }, () => YTaqFolders.moveFolder(folder.id, 1));
+		down.disabled = index === data.folders.length - 1;
+		const del = button('削除', { 'data-suisou-button': 'outline', 'data-suisou': 'error' }, () => {
+			if (del.dataset.confirm) return YTaqFolders.deleteFolder(folder.id);
+			del.dataset.confirm = '1';
+			del.textContent = '本当に削除';
+		});
+		row.append(name, up, down, del);
+		card.append(row);
+
+		if (!folder.channels.length) {
+			const p = document.createElement('p');
+			p.setAttribute('data-suisou', 'note');
+			p.textContent = 'チャンネルが入っていません';
+			card.append(p);
+		}
+		for (const id of folder.channels) {
+			const line = document.createElement('div');
+			line.setAttribute('data-suisou-layout', 'row middle between');
+			const label = document.createElement('a');
+			label.href = 'https://www.youtube.com/channel/' + id;
+			label.target = '_blank';
+			label.rel = 'noopener';
+			label.textContent = (data.channels[id] || {}).name || id;
+			line.append(label, button('外す', { 'data-suisou-button': '' }, () => YTaqFolders.removeChannel(folder.id, id)));
+			card.append(line);
+		}
+		return card;
+	}
+
+	function renderFolders(data) {
+		const box = document.querySelector('.ytaq-folders');
+		if (box.contains(document.activeElement) && document.activeElement.tagName === 'INPUT') return;
+		if (!data.folders.length) {
+			const p = document.createElement('p');
+			p.setAttribute('data-suisou', 'note');
+			p.textContent = 'フォルダがありません。YouTube のチャンネルのページや動画の下の「＋ フォルダ」から作れます。';
+			box.replaceChildren(p);
+			return;
+		}
+		box.replaceChildren(...data.folders.map((f, i) => folderCard(data, f, i)));
+	}
 })();

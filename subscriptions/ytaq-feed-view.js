@@ -77,8 +77,78 @@
 		return a;
 	}
 
+	function rename(folder, head) {
+		const input = el('input', 'ytaq-feed-rename');
+		input.value = folder.name;
+		let done = false;
+		const commit = save => {
+			if (done) return;
+			done = true;
+			const name = input.value.trim();
+			if (save && name && name !== folder.name) Folders.renameFolder(folder.id, name);
+			else render();
+		};
+		input.addEventListener('keydown', e => {
+			if (e.isComposing) return;
+			if (e.key === 'Enter') commit(true);
+			if (e.key === 'Escape') commit(false);
+		});
+		input.addEventListener('blur', () => commit(true));
+		head.querySelector('.ytaq-feed-column-name').replaceWith(input);
+		input.focus();
+		input.select();
+	}
+
+	function columnMenu(folder, head) {
+		const wrap = el('div', 'ytaq-feed-menu');
+		const toggle = el('button', 'ytaq-feed-menu-btn', '⋯');
+		toggle.type = 'button';
+		toggle.setAttribute('aria-label', 'フォルダの操作');
+		const panel = el('div', 'ytaq-feed-menu-panel');
+		panel.hidden = true;
+
+		const index = folders.folders.findIndex(f => f.id === folder.id);
+		const action = (label, fn, disabled) => {
+			const b = el('button', 'ytaq-feed-menu-item', label);
+			b.type = 'button';
+			b.disabled = !!disabled;
+			b.addEventListener('click', () => {
+				closeMenus();
+				fn();
+			});
+			return b;
+		};
+		const del = el('button', 'ytaq-feed-menu-item', '削除');
+		del.type = 'button';
+		del.addEventListener('click', () => {
+			if (!del.classList.contains('ytaq-feed-menu-confirm')) {
+				del.classList.add('ytaq-feed-menu-confirm');
+				del.textContent = '本当に削除';
+				return;
+			}
+			closeMenus();
+			Folders.deleteFolder(folder.id);
+		});
+		panel.append(
+			action('名前を変える', () => rename(folder, head)),
+			action('左へ', () => Folders.moveFolder(folder.id, -1), index === 0),
+			action('右へ', () => Folders.moveFolder(folder.id, 1), index === folders.folders.length - 1),
+			del
+		);
+
+		toggle.addEventListener('click', e => {
+			e.stopPropagation();
+			const open = panel.hidden;
+			closeMenus();
+			panel.hidden = !open;
+		});
+		wrap.append(toggle, panel);
+		return wrap;
+	}
+
 	function column(folder) {
 		const col = el('section', 'ytaq-feed-column');
+		col.dataset.folder = folder.id;
 		const ids = new Set(folder.channels);
 		const videos = feed ? Object.keys(feed.videos)
 			.filter(id => ids.has(feed.videos[id].channel) && feed.videos[id].published)
@@ -86,7 +156,7 @@
 			.slice(0, PER_COLUMN) : [];
 
 		const head = el('header', 'ytaq-feed-column-head');
-		head.append(el('span', 'ytaq-feed-column-name', folder.name), el('span', 'ytaq-feed-column-count', folder.channels.length + ' ch'));
+		head.append(el('span', 'ytaq-feed-column-name', folder.name), el('span', 'ytaq-feed-column-count', folder.channels.length + ' ch'), columnMenu(folder, head));
 		const list = el('div', 'ytaq-feed-list');
 		if (videos.length) list.append(...videos.map(id => item(id, feed.videos[id])));
 		else list.append(el('p', 'ytaq-feed-empty', folder.channels.length ? '読み込み中…' : 'チャンネルがまだ入っていません'));
@@ -94,7 +164,32 @@
 		return col;
 	}
 
+	let pending = false;
+
+	function editing() {
+		const a = document.activeElement;
+		if (a && a.classList && a.classList.contains('ytaq-feed-rename') && root.contains(a)) return true;
+		return [...root.querySelectorAll('.ytaq-feed-menu-panel')].some(p => !p.hidden);
+	}
+
+	function closeMenus() {
+		for (const p of root.querySelectorAll('.ytaq-feed-menu-panel')) p.hidden = true;
+		if (pending) setTimeout(render, 0);
+	}
+
 	function render() {
+		if (editing()) {
+			pending = true;
+			return;
+		}
+		pending = false;
+		const oldCols = root.querySelector('.ytaq-feed-columns');
+		const scrollX = oldCols ? oldCols.scrollLeft : 0;
+		const scrollY = {};
+		for (const c of root.querySelectorAll('.ytaq-feed-column')) {
+			const l = c.querySelector('.ytaq-feed-list');
+			if (l) scrollY[c.dataset.folder] = l.scrollTop;
+		}
 		if (!folders.folders.length) {
 			root.replaceChildren(el('p', 'ytaq-feed-empty', 'フォルダがありません。チャンネルのページや動画の下の「＋ フォルダ」から作れます。'));
 			return;
@@ -102,7 +197,21 @@
 		const cols = el('div', 'ytaq-feed-columns');
 		cols.append(...folders.folders.map(column));
 		root.replaceChildren(cols);
+		cols.scrollLeft = scrollX;
+		for (const c of cols.querySelectorAll('.ytaq-feed-column')) {
+			const y = scrollY[c.dataset.folder];
+			if (y) c.querySelector('.ytaq-feed-list').scrollTop = y;
+		}
 	}
+
+	root.addEventListener('focusout', () => {
+		if (pending) setTimeout(render, 0);
+	});
+
+	document.addEventListener('click', e => {
+		if (e.target.closest && e.target.closest('.ytaq-feed-menu')) return;
+		closeMenus();
+	});
 
 	function onPage() {
 		return location.pathname === PATH;
