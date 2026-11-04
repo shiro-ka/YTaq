@@ -1,5 +1,5 @@
 ytd-two-column-browse-results-renderer[page-subtype="home"] #contents.ytd-rich-grid-renderer {
-  padding-left: 24px;
+  padding-left: var(--suisou-space-4);
 }
 
 ytd-two-column-browse-results-renderer[page-subtype="home"] #chips-wrapper {
@@ -10,7 +10,7 @@ ytd-two-column-browse-results-renderer[page-subtype="home"] #chips-wrapper {
 ytd-rich-item-renderer.style-scope.ytd-rich-grid-renderer {
   background: var(--suisou-color-panel) !important;
   margin-top: 0;
-  margin-bottom: 16px !important;
+  margin-bottom: var(--suisou-space-3) !important;
   border: 1px solid var(--suisou-color-line-weak) !important;
   border-radius: var(--suisou-radius);
   overflow: clip;
@@ -30,15 +30,15 @@ ytd-rich-item-renderer.style-scope.ytd-rich-grid-renderer yt-touch-feedback-shap
 }
 
 ytd-two-column-browse-results-renderer[page-subtype="home"] #content.ytd-rich-section-renderer {
-  margin: 0 36px 0 8px !important;
+  margin: 0 36px 0 var(--suisou-space-2) !important;
 }
 
 ytd-rich-item-renderer.style-scope.ytd-rich-grid-renderer .ytLockupViewModelContentImage {
-  padding-bottom: 8px !important;
+  padding-bottom: var(--suisou-space-2) !important;
 }
 
 ytd-rich-item-renderer.style-scope.ytd-rich-grid-renderer yt-lockup-metadata-view-model {
-  padding: 0 8px 8px !important;
+  padding: 0 var(--suisou-space-2) var(--suisou-space-2) !important;
 }
 
 ytd-rich-item-renderer.style-scope.ytd-rich-grid-renderer .ytLockupMetadataViewModelMenuButton {

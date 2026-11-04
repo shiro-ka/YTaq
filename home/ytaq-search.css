@@ -2,7 +2,7 @@ html.ytaq-search-grid ytd-search ytd-item-section-renderer > #contents {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   grid-auto-flow: dense;
-  gap: 16px;
+  gap: var(--suisou-space-3);
 }
 
 html.ytaq-search-grid ytd-search ytd-item-section-renderer > #contents > * {
@@ -43,7 +43,7 @@ html.ytaq-search-grid ytd-search ytd-video-renderer ytd-thumbnail yt-image img {
 
 html.ytaq-search-grid ytd-search ytd-video-renderer .text-wrapper {
   max-width: none !important;
-  padding: 8px 8px 8px !important;
+  padding: var(--suisou-space-2) !important;
 }
 
 html.ytaq-search-grid ytd-search ytd-video-renderer .metadata-snippet-container,

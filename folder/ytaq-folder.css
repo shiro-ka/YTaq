@@ -2,19 +2,19 @@ html[data-suisou-theme] .ytaq-folder {
   position: relative;
   display: inline-flex;
   align-self: center;
-  margin-left: 8px;
+  margin-left: var(--suisou-space-2);
   font-family: Roboto, Arial, sans-serif;
 }
 
 html[data-suisou-theme] .ytaq-folder-btn {
   height: 36px;
   max-width: 280px;
-  padding: 0 12px;
+  padding: 0 var(--suisou-space-3);
   border: 1px solid var(--suisou-color-line-strong);
   border-radius: var(--suisou-radius);
   background: transparent;
   color: var(--suisou-color-text);
-  font: 500 14px/1 Roboto, Arial, sans-serif;
+  font: 500 var(--suisou-fs-14)/1 Roboto, Arial, sans-serif;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -37,15 +37,15 @@ html[data-suisou-theme] .ytaq-folder-menu {
   left: 0;
   z-index: 2300;
   min-width: 220px;
-  margin-top: 4px;
-  padding: 8px;
+  margin-top: var(--suisou-space-1);
+  padding: var(--suisou-space-2);
   flex-direction: column;
-  gap: 2px;
+  gap: var(--suisou-space-1);
   background: var(--suisou-color-panel);
   border: 1px solid var(--suisou-color-line-weak);
   border-radius: var(--suisou-radius);
   color: var(--suisou-color-text);
-  font-size: 14px;
+  font-size: var(--suisou-fs-14);
 }
 
 html[data-suisou-theme] .ytaq-folder-menu::before {
@@ -67,8 +67,8 @@ html[data-suisou-theme] .ytaq-folder-btn:disabled + .ytaq-folder-menu {
 html[data-suisou-theme] .ytaq-folder-row {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 8px;
+  gap: var(--suisou-space-2);
+  padding: var(--suisou-space-2);
   border-radius: var(--suisou-radius-small);
   cursor: pointer;
 }
@@ -83,14 +83,14 @@ html[data-suisou-theme] .ytaq-folder-row input {
 }
 
 html[data-suisou-theme] .ytaq-folder-new {
-  margin-top: 4px;
-  height: 32px;
-  padding: 0 8px;
+  margin-top: var(--suisou-space-1);
+  height: var(--suisou-size-button);
+  padding: 0 var(--suisou-space-2);
   border: 1px solid var(--suisou-color-line-strong);
   border-radius: var(--suisou-radius);
   background: var(--suisou-color-field);
   color: var(--suisou-color-text);
-  font: 14px Roboto, Arial, sans-serif;
+  font: var(--suisou-fs-14) Roboto, Arial, sans-serif;
 }
 
 html[data-suisou-theme] .ytaq-folder-new:focus-visible,

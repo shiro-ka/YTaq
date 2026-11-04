@@ -1,10 +1,24 @@
 :root {
+  --suisou-fs-12: 12px;   --suisou-lh-12: 16px;
+  --suisou-fs-14: 14px;   --suisou-lh-14: 20px;
+  --suisou-fs-16: 16px;   --suisou-lh-16: 24px;
+  --suisou-fs-20: 20px;   --suisou-lh-20: 28px;
+  --suisou-space-1: 4px;
+  --suisou-space-2: 8px;
+  --suisou-space-3: 16px;
+  --suisou-space-4: 24px;
+  --suisou-space-5: 48px;
+  --suisou-size-button: 32px;
+  --suisou-size-icon: 18px;
+  --suisou-size-icon-small: 16px;
+  --suisou-size-circle: 32px;
   --suisou-radius-small: 4px;
   --suisou-radius: 8px;
   --suisou-radius-pill: 999px;
   --suisou-duration-fast: 120ms;
+  --suisou-duration: 200ms;
   --suisou-ease: cubic-bezier(0.2, 0, 0, 1);
 }
 @media (prefers-reduced-motion: reduce) {
-  :root { --suisou-duration-fast: 0.01ms; }
+  :root { --suisou-duration-fast: 0.01ms; --suisou-duration: 0.01ms; }
 }

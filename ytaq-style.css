@@ -49,7 +49,7 @@ html[data-suisou-theme] ytd-guide-entry-renderer {
 }
 
 html[data-suisou-theme] ytd-guide-entry-renderer:not(:last-child) {
-  margin-bottom: 4px;
+  margin-bottom: var(--suisou-space-1);
 }
 
 html[data-suisou-theme] ytd-guide-entry-renderer[active] {
