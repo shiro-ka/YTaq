@@ -115,6 +115,10 @@
 		titleText.textContent = videoTitle || '';
 		title.appendChild(titleText);
 
+		const head = document.createElement('div');
+		head.className = 'ytaq-popup-head';
+		head.append(title);
+
 		const bar = document.createElement('div');
 		bar.className = 'ytaq-popup-bar';
 
@@ -126,7 +130,9 @@
 
 		const openLink = document.createElement('a');
 		openLink.className = 'ytaq-popup-open-original';
-		openLink.textContent = 'YouTubeで開く';
+		openLink.append(YTaqIcons.create('open_in_new'));
+		openLink.title = 'YouTubeで開く';
+		openLink.setAttribute('aria-label', 'YouTubeで開く');
 		openLink.href = `https://www.youtube.com/watch?v=${videoId}`;
 		openLink.target = '_blank';
 		openLink.rel = 'noopener';
@@ -140,8 +146,8 @@
 
 		actions.append(rateBox, openLink, closeBtn);
 		bar.append(channelRow, actions);
-		meta.append(title, bar);
-		if (window.YTaqPopupInfo) window.YTaqPopupInfo.build(videoId, { meta, channelRow, onClose: f => closers.push(f) });
+		meta.append(head, bar);
+		if (window.YTaqPopupInfo) window.YTaqPopupInfo.build(videoId, { head, channelRow, onClose: f => closers.push(f) });
 
 		const iframeContainer = document.createElement('div');
 		iframeContainer.className = 'ytaq-popup-iframe-container';

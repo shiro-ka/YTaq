@@ -86,7 +86,7 @@
 		const want = k => !!show[k];
 		const actions = el('div', 'ytaq-popup-actions-row');
 		const info = el('div', 'ytaq-popup-info');
-		parts.meta.append(actions, info);
+		parts.head.append(info);
 
 		let next = null;
 		let channelId = null;
@@ -138,6 +138,7 @@
 		if (descDrop) actions.append(descDrop.wrap);
 		if (subBtn) parts.channelRow.append(subBtn);
 		if (folderBtn) parts.channelRow.append(folderBtn.el);
+		parts.channelRow.append(actions);
 
 		function renderRating() {
 			const s = next ? next.likeStatus : 'INDIFFERENT';
