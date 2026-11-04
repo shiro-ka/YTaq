@@ -179,6 +179,8 @@
 			}
 		}
 
+		await write({ [FEED_KEY]: feed });
+
 		let more = true;
 		while (more) {
 			more = await fillDetails(feed);

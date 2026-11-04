@@ -257,7 +257,7 @@
 
 			if (data.event === 'onError') return showEmbedError(Number(data.info));
 
-			if (data.event === 'onPlaybackRateChange') return onReportedRate(Number(data.info));
+			if (data.event === 'onPlaybackRateChange') return embeddedVideo(iframe) ? undefined : onReportedRate(Number(data.info));
 
 			if (data.event === 'infoDelivery' && data.info) {
 				const author = data.info.videoData && data.info.videoData.author;
@@ -265,7 +265,7 @@
 					channel = author;
 					applyStoredRateOnce();
 				}
-				if (typeof data.info.playbackRate === 'number') onReportedRate(data.info.playbackRate);
+				if (typeof data.info.playbackRate === 'number' && !embeddedVideo(iframe)) onReportedRate(data.info.playbackRate);
 				if (typeof data.info.currentTime === 'number') lastTime = data.info.currentTime;
 			}
 		};
