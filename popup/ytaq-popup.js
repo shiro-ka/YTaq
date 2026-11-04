@@ -99,6 +99,9 @@
 		closeBtn.textContent = '×';
 		closeBtn.addEventListener('click', hideVideoPopup);
 
+		const meta = document.createElement('div');
+		meta.className = 'ytaq-popup-meta';
+
 		const title = document.createElement('div');
 		title.className = 'ytaq-popup-title';
 		const titleText = document.createElement('span');
@@ -106,17 +109,28 @@
 		titleText.textContent = videoTitle || '';
 		title.appendChild(titleText);
 
+		const bar = document.createElement('div');
+		bar.className = 'ytaq-popup-bar';
+
+		const channelName = document.createElement('span');
+		channelName.className = 'ytaq-popup-channel';
+
+		const actions = document.createElement('div');
+		actions.className = 'ytaq-popup-actions';
+
 		const openLink = document.createElement('a');
 		openLink.className = 'ytaq-popup-open-original';
 		openLink.textContent = 'YouTubeで開く';
 		openLink.href = `https://www.youtube.com/watch?v=${videoId}`;
 		openLink.target = '_blank';
 		openLink.rel = 'noopener';
-		title.appendChild(openLink);
 
 		const rateBox = document.createElement('div');
 		rateBox.className = 'ytaq-popup-rate';
-		title.appendChild(rateBox);
+
+		actions.append(rateBox, openLink, closeBtn);
+		bar.append(channelName, actions);
+		meta.append(title, bar);
 
 		const iframeContainer = document.createElement('div');
 		iframeContainer.className = 'ytaq-popup-iframe-container';
@@ -266,6 +280,7 @@
 				const author = data.info.videoData && data.info.videoData.author;
 				if (author && author !== channel) {
 					channel = author;
+					channelName.textContent = author;
 					applyStoredRateOnce();
 				}
 				if (typeof data.info.playbackRate === 'number' && !embeddedVideo(iframe)) onReportedRate(data.info.playbackRate);
@@ -330,7 +345,7 @@
 		setTimeout(dropSkeleton, 5000);
 
 		iframeContainer.append(iframe, skeleton);
-		content.append(closeBtn, title, iframeContainer);
+		content.append(iframeContainer, meta);
 		popup.appendChild(content);
 
 		popup.addEventListener('click', e => {

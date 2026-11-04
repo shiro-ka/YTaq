@@ -12,28 +12,67 @@
 }
 
 .ytaq-popup-content {
+	display: flex;
+	flex-direction: column;
 	background: var(--suisou-color-panel);
-	border: 1px solid var(--suisou-color-line-strong);
+	border: 1px solid var(--suisou-color-line-weak);
 	border-radius: var(--suisou-radius);
-	padding: 20px;
-	padding-right: 12px;
-	max-width: 90vw;
-	max-height: 90vh;
+	overflow: clip;
+	box-sizing: border-box;
+}
+
+.ytaq-popup-meta {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	padding: 10px 12px 10px;
+	font-family: Roboto, Arial, sans-serif;
+}
+
+.ytaq-popup-title {
+	color: var(--suisou-color-text);
+	font-size: 16px;
+	font-weight: 500;
+	line-height: 22px;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	line-clamp: 2;
 	overflow: hidden;
-	position: relative;
+}
+
+.ytaq-popup-bar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	min-height: 28px;
+}
+
+.ytaq-popup-channel {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	color: var(--suisou-color-text-note);
+	font-size: 13px;
+}
+
+.ytaq-popup-actions {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	flex: none;
 }
 
 .ytaq-popup-close {
-	position: absolute;
-	top: 8px;
-	right: 12px;
 	background: none;
 	border: none;
 	color: var(--suisou-color-text-note);
-	font-size: 24px;
+	font-size: 20px;
 	cursor: pointer;
-	width: 32px;
-	height: 32px;
+	width: 28px;
+	height: 28px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -47,18 +86,8 @@
 	color: var(--suisou-color-text);
 }
 
-.ytaq-popup-title {
-	color: var(--suisou-color-text);
-	font-size: 16px;
-	font-weight: bold;
-	margin-bottom: 12px;
-	padding-right: 40px;
-	line-height: 1.4;
-}
-
 .ytaq-popup-iframe-container {
-	width: 80vw;
-	max-width: 1280px;
+	width: min(80vw, 1280px, calc((90vh - 90px) * 16 / 9));
 	aspect-ratio: 16/9;
 	position: relative;
 	overflow: hidden;
@@ -126,38 +155,23 @@
 }
 
 .ytaq-popup-iframe-container.ytaq-popup-shorts {
-	width: 50vh;
-	max-width: 500px;
-	height: 90vh;
-	max-height: none;
-	min-height: 600px;
+	width: min(500px, calc((90vh - 90px) * 9 / 16));
 	aspect-ratio: 9/16;
 }
 
 .ytaq-popup-content.ytaq-popup-shorts {
-	max-width: 540px;
-	max-height: 95vh;
+	max-width: 500px;
 }
 
 .ytaq-popup-open-original {
-	float: right;
-	font-size: 12px;
+	font-size: 13px;
 	font-weight: normal;
 	color: var(--suisou-color-accent);
 	text-decoration: none;
-	margin-left: 12px;
 }
 
 .ytaq-popup-open-original:hover {
 	text-decoration: underline;
-}
-
-.ytaq-popup-notice {
-	float: right;
-	font-size: 12px;
-	font-weight: normal;
-	color: var(--suisou-color-warning);
-	margin-left: 12px;
 }
 
 .ytaq-popup-error {
@@ -186,11 +200,9 @@
 }
 
 .ytaq-popup-rate {
-	float: right;
 	display: inline-flex;
 	align-items: center;
 	gap: 2px;
-	margin-left: 12px;
 }
 
 .ytaq-popup-rate-btn,
