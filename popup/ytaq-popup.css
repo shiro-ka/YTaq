@@ -298,45 +298,41 @@
 .ytaq-popup-rate {
 	display: inline-flex;
 	align-items: center;
-	gap: 2px;
+	gap: 4px;
 }
 
 .ytaq-popup-rate-btn,
 .ytaq-popup-rate-display {
-	background: transparent;
-	color: var(--suisou-color-text-note);
+	height: 28px;
+	padding: 0 10px;
 	border: 1px solid var(--suisou-color-line-strong);
-	border-radius: var(--suisou-radius-small);
+	border-radius: var(--suisou-radius);
+	background: transparent;
+	color: var(--suisou-color-text);
+	font: 500 13px Roboto, Arial, sans-serif;
 	cursor: pointer;
-	font-size: 12px;
-	font-weight: normal;
-	line-height: 1;
-	padding: 5px 8px;
-	height: 24px;
-	transition: background var(--suisou-duration-fast) var(--suisou-ease),
-	            color var(--suisou-duration-fast) var(--suisou-ease);
+	transition: background var(--suisou-duration-fast) var(--suisou-ease);
 }
 
 .ytaq-popup-rate-btn {
 	display: inline-flex;
 	align-items: center;
-	padding: 0 3px;
+	padding: 0 4px;
 }
 
 .ytaq-popup-rate-btn .ytaq-icon {
-	width: 16px;
-	height: 16px;
+	width: 18px;
+	height: 18px;
 }
 
 .ytaq-popup-rate-display {
-	min-width: 52px;
+	min-width: 56px;
 	font-variant-numeric: tabular-nums;
 }
 
 .ytaq-popup-rate-btn:hover,
 .ytaq-popup-rate-display:hover {
 	background: var(--suisou-color-hover);
-	color: var(--suisou-color-text);
 }
 
 .ytaq-popup-channel-row {
