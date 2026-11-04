@@ -178,12 +178,67 @@
 }
 
 .ytaq-popup-iframe-container.ytaq-popup-shorts {
-	width: min(500px, calc((90vh - 170px) * 9 / 16));
+	flex: none;
+	width: min(500px, calc((90vh - 2px) * 9 / 16));
 	aspect-ratio: 9/16;
 }
 
 .ytaq-popup-content.ytaq-popup-shorts {
-	max-width: 500px;
+	flex-direction: row;
+}
+
+.ytaq-popup-shorts .ytaq-popup-meta {
+	flex: none;
+	width: 300px;
+	min-width: 0;
+	padding: 16px;
+	gap: 16px;
+}
+
+.ytaq-popup-shorts .ytaq-popup-head {
+	flex-direction: column;
+	align-items: stretch;
+	gap: 6px;
+}
+
+.ytaq-popup-shorts .ytaq-popup-title {
+	flex: none;
+	-webkit-line-clamp: 4;
+	line-clamp: 4;
+}
+
+.ytaq-popup-shorts .ytaq-popup-bar {
+	flex-direction: column;
+	flex-wrap: nowrap;
+	align-items: stretch;
+	gap: 12px;
+	margin-top: auto;
+}
+
+.ytaq-popup-shorts .ytaq-popup-channel-row {
+	row-gap: 12px;
+}
+
+.ytaq-popup-shorts .ytaq-popup-actions-row {
+	flex-basis: 100%;
+	position: relative;
+}
+
+.ytaq-popup-shorts .ytaq-popup-drop {
+	position: static;
+}
+
+.ytaq-popup-shorts .ytaq-popup-drop-menu,
+.ytaq-popup-shorts .ytaq-popup-drop-menu.ytaq-popup-desc {
+	left: 0;
+	right: 0;
+	width: auto;
+	min-width: 0;
+	max-height: 50vh;
+}
+
+.ytaq-popup-shorts .ytaq-popup-actions {
+	justify-content: space-between;
 }
 
 
