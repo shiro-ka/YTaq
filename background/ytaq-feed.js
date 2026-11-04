@@ -12,7 +12,11 @@
 	const SHORTS_MAX_SECONDS = 180;
 	const INTERVAL_MS = 30 * 60 * 1000;
 	const MIN_GAP_MS = 2 * 60 * 1000;
-	const BACKFILL_TABS = ['EgZ2aWRlb3PyBgQKAjoA', 'EgdzdHJlYW1z8gYECgJ6AA=='];
+	const VIDEOS_TAB = 'EgZ2aWRlb3PyBgQKAjoA';
+	const STREAMS_TAB = 'EgdzdHJlYW1z8gYECgJ6AA==';
+	const SHORTS_TAB = 'EgZzaG9ydHPyBgUKA5oBAA==';
+	const BACKFILL_TABS = [VIDEOS_TAB, STREAMS_TAB];
+	const FALLBACK_TABS = [VIDEOS_TAB, STREAMS_TAB, SHORTS_TAB];
 
 	function read(keys) {
 		return new Promise(ok => chrome.storage.local.get(keys, ok));
@@ -62,18 +66,25 @@
 				out.push({ id: l.contentId, title: meta && meta.title ? meta.title.content : '' });
 				return;
 			}
+			const s = node.shortsLockupViewModel;
+			const reel = s && s.onTap && s.onTap.innertubeCommand && s.onTap.innertubeCommand.reelWatchEndpoint;
+			if (reel && reel.videoId) {
+				const text = s.overlayMetadata && s.overlayMetadata.primaryText;
+				out.push({ id: reel.videoId, title: text ? text.content : '' });
+				return;
+			}
 			for (const k in node) collectLockups(node[k], out);
 		}
 		return out;
 	}
 
-	async function backfill(channelId) {
+	async function readTabs(channelId, tabs) {
 		const found = [];
-		for (const params of BACKFILL_TABS) {
+		for (const params of tabs) {
 			try {
 				collectLockups(await innertube('browse', { browseId: channelId, params }), found);
 			} catch (e) {
-				console.warn('[YTaq feed] backfill', channelId, e.message);
+				console.warn('[YTaq feed] tab', channelId, e.message);
 			}
 		}
 		return found;
@@ -111,9 +122,23 @@
 		for (const id of ids.slice(KEEP_PER_CHANNEL)) delete feed.videos[id];
 	}
 
+	function addUndated(feed, channelId, found) {
+		for (const e of found) {
+			if (!feed.videos[e.id]) feed.videos[e.id] = { channel: channelId, title: e.title, published: null, detail: null };
+		}
+	}
+
 	async function refreshChannel(feed, channelId) {
-		const entries = await fetchRss(channelId);
 		const prev = feed.channels[channelId];
+		let entries;
+		try {
+			entries = await fetchRss(channelId);
+		} catch (e) {
+			console.warn('[YTaq feed] rss', channelId, e.message);
+			addUndated(feed, channelId, await readTabs(channelId, FALLBACK_TABS));
+			feed.channels[channelId] = { fetchedAt: Date.now(), newest: prev && prev.newest || 0 };
+			return;
+		}
 		const oldest = entries.length ? Math.min(...entries.map(e => e.published)) : 0;
 		const gap = !prev || (prev.newest && entries.length >= RSS_SIZE && oldest > prev.newest);
 
@@ -126,11 +151,7 @@
 			}
 		}
 
-		if (gap) {
-			for (const e of await backfill(channelId)) {
-				if (!feed.videos[e.id]) feed.videos[e.id] = { channel: channelId, title: e.title, published: null, detail: null };
-			}
-		}
+		if (gap) addUndated(feed, channelId, await readTabs(channelId, BACKFILL_TABS));
 
 		const newest = Math.max(prev && prev.newest || 0, ...entries.map(e => e.published));
 		feed.channels[channelId] = { fetchedAt: Date.now(), newest };
@@ -222,6 +243,10 @@
 		if (Date.now() - lastFull < MIN_GAP_MS) return reply(true);
 		refresh().then(() => reply(true), () => reply(false));
 		return true;
+	});
+
+	chrome.storage.onChanged.addListener((changes, area) => {
+		if (area === 'local' && changes[CLIENT_KEY] && !changes[CLIENT_KEY].oldValue) refresh();
 	});
 
 	chrome.storage.onChanged.addListener((changes, area) => {
