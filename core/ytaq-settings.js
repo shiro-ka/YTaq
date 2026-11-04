@@ -12,6 +12,10 @@
 		embedLogin: { key: 'ytaq_embed_login', value: true },
 		watchHistory: { key: 'ytaq_watch_history', value: true },
 		antibite: { key: 'ytaq_antibite', value: { thumbnailEnabled: true, thumbnailFrame: 'hq1' } },
+		popupInfo: {
+			key: 'ytaq_popup_info',
+			value: { description: true, date: true, like: true, save: true, subscribe: true, folder: true, views: false, likeCount: false, dislike: false, comment: false }
+		},
 		searchGrid: { key: 'ytaq_search_grid', value: true },
 		feedShorts: { key: 'ytaq_feed_shorts', value: false },
 		titleClean: {

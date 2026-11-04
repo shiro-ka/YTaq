@@ -66,7 +66,11 @@
 	let messageHandler = null;
 	let historyStop = null;
 
+	let closers = [];
+
 	function hideVideoPopup() {
+		for (const f of closers) f();
+		closers = [];
 		if (historyStop) {
 			historyStop();
 			historyStop = null;
@@ -128,9 +132,14 @@
 		const rateBox = document.createElement('div');
 		rateBox.className = 'ytaq-popup-rate';
 
+		const channelRow = document.createElement('div');
+		channelRow.className = 'ytaq-popup-channel-row';
+		channelRow.append(channelName);
+
 		actions.append(rateBox, openLink, closeBtn);
-		bar.append(channelName, actions);
+		bar.append(channelRow, actions);
 		meta.append(title, bar);
+		if (window.YTaqPopupInfo) window.YTaqPopupInfo.build(videoId, { meta, channelRow, onClose: f => closers.push(f) });
 
 		const iframeContainer = document.createElement('div');
 		iframeContainer.className = 'ytaq-popup-iframe-container';

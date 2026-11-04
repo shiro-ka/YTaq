@@ -6,20 +6,83 @@
 
 	const SHOWN_NAMES = 2;
 
-	const widget = document.createElement('div');
-	widget.className = 'ytaq-folder';
-
-	const button = document.createElement('button');
-	button.className = 'ytaq-folder-btn';
-	button.type = 'button';
-
-	const menu = document.createElement('div');
-	menu.className = 'ytaq-folder-menu';
-
-	widget.append(button, menu);
-
-	let channel = null;
+	const buttons = new Set();
 	let data = { folders: [], channels: {} };
+
+	function createButton() {
+		const widget = document.createElement('div');
+		widget.className = 'ytaq-folder';
+
+		const button = document.createElement('button');
+		button.className = 'ytaq-folder-btn';
+		button.type = 'button';
+
+		const menu = document.createElement('div');
+		menu.className = 'ytaq-folder-menu';
+
+		widget.append(button, menu);
+
+		const self = { el: widget, channel: null, render, setChannel, destroy: () => buttons.delete(self) };
+
+		function setChannel(channel) {
+			self.channel = channel;
+			render();
+		}
+
+		function render() {
+			const channel = self.channel;
+			const inFolders = channel ? Folders.foldersOf(data, channel.id) : [];
+			button.classList.toggle('ytaq-folder-in', inFolders.length > 0);
+			const names = inFolders.map(f => f.name);
+			button.textContent = names.length === 0
+				? '＋ フォルダ'
+				: '✓ ' + names.slice(0, SHOWN_NAMES).join('・') + (names.length > SHOWN_NAMES ? '　＋' + (names.length - SHOWN_NAMES) : '');
+			button.title = names.length ? names.join('・') : 'フォルダに入れる';
+			button.disabled = !channel;
+
+			const rows = data.folders.map(f => {
+				const row = document.createElement('label');
+				row.className = 'ytaq-folder-row';
+				const cb = document.createElement('input');
+				cb.type = 'checkbox';
+				cb.checked = !!channel && f.channels.includes(channel.id);
+				cb.addEventListener('change', () => {
+					if (self.channel) Folders.toggle(f.id, self.channel);
+				});
+				row.append(cb, document.createTextNode(f.name));
+				return row;
+			});
+
+			const input = document.createElement('input');
+			input.className = 'ytaq-folder-new';
+			input.type = 'text';
+			input.placeholder = '＋ 新しいフォルダ';
+			input.addEventListener('keydown', async e => {
+				if (e.key !== 'Enter' || e.isComposing) return;
+				const name = input.value.trim();
+				if (!name || !self.channel) return;
+				input.value = '';
+				const id = await Folders.createFolder(name);
+				await Folders.toggle(id, self.channel);
+			});
+
+			menu.replaceChildren(...rows, input);
+		}
+
+		buttons.add(self);
+		render();
+		return self;
+	}
+
+	Folders.watch(next => {
+		data = next;
+		for (const b of buttons) b.render();
+	});
+
+	window.YTaqFolderButton = { create: createButton };
+
+	const pageButton = createButton();
+	const widget = pageButton.el;
 	let currentHref = null;
 
 	function target() {
@@ -34,46 +97,6 @@
 		return { host, href: location.pathname, name: h1 ? h1.textContent.trim() : document.title.replace(/ - YouTube$/, '') };
 	}
 
-	function render() {
-		const inFolders = channel ? Folders.foldersOf(data, channel.id) : [];
-		button.classList.toggle('ytaq-folder-in', inFolders.length > 0);
-		const names = inFolders.map(f => f.name);
-		const label = names.length === 0
-			? '＋ フォルダ'
-			: '✓ ' + names.slice(0, SHOWN_NAMES).join('・') + (names.length > SHOWN_NAMES ? '　＋' + (names.length - SHOWN_NAMES) : '');
-		button.textContent = label;
-		button.title = names.length ? names.join('・') : 'フォルダに入れる';
-		button.disabled = !channel;
-
-		const rows = data.folders.map(f => {
-			const row = document.createElement('label');
-			row.className = 'ytaq-folder-row';
-			const cb = document.createElement('input');
-			cb.type = 'checkbox';
-			cb.checked = !!channel && f.channels.includes(channel.id);
-			cb.addEventListener('change', () => {
-				if (channel) Folders.toggle(f.id, channel);
-			});
-			row.append(cb, document.createTextNode(f.name));
-			return row;
-		});
-
-		const input = document.createElement('input');
-		input.className = 'ytaq-folder-new';
-		input.type = 'text';
-		input.placeholder = '＋ 新しいフォルダ';
-		input.addEventListener('keydown', async e => {
-			if (e.key !== 'Enter' || e.isComposing) return;
-			const name = input.value.trim();
-			if (!name || !channel) return;
-			input.value = '';
-			const id = await Folders.createFolder(name);
-			await Folders.toggle(id, channel);
-		});
-
-		menu.replaceChildren(...rows, input);
-	}
-
 	async function place() {
 		const t = target();
 		if (!t) {
@@ -84,12 +107,10 @@
 		if (widget.parentElement !== t.host) t.host.appendChild(widget);
 		if (t.href === currentHref) return;
 		currentHref = t.href;
-		channel = null;
-		render();
+		pageButton.setChannel(null);
 		const id = await Folders.resolveChannel(t.href);
 		if (currentHref !== t.href) return;
-		channel = id ? { id, name: t.name } : null;
-		render();
+		pageButton.setChannel(id ? { id, name: t.name } : null);
 	}
 
 	let scheduled = false;
@@ -103,11 +124,6 @@
 	}
 
 	const WATCH = 'ytd-watch-metadata, ytd-channel-name, yt-flexible-actions-view-model, yt-page-header-view-model';
-
-	Folders.watch(next => {
-		data = next;
-		render();
-	});
 
 	YTaq.ready(() => {
 		schedule();

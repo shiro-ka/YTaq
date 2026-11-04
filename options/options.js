@@ -103,13 +103,14 @@
 		},
 
 		perf: {
-			names: ['perf', 'click', 'embedReferer', 'embedLogin', 'watchHistory'],
+			names: ['perf', 'click', 'embedReferer', 'embedLogin', 'watchHistory', 'popupInfo'],
 			render(v) {
 				for (const k of PERF_KEYS) $('perf', 'perf-' + k).checked = !!v.perf[k];
 				$('perf', 'click').value = v.click;
 				$('perf', 'embedReferer').value = v.embedReferer;
 				$('perf', 'embedLogin').checked = !!v.embedLogin;
 				$('perf', 'watchHistory').checked = !!v.watchHistory;
+				for (const cb of document.querySelectorAll('.ytaq-popup-info-options input')) cb.checked = !!v.popupInfo[cb.value];
 			},
 			collect() {
 				const perf = {};
@@ -119,7 +120,8 @@
 					click: $('perf', 'click').value,
 					embedReferer: $('perf', 'embedReferer').value.trim() || S.defaults('embedReferer'),
 					embedLogin: $('perf', 'embedLogin').checked,
-					watchHistory: $('perf', 'watchHistory').checked
+					watchHistory: $('perf', 'watchHistory').checked,
+					popupInfo: Object.fromEntries([...document.querySelectorAll('.ytaq-popup-info-options input')].map(cb => [cb.value, cb.checked]))
 				};
 			}
 		},

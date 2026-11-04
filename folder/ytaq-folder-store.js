@@ -22,48 +22,8 @@
 		return 'f' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 	}
 
-	function innertubeConfig() {
-		try {
-			const page = window.wrappedJSObject;
-			if (page && page.ytcfg && typeof page.ytcfg.get === 'function') {
-				return {
-					clientVersion: String(page.ytcfg.get('INNERTUBE_CLIENT_VERSION')),
-					hl: String(page.ytcfg.get('HL') || 'ja'),
-					gl: String(page.ytcfg.get('GL') || 'JP')
-				};
-			}
-		} catch (e) {
-			console.warn('[YTaq] folder: ytcfg', e);
-		}
-		return null;
-	}
-
-	function waitConfig() {
-		return new Promise(ok => {
-			const until = Date.now() + 15000;
-			(function poll() {
-				const cfg = innertubeConfig();
-				if (cfg && cfg.clientVersion && cfg.clientVersion !== 'undefined') return ok(cfg);
-				if (Date.now() > until) return ok(null);
-				setTimeout(poll, 200);
-			})();
-		});
-	}
-
 	async function resolveHandleOnline(path) {
-		const cfg = await waitConfig();
-		if (!cfg) return null;
-		const res = await fetch(ORIGIN + '/youtubei/v1/navigation/resolve_url?prettyPrint=false', {
-			method: 'POST',
-			credentials: 'include',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({
-				context: { client: { clientName: 'WEB', clientVersion: cfg.clientVersion, hl: cfg.hl } },
-				url: ORIGIN + path
-			})
-		});
-		if (!res.ok) return null;
-		const json = await res.json();
+		const json = await window.YTaqInnertube.call('navigation/resolve_url', { url: ORIGIN + path }, { auth: false });
 		const id = json && json.endpoint && json.endpoint.browseEndpoint && json.endpoint.browseEndpoint.browseId;
 		return id && id.startsWith('UC') ? id : null;
 	}
@@ -204,12 +164,6 @@
 		return update(d => {
 			const folder = d.folders.find(f => f.id === folderId);
 			if (folder) folder.channels = folder.channels.filter(id => id !== channelId);
-		});
-	}
-
-	if (location.hostname === 'www.youtube.com') {
-		waitConfig().then(cfg => {
-			if (cfg) write({ ytaq_innertube: cfg });
 		});
 	}
 
