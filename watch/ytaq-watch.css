@@ -1,5 +1,5 @@
 html.ytaq-watch-wide.ytaq-watch-fit {
-  --watch-info-height: 112px;
+  --watch-info-height: 109px;
 }
 
 html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) {
@@ -40,4 +40,129 @@ html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) #primary {
 
 html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) #secondary {
   padding-right: 0;
+}
+
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata {
+  width: var(--watch-card-width);
+  margin-top: var(--suisou-space-2) !important;
+  position: relative;
+  z-index: 1;
+}
+
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata #title-row,
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata #top-row {
+  box-sizing: border-box;
+  width: 100%;
+  background: var(--suisou-color-panel);
+  border-inline: 1px solid var(--suisou-color-line-weak);
+}
+
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata #title-row {
+  padding: var(--suisou-space-2) var(--suisou-space-3) 0;
+}
+
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata #title-row {
+  border-top: 1px solid var(--suisou-color-line-weak);
+  border-radius: var(--suisou-radius) var(--suisou-radius) 0 0;
+}
+
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata #top-row {
+  margin: 0;
+  padding: var(--suisou-space-1) var(--suisou-space-3) var(--suisou-space-2);
+  align-items: center;
+  border-bottom: 1px solid var(--suisou-color-line-weak);
+  border-radius: 0 0 var(--suisou-radius) var(--suisou-radius);
+}
+
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata #owner,
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata #actions {
+  margin-top: 0;
+  align-items: center;
+}
+
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata #bottom-row {
+  width: var(--watch-primary-width);
+  margin-top: var(--suisou-space-2);
+}
+
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) #secondary {
+  margin-top: calc(var(--watch-card-height, 0px) + var(--suisou-space-2) * 2);
+}
+
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata #top-row .ytSpecButtonShapeNextHost {
+  height: var(--suisou-size-button);
+  border: 1px solid var(--suisou-color-line-strong);
+  border-radius: var(--suisou-radius);
+  background: transparent;
+  color: var(--suisou-color-text);
+}
+
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata #top-row .ytSpecButtonShapeNextHost:hover {
+  background: var(--suisou-color-hover);
+}
+
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata #top-row .ytSpecButtonShapeNextIconButton {
+  width: var(--suisou-size-button);
+}
+
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata #top-row .ytSpecButtonShapeNextSegmentedStart {
+  border-right: 0;
+  border-radius: var(--suisou-radius) 0 0 var(--suisou-radius);
+}
+
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata #top-row .ytSpecButtonShapeNextSegmentedEnd {
+  border-radius: 0 var(--suisou-radius) var(--suisou-radius) 0;
+}
+
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata #top-row .ytaq-folder-btn {
+  height: var(--suisou-size-button);
+  padding: 0 var(--suisou-space-2);
+}
+
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) #clarify-box:empty {
+  margin-top: 0 !important;
+}
+
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata #actions like-button-view-model button {
+  --watch-icon: var(--watch-icon-thumb_up);
+}
+
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata #actions like-button-view-model button[aria-pressed="true"] {
+  --watch-icon: var(--watch-icon-thumb_up_fill);
+}
+
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata #actions dislike-button-view-model button {
+  --watch-icon: var(--watch-icon-thumb_down);
+}
+
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata #actions dislike-button-view-model button[aria-pressed="true"] {
+  --watch-icon: var(--watch-icon-thumb_down_fill);
+}
+
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata #actions button:has(path[d^="M10 3.158"]) {
+  --watch-icon: var(--watch-icon-share);
+}
+
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata #actions button:has(path[d^="M19 2H5"]) {
+  --watch-icon: var(--watch-icon-playlist_add);
+}
+
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata #actions button:has(path[d^="M6 10a2"]) {
+  --watch-icon: var(--watch-icon-more_horiz);
+}
+
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata #actions .ytSpecButtonShapeNextHost:is(like-button-view-model button, dislike-button-view-model button, :has(path[d^="M10 3.158"], path[d^="M19 2H5"], path[d^="M6 10a2"])) .ytSpecButtonShapeNextIcon {
+  position: relative;
+}
+
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata #actions .ytSpecButtonShapeNextHost:is(like-button-view-model button, dislike-button-view-model button, :has(path[d^="M10 3.158"], path[d^="M19 2H5"], path[d^="M6 10a2"])) .ytSpecButtonShapeNextIcon > * {
+  visibility: hidden;
+}
+
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata #actions .ytSpecButtonShapeNextHost:is(like-button-view-model button, dislike-button-view-model button, :has(path[d^="M10 3.158"], path[d^="M19 2H5"], path[d^="M6 10a2"])) .ytSpecButtonShapeNextIcon::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  background: currentColor;
+  mask: var(--watch-icon) center / contain no-repeat;
 }

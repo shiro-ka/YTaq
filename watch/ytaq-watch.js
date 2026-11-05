@@ -25,6 +25,31 @@
 		window.dispatchEvent(new Event('resize'));
 	}
 
+	for (const name of ['thumb_up', 'thumb_up_fill', 'thumb_down', 'thumb_down_fill', 'share', 'playlist_add', 'more_horiz']) {
+		document.documentElement.style.setProperty('--watch-icon-' + name, YTaqIcons.url(name));
+	}
+
+	const observer = new ResizeObserver(measure);
+	const observed = new Set();
+
+	function measure() {
+		const player = document.querySelector('#full-bleed-container');
+		const primary = document.querySelector('ytd-watch-flexy #primary');
+		const title = document.querySelector('ytd-watch-metadata #title-row');
+		const row = document.querySelector('ytd-watch-metadata #top-row');
+		if (!player || !primary || !title || !row) return;
+		for (const el of [player, primary, title, row]) {
+			if (!observed.has(el)) {
+				observed.add(el);
+				observer.observe(el);
+			}
+		}
+		const root = document.documentElement.style;
+		root.setProperty('--watch-card-width', player.getBoundingClientRect().width + 'px');
+		root.setProperty('--watch-card-height', title.getBoundingClientRect().height + row.getBoundingClientRect().height + 'px');
+		root.setProperty('--watch-primary-width', primary.clientWidth - parseFloat(getComputedStyle(primary).paddingRight) + 'px');
+	}
+
 	let run = 0;
 
 	function apply() {
@@ -36,6 +61,8 @@
 			const page = flexy();
 			if (page && page.hasAttribute('theater')) {
 				refit();
+				measure();
+				if (!document.querySelector('ytd-watch-metadata #top-row') && ++polls < MAX_POLLS) setTimeout(step, POLL_MS);
 				return;
 			}
 			const button = document.querySelector('.ytp-size-button');
