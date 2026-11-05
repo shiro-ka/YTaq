@@ -83,7 +83,7 @@ html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metada
 }
 
 html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata #owner {
-  flex: 1 1 0;
+  flex: 1 1 360px;
   min-width: 0;
   margin-right: var(--suisou-space-2);
 }
