@@ -520,3 +520,7 @@ html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metada
 html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata #actions #top-level-buttons-computed {
   margin: 0;
 }
+
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata #top-row yt-light-shape {
+  display: none;
+}
