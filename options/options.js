@@ -337,18 +337,28 @@
 
 	let channelState = { rates: {}, subs: { fetchedAt: 0, channels: [] }, folders: { folders: [], channels: {} } };
 
+	const seen = new Map();
+	const hasSettings = new Map();
+
+	function configured(id) {
+		const { rates, folders } = channelState;
+		return !!rates[id] || folders.folders.some(f => f.channels.includes(id));
+	}
+
 	function allChannels() {
 		const { rates, subs, folders } = channelState;
-		const map = new Map(subs.channels.map(c => [c.id, c]));
-		for (const id of Object.keys(rates)) if (!map.has(id)) map.set(id, { id, name: rates[id].name });
+		for (const c of subs.channels) seen.set(c.id, c);
+		for (const id of Object.keys(rates)) if (!seen.has(id)) seen.set(id, { id, name: rates[id].name });
 		for (const f of folders.folders) {
-			for (const id of f.channels) if (!map.has(id)) map.set(id, { id, name: (folders.channels[id] || {}).name || id });
+			for (const id of f.channels) if (!seen.has(id)) seen.set(id, { id, name: (folders.channels[id] || {}).name || id });
 		}
-		return [...map.values()].sort((a, b) => a.name.localeCompare(b.name, 'ja'));
+		const list = [...seen.values()].sort((a, b) => a.name.trim().localeCompare(b.name.trim(), 'ja'));
+		for (const c of list) if (!hasSettings.has(c.id)) hasSettings.set(c.id, configured(c.id));
+		return list;
 	}
 
 	function channelRow(c) {
-		const { rates, folders } = channelState;
+		const { rates, folders, subs } = channelState;
 		const row = document.createElement('div');
 		row.className = 'ytaq-channel-row';
 		row.dataset.name = c.name.toLowerCase();
@@ -372,6 +382,12 @@
 		name.rel = 'noopener';
 		name.textContent = c.name;
 		head.append(name);
+		if (subs.fetchedAt && !subs.channels.some(x => x.id === c.id)) {
+			const tag = document.createElement('span');
+			tag.textContent = '未登録';
+			tag.setAttribute('data-suisou-item', 'tag');
+			head.append(tag);
+		}
 
 		const speed = document.createElement('div');
 		speed.setAttribute('data-suisou-layout', 'row middle wrap');
@@ -423,6 +439,9 @@
 		for (const row of document.querySelectorAll('.ytaq-channel-row')) {
 			row.hidden = !!q && !row.dataset.name.includes(q);
 		}
+		for (const group of document.querySelectorAll('.ytaq-channel-group')) {
+			group.hidden = !group.querySelector('.ytaq-channel-row:not([hidden])');
+		}
 	}
 
 	function renderChannels() {
@@ -436,20 +455,35 @@
 			box.replaceChildren(p);
 			return;
 		}
-		box.replaceChildren(...list.map(channelRow));
+		box.replaceChildren(...[['設定あり', true], ['設定なし', false]].flatMap(([title, flag]) => {
+			const rows = list.filter(c => hasSettings.get(c.id) === flag);
+			if (!rows.length) return [];
+			const group = document.createElement('div');
+			group.className = 'ytaq-channel-group';
+			group.setAttribute('data-suisou-layout', 'stack');
+			const h = document.createElement('h3');
+			h.textContent = `${title}（${rows.length}）`;
+			h.setAttribute('data-suisou-text', 'fs-16 fw-700');
+			group.append(h, ...rows.map(channelRow));
+			return [group];
+		}));
 		filterChannels();
 	}
 
 	function initChannels() {
 		document.querySelector('.ytaq-channel-search').addEventListener('input', filterChannels);
+		let gotChannels = false;
+		let gotFolders = false;
 		YTaqChannels.watch(v => {
 			channelState.rates = v.rates;
 			channelState.subs = v.subs;
-			renderChannels();
+			gotChannels = true;
+			if (gotFolders) renderChannels();
 		});
 		YTaqFolders.watch(v => {
 			channelState.folders = v;
-			renderChannels();
+			gotFolders = true;
+			if (gotChannels) renderChannels();
 		});
 	}
 

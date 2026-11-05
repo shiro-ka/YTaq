@@ -28,7 +28,7 @@
 		for (let i = 0; i < MAX_PAGES && body; i++) {
 			const json = await window.YTaqInnertube.call('browse', body);
 			for (const { channelRenderer: r } of collect(json, o => o.channelRenderer, [])) {
-				channels.push({ id: r.channelId, name: (r.title && r.title.simpleText) || '', avatar: avatarOf(r) });
+				channels.push({ id: r.channelId, name: ((r.title && r.title.simpleText) || '').trim(), avatar: avatarOf(r) });
 			}
 			const next = collect(json, o => o.continuationCommand && o.continuationCommand.token, [])[0];
 			body = next ? { continuation: next.continuationCommand.token } : null;
