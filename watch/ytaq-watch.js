@@ -48,7 +48,10 @@
 	descButton.setAttribute('aria-label', '概要');
 	descButton.append(YTaqIcons.create('notes'));
 	descButton.addEventListener('click', () => {
-		document.documentElement.classList.toggle(DESC_CLASS);
+		const open = document.documentElement.classList.toggle(DESC_CLASS);
+		if (!open) return;
+		const expander = document.querySelector('ytd-watch-metadata #description-inline-expander');
+		if (expander && !expander.hasAttribute('is-expanded')) expander.querySelector('#expand')?.click();
 	});
 
 	function placeDescButton() {
