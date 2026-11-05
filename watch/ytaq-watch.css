@@ -1,6 +1,10 @@
+html.ytaq-watch-wide.ytaq-watch-fit {
+  --ytaq-watch-info: 112px;
+}
+
 html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) #full-bleed-container {
   box-sizing: border-box;
-  width: min(100% - var(--suisou-space-3) * 2, (100vh - 56px - var(--suisou-space-2) * 2) * 16 / 9);
+  width: min(100% - var(--suisou-space-3) * 2, (100vh - 56px - var(--suisou-space-2) * 2 - var(--ytaq-watch-info, 0px)) * 16 / 9);
   height: auto !important;
   min-height: 0 !important;
   max-height: none !important;

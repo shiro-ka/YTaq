@@ -58,6 +58,11 @@
 		apply();
 	});
 
+	YTaqSettings.watch('watchFitInfo', v => {
+		document.documentElement.classList.toggle('ytaq-watch-fit', !!v);
+		refit();
+	});
+
 	YTaq.ready(apply);
 	YTaq.onNavigate(apply);
 })();

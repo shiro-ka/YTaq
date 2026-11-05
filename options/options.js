@@ -76,7 +76,7 @@
 
 	const SECTIONS = {
 		theme: {
-			names: ['theme', 'searchGrid', 'watchWide'],
+			names: ['theme', 'searchGrid', 'watchWide', 'watchFitInfo'],
 			async init() {
 				palette = await loadPalette();
 				const name = $('theme', 'theme-name');
@@ -93,13 +93,15 @@
 				fillSelect($('theme', 'theme-accent'), palette.get(name.value) || [], v.theme.accent);
 				$('theme', 'searchGrid').checked = !!v.searchGrid;
 				$('theme', 'watchWide').checked = !!v.watchWide;
+				$('theme', 'watchFitInfo').checked = !!v.watchFitInfo;
 				applyTheme(this.collect().theme);
 			},
 			collect() {
 				return {
 					theme: { theme: $('theme', 'theme-name').value, accent: $('theme', 'theme-accent').value },
 					searchGrid: $('theme', 'searchGrid').checked,
-					watchWide: $('theme', 'watchWide').checked
+					watchWide: $('theme', 'watchWide').checked,
+					watchFitInfo: $('theme', 'watchFitInfo').checked
 				};
 			}
 		},
