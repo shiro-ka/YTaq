@@ -299,3 +299,17 @@ html.ytaq-watch-wide.ytaq-watch-side ytd-watch-flexy[theater][is-two-columns_]:n
   border: 1px solid var(--suisou-color-line-weak);
   border-radius: var(--suisou-radius);
 }
+
+html.ytaq-watch-wide.ytaq-watch-side:not(.ytaq-watch-related):has(ytd-watch-flexy[theater][is-two-columns_]:not([fixed-panels]):not([fullscreen]):not([hidden])) {
+  scroll-snap-type: y mandatory;
+}
+
+html.ytaq-watch-wide.ytaq-watch-side ytd-watch-flexy[theater][is-two-columns_]:not([fixed-panels]):not([fullscreen]) #full-bleed-container {
+  scroll-snap-align: start;
+  scroll-margin-top: calc(56px + var(--suisou-space-2));
+}
+
+html.ytaq-watch-wide.ytaq-watch-side ytd-watch-flexy[theater][is-two-columns_]:not([fixed-panels]):not([fullscreen]) ytd-comments {
+  scroll-snap-align: start;
+  scroll-margin-top: calc(56px + var(--suisou-space-2));
+}
