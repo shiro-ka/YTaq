@@ -88,6 +88,7 @@
 	chatButton.setAttribute('aria-label', 'チャットのリプレイ');
 	chatButton.append(YTaqIcons.create('chat'));
 	chatButton.addEventListener('click', () => {
+		replayRun++;
 		const page = flexy();
 		const selector = page && page.hasAttribute('fixed-panels') ? '#chat #show-hide-button button' : 'ytd-watch-metadata #teaser-carousel button';
 		document.querySelector(selector)?.click();
@@ -192,6 +193,12 @@
 		refit();
 	});
 
+	YTaqSettings.watch('watchCloseReplay', v => {
+		closeReplay = !!v;
+		if (closeReplay) closeReplayChat();
+		else replayRun++;
+	});
+
 	YTaqSettings.watch('watchDescBelow', v => {
 		document.documentElement.classList.toggle('ytaq-watch-desc-below', !!v);
 		measure();
@@ -228,6 +235,32 @@
 		e.stopImmediatePropagation();
 		video.currentTime = time;
 	}, true);
+
+	let closeReplay = false;
+	let replayRun = 0;
+
+	function chatIsReplay() {
+		try {
+			return document.querySelector('#chat iframe#chatframe').contentWindow.location.pathname === '/live_chat_replay';
+		} catch {
+			return false;
+		}
+	}
+
+	function closeReplayChat() {
+		const current = ++replayRun;
+		let polls = 0;
+		const step = () => {
+			if (current !== replayRun || !closeReplay || !location.pathname.startsWith('/watch')) return;
+			const page = flexy();
+			if (page && page.hasAttribute('fixed-panels') && chatIsReplay()) {
+				document.querySelector('#chat #show-hide-button button')?.click();
+				return;
+			}
+			if (++polls < MAX_POLLS) setTimeout(step, POLL_MS);
+		};
+		step();
+	}
 
 	function playlistId() {
 		return new URLSearchParams(location.search).get('list');
@@ -279,5 +312,6 @@
 	YTaq.onNavigate(() => {
 		document.documentElement.classList.remove(DESC_CLASS);
 		apply();
+		closeReplayChat();
 	});
 })();
