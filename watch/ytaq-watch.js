@@ -31,10 +31,12 @@
 
 	const PIP_CLASS = 'ytaq-watch-pip';
 	const DESC_CLASS = 'ytaq-watch-desc-open';
+	const DESC_GAP = 4;
 	const PIP_VISIBLE_RATIO = 0.5;
 	const pipObserver = new IntersectionObserver(entries => {
 		const on = entries[entries.length - 1].intersectionRatio < PIP_VISIBLE_RATIO;
 		document.documentElement.classList.toggle(PIP_CLASS, on);
+		document.documentElement.classList.remove(DESC_CLASS);
 		refit();
 	}, { rootMargin: '-56px 0px 0px 0px', threshold: [PIP_VISIBLE_RATIO] });
 
@@ -50,9 +52,25 @@
 	descButton.addEventListener('click', () => {
 		const open = document.documentElement.classList.toggle(DESC_CLASS);
 		if (!open) return;
+		placeDesc();
 		const expander = document.querySelector('ytd-watch-metadata #description-inline-expander');
 		if (expander && !expander.hasAttribute('is-expanded')) expander.querySelector('#expand')?.click();
 	});
+
+	function placeDesc() {
+		if (!document.documentElement.classList.contains(DESC_CLASS)) return;
+		const row = document.querySelector('ytd-watch-metadata #bottom-row');
+		if (!row) return;
+		const button = descButton.getBoundingClientRect();
+		const parent = row.offsetParent;
+		const box = parent ? parent.getBoundingClientRect() : null;
+		const right = box ? box.right - parent.clientLeft : document.documentElement.clientWidth;
+		const bottom = box ? box.bottom - parent.clientTop : document.documentElement.clientHeight;
+		const style = document.documentElement.style;
+		style.setProperty('--watch-desc-right', (right - button.right) + 'px');
+		style.setProperty('--watch-desc-bottom', (bottom - button.top + DESC_GAP) + 'px');
+		style.setProperty('--watch-desc-room', (button.right - DESC_GAP) + 'px');
+	}
 
 	function placeDescButton() {
 		const actions = document.querySelector('ytd-watch-metadata #actions');
@@ -66,6 +84,7 @@
 	}, true);
 
 	function measure() {
+		placeDesc();
 		const player = document.querySelector('#full-bleed-container');
 		const primary = document.querySelector('ytd-watch-flexy #primary');
 		const title = document.querySelector('ytd-watch-metadata #title-row');
