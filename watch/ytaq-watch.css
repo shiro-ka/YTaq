@@ -3,7 +3,7 @@ html.ytaq-watch-wide.ytaq-watch-fit {
 }
 
 html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) {
-  --watch-width: min(100% - var(--suisou-space-3) * 2, (100vh - 56px - var(--suisou-space-2) * 2 - var(--watch-info-height, 0px)) * 16 / 9);
+  --watch-width: min(100% - var(--suisou-space-3) * 2 - var(--watch-panel-width, 0px), (100vh - 56px - var(--suisou-space-2) * 2 - var(--watch-info-height, 0px)) * 16 / 9);
 }
 
 html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) #full-bleed-container {
@@ -13,7 +13,7 @@ html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) #full-bleed-cont
   min-height: 0 !important;
   max-height: none !important;
   aspect-ratio: 16 / 9;
-  margin: var(--suisou-space-2) auto 0;
+  margin: var(--suisou-space-2) 0 0 calc((100% - var(--watch-panel-width, 0px) - var(--watch-width)) / 2);
   background: transparent;
   border-radius: var(--suisou-radius);
   overflow: clip;
@@ -30,10 +30,12 @@ html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) #columns {
   box-sizing: border-box;
   width: var(--watch-width);
   max-width: none;
-  margin-inline: auto;
+  margin-inline: calc((100% - var(--watch-panel-width, 0px) - var(--watch-width)) / 2) 0;
+  padding-right: 0 !important;
 }
 
 html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) #primary {
+  min-width: 0 !important;
   margin-left: 0;
   padding-right: var(--suisou-space-3);
 }

@@ -38,6 +38,11 @@
 		const title = document.querySelector('ytd-watch-metadata #title-row');
 		const row = document.querySelector('ytd-watch-metadata #top-row');
 		if (!player || !primary || !title || !row) return;
+		const flexyEl = flexy();
+		if (flexyEl && !observed.has(flexyEl)) {
+			observed.add(flexyEl);
+			new MutationObserver(measure).observe(flexyEl, { attributes: true, attributeFilter: ['fixed-panels', 'panel-expanded', 'live-chat-present-and-expanded'] });
+		}
 		for (const el of [player, primary, title, row]) {
 			if (!observed.has(el)) {
 				observed.add(el);
@@ -48,6 +53,8 @@
 		root.setProperty('--watch-card-width', player.getBoundingClientRect().width + 'px');
 		root.setProperty('--watch-card-height', title.getBoundingClientRect().height + row.getBoundingClientRect().height + 'px');
 		root.setProperty('--watch-primary-width', primary.clientWidth - parseFloat(getComputedStyle(primary).paddingRight) + 'px');
+		const chat = flexyEl && flexyEl.hasAttribute('fixed-panels') && document.querySelector('ytd-watch-flexy #chat');
+		root.setProperty('--watch-panel-width', chat ? chat.getBoundingClientRect().width + 'px' : '0px');
 	}
 
 	let run = 0;
