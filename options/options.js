@@ -2,7 +2,7 @@
 	'use strict';
 
 	const S = YTaqSettings;
-	const FIRST = 'theme';
+	const FIRST = 'channels';
 	const PERF_KEYS = Object.keys(S.defaults('perf'));
 	const THEME_BLOCK = /^\[data-suisou-theme~="([a-z]+)"\] \{/gm;
 	const ACCENT_BLOCK = /^\[data-suisou-theme~="([a-z]+)"\]\[data-suisou-theme~="([a-z]+)"\] \{/gm;
