@@ -4,13 +4,10 @@
 	const YTaq = window.YTaq;
 	const Folders = window.YTaqFolders;
 
-	const SHOWN_NAMES = 2;
-
 	const buttons = new Set();
 	let data = { folders: [], channels: {} };
 
-	function createButton(options) {
-		const iconMode = !!(options && options.icon);
+	function createButton() {
 		const widget = document.createElement('div');
 		widget.className = 'ytaq-folder';
 
@@ -35,14 +32,8 @@
 			const inFolders = channel ? Folders.foldersOf(data, channel.id) : [];
 			button.classList.toggle('ytaq-folder-in', inFolders.length > 0);
 			const names = inFolders.map(f => f.name);
-				if (iconMode) {
-				button.replaceChildren(YTaqIcons.create(names.length ? 'folder_fill' : 'folder'));
-				button.setAttribute('aria-label', names.length ? 'フォルダ: ' + names.join('・') : 'フォルダに入れる');
-			} else {
-				button.textContent = names.length === 0
-					? '＋ フォルダ'
-					: '✓ ' + names.slice(0, SHOWN_NAMES).join('・') + (names.length > SHOWN_NAMES ? '　＋' + (names.length - SHOWN_NAMES) : '');
-			}
+			button.replaceChildren(YTaqIcons.create(names.length ? 'folder_fill' : 'folder'));
+			button.setAttribute('aria-label', names.length ? 'フォルダ: ' + names.join('・') : 'フォルダに入れる');
 			button.title = names.length ? names.join('・') : 'フォルダに入れる';
 			button.disabled = !channel;
 

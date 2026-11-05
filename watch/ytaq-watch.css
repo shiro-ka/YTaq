@@ -123,8 +123,27 @@ html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metada
 }
 
 html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata #top-row .ytaq-folder-btn {
+  width: var(--suisou-size-button);
   height: var(--suisou-size-button);
-  padding: 0 var(--suisou-space-2);
+}
+
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata ytd-subscription-notification-toggle-button-renderer-next button {
+  width: var(--suisou-size-button);
+  min-width: 0;
+  padding: 0;
+}
+
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata ytd-subscription-notification-toggle-button-renderer-next .ytSpecButtonShapeNextSecondaryIcon {
+  display: none;
+}
+
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata ytd-subscription-notification-toggle-button-renderer-next .ytSpecButtonShapeNextIcon {
+  margin: 0;
+  transform: scale(0.75);
+}
+
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata #subscribe-button:has(ytd-subscription-notification-toggle-button-renderer-next) .ytAnimatedActionBackgroundContainer {
+  display: none;
 }
 
 html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) #clarify-box:empty {

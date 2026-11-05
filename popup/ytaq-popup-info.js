@@ -104,7 +104,7 @@
 		const likeBtn = want('like') ? iconButton('ytaq-popup-like', '高評価', 'thumb_up', () => rate('LIKE')) : null;
 		const dislikeBtn = want('dislike') ? iconButton('ytaq-popup-dislike', '低評価', 'thumb_down', () => rate('DISLIKE')) : null;
 		const subBtn = want('subscribe') ? button('ytaq-popup-sub', 'チャンネル登録', toggleSubscribe) : null;
-		const folderBtn = want('folder') && window.YTaqFolderButton ? window.YTaqFolderButton.create({ icon: true }) : null;
+		const folderBtn = want('folder') && window.YTaqFolderButton ? window.YTaqFolderButton.create() : null;
 		if (folderBtn && parts.onClose) parts.onClose(folderBtn.destroy);
 
 		const drops = [];

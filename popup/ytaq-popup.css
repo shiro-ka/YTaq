@@ -391,6 +391,11 @@ html[data-suisou-theme] .ytaq-popup-channel-row .ytaq-folder-btn,
 	padding: 0 var(--suisou-space-1);
 }
 
+html[data-suisou-theme] .ytaq-popup-channel-row .ytaq-folder-btn {
+	width: var(--suisou-size-button);
+	padding: 0;
+}
+
 .ytaq-icon {
 	flex: none;
 	fill: currentColor;

@@ -7,18 +7,23 @@ html[data-suisou-theme] .ytaq-folder {
 }
 
 html[data-suisou-theme] .ytaq-folder-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
   height: 36px;
-  max-width: 280px;
-  padding: 0 var(--suisou-space-3);
+  padding: 0;
   border: 1px solid var(--suisou-color-line-strong);
   border-radius: var(--suisou-radius);
   background: transparent;
   color: var(--suisou-color-text);
-  font: 500 var(--suisou-fs-14)/1 Roboto, Arial, sans-serif;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   cursor: default;
+}
+
+html[data-suisou-theme] .ytaq-folder-btn .ytaq-icon {
+  width: var(--suisou-size-icon);
+  height: var(--suisou-size-icon);
+  fill: currentColor;
 }
 
 html[data-suisou-theme] .ytaq-folder-btn.ytaq-folder-in {
