@@ -29,6 +29,14 @@
 		document.documentElement.style.setProperty('--watch-icon-' + name, YTaqIcons.url(name));
 	}
 
+	const PIP_CLASS = 'ytaq-watch-pip';
+	const PIP_VISIBLE_RATIO = 0.5;
+	const pipObserver = new IntersectionObserver(entries => {
+		const on = entries[entries.length - 1].intersectionRatio < PIP_VISIBLE_RATIO;
+		document.documentElement.classList.toggle(PIP_CLASS, on);
+		refit();
+	}, { rootMargin: '-56px 0px 0px 0px', threshold: [PIP_VISIBLE_RATIO] });
+
 	const observer = new ResizeObserver(measure);
 	const observed = new Set();
 
@@ -43,6 +51,10 @@
 			observed.add(flexyEl);
 			new MutationObserver(measure).observe(flexyEl, { attributes: true, attributeFilter: ['fixed-panels', 'panel-expanded', 'live-chat-present-and-expanded'] });
 		}
+		if (!observed.has(pipObserver)) {
+			observed.add(pipObserver);
+			pipObserver.observe(player);
+		}
 		for (const el of [player, primary, title, row]) {
 			if (!observed.has(el)) {
 				observed.add(el);
@@ -51,8 +63,21 @@
 		}
 		const root = document.documentElement.style;
 		root.setProperty('--watch-card-width', player.getBoundingClientRect().width + 'px');
-		root.setProperty('--watch-card-height', title.getBoundingClientRect().height + row.getBoundingClientRect().height + 'px');
+		root.setProperty('--watch-title-height', title.getBoundingClientRect().height + 'px');
+		if (!document.documentElement.classList.contains(PIP_CLASS)) {
+			root.setProperty('--watch-card-height', title.getBoundingClientRect().height + row.getBoundingClientRect().height + 'px');
+		}
 		root.setProperty('--watch-primary-width', primary.clientWidth - parseFloat(getComputedStyle(primary).paddingRight) + 'px');
+		const secondary = document.querySelector('ytd-watch-flexy #secondary');
+		if (secondary) {
+			const r = secondary.getBoundingClientRect();
+			root.setProperty('--watch-pip-left', r.left + 'px');
+			root.setProperty('--watch-pip-width', r.width + 'px');
+			if (!observed.has(secondary)) {
+				observed.add(secondary);
+				observer.observe(secondary);
+			}
+		}
 		const chat = flexyEl && flexyEl.hasAttribute('fixed-panels') && document.querySelector('ytd-watch-flexy #chat');
 		root.setProperty('--watch-panel-width', chat ? chat.getBoundingClientRect().width + 'px' : '0px');
 	}
@@ -90,6 +115,15 @@
 		if (wide) document.cookie = 'wide=1; domain=.youtube.com; path=/; max-age=31536000; secure';
 		if (turnedOff) setTheater(false);
 		apply();
+	});
+
+	YTaqSettings.watch('watchSide', v => {
+		document.documentElement.classList.toggle('ytaq-watch-side', !!v);
+		refit();
+	});
+
+	YTaqSettings.watch('watchRelated', v => {
+		document.documentElement.classList.toggle('ytaq-watch-related', !!v);
 	});
 
 	YTaqSettings.watch('watchFitInfo', v => {

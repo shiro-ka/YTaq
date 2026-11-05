@@ -168,3 +168,75 @@ html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metada
   background: currentColor;
   mask: var(--watch-icon) center / contain no-repeat;
 }
+
+html.ytaq-watch-wide:not(.ytaq-watch-related) ytd-watch-flexy[theater]:not([fullscreen]) #related,
+html.ytaq-watch-wide:not(.ytaq-watch-related) ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-next-secondary-results-renderer {
+  display: none;
+}
+
+html.ytaq-watch-wide.ytaq-watch-side ytd-watch-flexy[theater][is-two-columns_]:not([fixed-panels]):not([fullscreen]) #primary {
+  flex: none;
+  width: 440px;
+}
+
+html.ytaq-watch-wide.ytaq-watch-side ytd-watch-flexy[theater][is-two-columns_]:not([fixed-panels]):not([fullscreen]) #secondary {
+  flex: 1;
+  width: auto;
+  max-width: none;
+  min-width: 0;
+}
+
+html.ytaq-watch-wide.ytaq-watch-side.ytaq-watch-pip ytd-watch-flexy[theater][is-two-columns_]:not([fixed-panels]):not([fullscreen]) {
+  --watch-pip-size: min(var(--watch-pip-width), (100vh - 56px - var(--suisou-space-2) * 3 - var(--watch-card-height)) * 16 / 9);
+  --watch-pip-panel-top: calc(56px + var(--suisou-space-2) * 2 + var(--watch-pip-size) * 9 / 16);
+}
+
+html.ytaq-watch-wide.ytaq-watch-side.ytaq-watch-pip ytd-watch-flexy[theater][is-two-columns_]:not([fixed-panels]):not([fullscreen]) #full-bleed-container {
+  overflow: visible;
+  z-index: 1000;
+}
+
+html.ytaq-watch-wide.ytaq-watch-side.ytaq-watch-pip ytd-watch-flexy[theater][is-two-columns_]:not([fixed-panels]):not([fullscreen]) #player-full-bleed-container {
+  position: fixed;
+  inset: auto;
+  top: calc(56px + var(--suisou-space-2));
+  left: var(--watch-pip-left);
+  width: var(--watch-pip-size) !important;
+  height: auto !important;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--suisou-radius);
+  overflow: clip;
+}
+
+html.ytaq-watch-wide.ytaq-watch-side.ytaq-watch-pip ytd-watch-flexy[theater][is-two-columns_]:not([fixed-panels]):not([fullscreen]) ytd-watch-metadata {
+  padding-top: var(--watch-card-height);
+  z-index: 1000;
+}
+
+html.ytaq-watch-wide.ytaq-watch-side.ytaq-watch-pip ytd-watch-flexy[theater][is-two-columns_]:not([fixed-panels]):not([fullscreen]) ytd-watch-metadata #title-row {
+  position: fixed;
+  top: var(--watch-pip-panel-top);
+  left: var(--watch-pip-left);
+  width: var(--watch-pip-size);
+}
+
+html.ytaq-watch-wide.ytaq-watch-side.ytaq-watch-pip ytd-watch-flexy[theater][is-two-columns_]:not([fixed-panels]):not([fullscreen]) ytd-watch-metadata #top-row {
+  position: fixed;
+  flex-wrap: wrap;
+  row-gap: var(--suisou-space-2);
+  top: calc(var(--watch-pip-panel-top) + var(--watch-title-height));
+  left: var(--watch-pip-left);
+  width: var(--watch-pip-size);
+}
+
+html.ytaq-watch-wide.ytaq-watch-side ytd-watch-flexy[theater][is-two-columns_]:not([fixed-panels]):not([fullscreen]) #related .ytLockupViewModelContentImage {
+  flex: none !important;
+  width: 240px !important;
+  max-width: 240px !important;
+  min-width: 0 !important;
+}
+
+html.ytaq-watch-wide.ytaq-watch-side ytd-watch-flexy[theater][is-two-columns_]:not([fixed-panels]):not([fullscreen]) #primary {
+  position: relative;
+  z-index: 1000;
+}

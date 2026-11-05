@@ -19,6 +19,8 @@
 		searchGrid: { key: 'ytaq_search_grid', value: true },
 		watchWide: { key: 'ytaq_watch_wide', value: true },
 		watchFitInfo: { key: 'ytaq_watch_fit_info', value: true },
+		watchSide: { key: 'ytaq_watch_side', value: true },
+		watchRelated: { key: 'ytaq_watch_related', value: false },
 		feedShorts: { key: 'ytaq_feed_shorts', value: false },
 		titleClean: {
 			key: 'ytaq_title_clean',
