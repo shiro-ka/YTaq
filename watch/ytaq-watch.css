@@ -285,3 +285,17 @@ html.ytaq-watch-wide.ytaq-watch-side.ytaq-watch-pip ytd-watch-flexy[theater][is-
   height: 100%;
   max-height: none !important;
 }
+
+html.ytaq-watch-wide.ytaq-watch-side ytd-watch-flexy[theater][is-two-columns_]:not([fixed-panels]):not([fullscreen]) ytd-comments {
+  box-sizing: border-box;
+  display: block;
+  height: calc(100vh - 56px - var(--suisou-space-2) * 2);
+  margin: 0 0 var(--suisou-space-2) !important;
+  padding: var(--suisou-space-2) var(--suisou-space-3);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--suisou-color-line-strong) transparent;
+  background: var(--suisou-color-panel);
+  border: 1px solid var(--suisou-color-line-weak);
+  border-radius: var(--suisou-radius);
+}
