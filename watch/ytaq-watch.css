@@ -82,9 +82,15 @@ html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metada
   align-items: center;
 }
 
-html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata #bottom-row {
-  width: var(--watch-primary-width);
-  margin-top: var(--suisou-space-2);
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata #owner {
+  flex: 1 1 0;
+  min-width: 0;
+  margin-right: var(--suisou-space-2);
+}
+
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata #actions {
+  flex: none;
+  min-width: 0;
 }
 
 html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) #secondary {
@@ -190,16 +196,8 @@ html.ytaq-watch-wide.ytaq-watch-side ytd-watch-flexy[theater][is-two-columns_]:n
   margin-left: calc(var(--watch-primary-width) - var(--watch-card-width));
 }
 
-html.ytaq-watch-wide.ytaq-watch-side ytd-watch-flexy[theater][is-two-columns_]:not([fixed-panels]):not([fullscreen]) ytd-watch-metadata #bottom-row {
-  position: absolute;
-  top: calc(var(--watch-card-height) + var(--suisou-space-2));
-  left: 0;
-  width: var(--watch-pip-width);
-  margin: 0;
-}
-
 html.ytaq-watch-wide.ytaq-watch-side ytd-watch-flexy[theater][is-two-columns_]:not([fixed-panels]):not([fullscreen]) #secondary {
-  margin-top: calc(var(--watch-card-height, 0px) + var(--watch-desc-height, 0px) + var(--suisou-space-2) * 3);
+  margin-top: calc(var(--watch-card-height, 0px) + var(--suisou-space-2) * 2);
   flex: 1;
   width: auto;
   max-width: none;
@@ -265,7 +263,7 @@ html.ytaq-watch-wide.ytaq-watch-side ytd-watch-flexy[theater][is-two-columns_]:n
 
 html.ytaq-watch-wide.ytaq-watch-side.ytaq-watch-pip ytd-watch-flexy[theater][is-two-columns_]:not([fixed-panels]):not([fullscreen]) #related {
   position: fixed;
-  top: calc(var(--watch-pip-panel-top) + var(--watch-title-height) + var(--watch-row-height) + var(--watch-desc-height) + var(--suisou-space-2) * 2);
+  top: calc(var(--watch-pip-panel-top) + var(--watch-title-height) + var(--watch-row-height) + var(--suisou-space-2));
   bottom: var(--suisou-space-2);
   left: var(--watch-pip-left);
   width: var(--watch-pip-size);
@@ -280,18 +278,9 @@ html.ytaq-watch-wide.ytaq-watch-side ytd-watch-flexy[theater][is-two-columns_]:n
   z-index: 1000;
 }
 
-html.ytaq-watch-wide.ytaq-watch-side.ytaq-watch-pip ytd-watch-flexy[theater][is-two-columns_]:not([fixed-panels]):not([fullscreen]) ytd-watch-metadata #bottom-row {
-  position: fixed;
-  top: calc(var(--watch-pip-panel-top) + var(--watch-title-height) + var(--watch-row-height) + var(--suisou-space-2));
-  left: var(--watch-pip-left);
-  width: var(--watch-pip-size);
-  max-height: calc(100vh - var(--watch-pip-panel-top) - var(--watch-title-height) - var(--watch-row-height) - var(--suisou-space-2) * 2);
-  overflow-y: auto;
-}
-
 html.ytaq-watch-wide.ytaq-watch-side.ytaq-watch-pip ytd-watch-flexy[theater][is-two-columns_]:not([fixed-panels]):not([fullscreen]) ytd-playlist-panel-renderer#playlist {
   position: fixed;
-  top: calc(var(--watch-pip-panel-top) + var(--watch-title-height) + var(--watch-row-height) + var(--watch-desc-height) + var(--suisou-space-2) * 2);
+  top: calc(var(--watch-pip-panel-top) + var(--watch-title-height) + var(--watch-row-height) + var(--suisou-space-2));
   bottom: var(--suisou-space-2);
   left: var(--watch-pip-left);
   width: var(--watch-pip-size);
@@ -331,4 +320,73 @@ html.ytaq-watch-wide.ytaq-watch-side ytd-watch-flexy[theater][is-two-columns_]:n
 html.ytaq-watch-wide.ytaq-watch-side ytd-watch-flexy[theater][is-two-columns_]:not([fixed-panels]):not([fullscreen]) ytd-comments {
   scroll-snap-align: start;
   scroll-margin-top: calc(56px + var(--suisou-space-2));
+}
+
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata #bottom-row {
+  display: none;
+}
+
+html.ytaq-watch-wide.ytaq-watch-desc-open ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata #bottom-row {
+  position: absolute;
+  bottom: calc(100% + var(--suisou-space-2));
+  left: 0;
+  z-index: 1001;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--suisou-space-2);
+  box-sizing: border-box;
+  width: 100%;
+  max-height: 60vh;
+  margin: 0;
+  padding: var(--suisou-space-2);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--suisou-color-line-strong) transparent;
+  background: var(--suisou-color-panel);
+  border: 1px solid var(--suisou-color-line-strong);
+  border-radius: var(--suisou-radius);
+}
+
+html.ytaq-watch-wide.ytaq-watch-side.ytaq-watch-pip.ytaq-watch-desc-open ytd-watch-flexy[theater][is-two-columns_]:not([fixed-panels]):not([fullscreen]) ytd-watch-metadata #bottom-row {
+  position: fixed;
+  top: auto;
+  bottom: calc(100vh - var(--watch-pip-panel-top) + var(--suisou-space-2));
+  left: var(--watch-pip-left);
+  width: var(--watch-pip-size);
+  max-height: calc(var(--watch-pip-panel-top) - 56px - var(--suisou-space-2) * 2);
+}
+
+.ytaq-watch-desc-btn {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  width: var(--suisou-size-button);
+  height: var(--suisou-size-button);
+  margin-right: var(--suisou-space-2);
+  padding: 0;
+  border: 1px solid var(--suisou-color-line-strong);
+  border-radius: var(--suisou-radius);
+  background: transparent;
+  color: var(--suisou-color-text);
+  cursor: pointer;
+}
+
+.ytaq-watch-desc-btn:hover {
+  background: var(--suisou-color-hover);
+}
+
+.ytaq-watch-desc-btn .ytaq-icon {
+  width: var(--suisou-size-icon);
+  height: var(--suisou-size-icon);
+}
+
+html:not(.ytaq-watch-wide) .ytaq-watch-desc-btn {
+  display: none;
+}
+
+html.ytaq-watch-desc-open .ytaq-watch-desc-btn {
+  border-color: var(--suisou-color-accent);
+  background: var(--suisou-color-accent-tint);
 }

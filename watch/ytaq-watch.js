@@ -30,6 +30,7 @@
 	}
 
 	const PIP_CLASS = 'ytaq-watch-pip';
+	const DESC_CLASS = 'ytaq-watch-desc-open';
 	const PIP_VISIBLE_RATIO = 0.5;
 	const pipObserver = new IntersectionObserver(entries => {
 		const on = entries[entries.length - 1].intersectionRatio < PIP_VISIBLE_RATIO;
@@ -39,6 +40,27 @@
 
 	const observer = new ResizeObserver(measure);
 	const observed = new Set();
+
+	const descButton = document.createElement('button');
+	descButton.type = 'button';
+	descButton.className = 'ytaq-watch-desc-btn';
+	descButton.title = '概要';
+	descButton.setAttribute('aria-label', '概要');
+	descButton.append(YTaqIcons.create('notes'));
+	descButton.addEventListener('click', () => {
+		document.documentElement.classList.toggle(DESC_CLASS);
+	});
+
+	function placeDescButton() {
+		const actions = document.querySelector('ytd-watch-metadata #actions');
+		if (actions && descButton.parentElement !== actions) actions.prepend(descButton);
+	}
+
+	document.addEventListener('pointerdown', e => {
+		if (!document.documentElement.classList.contains(DESC_CLASS) || !e.target.closest) return;
+		if (e.target.closest('.ytaq-watch-desc-btn, ytd-watch-metadata #bottom-row')) return;
+		document.documentElement.classList.remove(DESC_CLASS);
+	}, true);
 
 	function measure() {
 		const player = document.querySelector('#full-bleed-container');
@@ -65,14 +87,7 @@
 		root.setProperty('--watch-card-width', player.getBoundingClientRect().width + 'px');
 		root.setProperty('--watch-title-height', title.getBoundingClientRect().height + 'px');
 		root.setProperty('--watch-row-height', row.getBoundingClientRect().height + 'px');
-		const description = document.querySelector('ytd-watch-metadata #bottom-row');
-		if (description) {
-			root.setProperty('--watch-desc-height', description.getBoundingClientRect().height + 'px');
-			if (!observed.has(description)) {
-				observed.add(description);
-				observer.observe(description);
-			}
-		}
+		placeDescButton();
 		if (!document.documentElement.classList.contains(PIP_CLASS)) {
 			root.setProperty('--watch-card-height', title.getBoundingClientRect().height + row.getBoundingClientRect().height + 'px');
 		}
@@ -165,5 +180,8 @@
 	}, true);
 
 	YTaq.ready(apply);
-	YTaq.onNavigate(apply);
+	YTaq.onNavigate(() => {
+		document.documentElement.classList.remove(DESC_CLASS);
+		apply();
+	});
 })();
