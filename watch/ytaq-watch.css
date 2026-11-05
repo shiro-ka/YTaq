@@ -174,9 +174,24 @@ html.ytaq-watch-wide:not(.ytaq-watch-related) ytd-watch-flexy[theater]:not([full
   display: none;
 }
 
+html.ytaq-watch-wide.ytaq-watch-side ytd-watch-flexy[theater][is-two-columns_]:not([fixed-panels]):not([fullscreen]) #columns {
+  flex-direction: row-reverse;
+}
+
 html.ytaq-watch-wide.ytaq-watch-side ytd-watch-flexy[theater][is-two-columns_]:not([fixed-panels]):not([fullscreen]) #primary {
   flex: none;
+  box-sizing: content-box;
   width: 440px;
+  padding-right: 0;
+  padding-left: var(--suisou-space-3);
+}
+
+html.ytaq-watch-wide.ytaq-watch-side ytd-watch-flexy[theater][is-two-columns_]:not([fixed-panels]):not([fullscreen]) ytd-watch-metadata {
+  margin-left: calc(var(--watch-primary-width) - var(--watch-card-width));
+}
+
+html.ytaq-watch-wide.ytaq-watch-side ytd-watch-flexy[theater][is-two-columns_]:not([fixed-panels]):not([fullscreen]) ytd-watch-metadata #bottom-row {
+  margin-left: calc(var(--watch-card-width) - var(--watch-primary-width));
 }
 
 html.ytaq-watch-wide.ytaq-watch-side ytd-watch-flexy[theater][is-two-columns_]:not([fixed-panels]):not([fullscreen]) #secondary {

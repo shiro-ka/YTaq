@@ -67,7 +67,8 @@
 		if (!document.documentElement.classList.contains(PIP_CLASS)) {
 			root.setProperty('--watch-card-height', title.getBoundingClientRect().height + row.getBoundingClientRect().height + 'px');
 		}
-		root.setProperty('--watch-primary-width', primary.clientWidth - parseFloat(getComputedStyle(primary).paddingRight) + 'px');
+		const primaryStyle = getComputedStyle(primary);
+		root.setProperty('--watch-primary-width', primary.clientWidth - parseFloat(primaryStyle.paddingLeft) - parseFloat(primaryStyle.paddingRight) + 'px');
 		const secondary = document.querySelector('ytd-watch-flexy #secondary');
 		if (secondary) {
 			const r = secondary.getBoundingClientRect();
