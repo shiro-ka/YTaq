@@ -2,9 +2,13 @@ html.ytaq-watch-wide.ytaq-watch-fit {
   --watch-info-height: 112px;
 }
 
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) {
+  --watch-width: min(100% - var(--suisou-space-3) * 2, (100vh - 56px - var(--suisou-space-2) * 2 - var(--watch-info-height, 0px)) * 16 / 9);
+}
+
 html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) #full-bleed-container {
   box-sizing: border-box;
-  width: min(100% - var(--suisou-space-3) * 2, (100vh - 56px - var(--suisou-space-2) * 2 - var(--watch-info-height, 0px)) * 16 / 9);
+  width: var(--watch-width);
   height: auto !important;
   min-height: 0 !important;
   max-height: none !important;
@@ -20,4 +24,20 @@ html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) #player-full-ble
   inset: 0;
   width: 100% !important;
   height: 100% !important;
+}
+
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) #columns {
+  box-sizing: border-box;
+  width: var(--watch-width);
+  max-width: none;
+  margin-inline: auto;
+}
+
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) #primary {
+  margin-left: 0;
+  padding-right: var(--suisou-space-3);
+}
+
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) #secondary {
+  padding-right: 0;
 }
