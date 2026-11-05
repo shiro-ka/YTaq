@@ -191,10 +191,15 @@ html.ytaq-watch-wide.ytaq-watch-side ytd-watch-flexy[theater][is-two-columns_]:n
 }
 
 html.ytaq-watch-wide.ytaq-watch-side ytd-watch-flexy[theater][is-two-columns_]:not([fixed-panels]):not([fullscreen]) ytd-watch-metadata #bottom-row {
-  margin-left: calc(var(--watch-card-width) - var(--watch-primary-width));
+  position: absolute;
+  top: calc(var(--watch-card-height) + var(--suisou-space-2));
+  left: 0;
+  width: var(--watch-pip-width);
+  margin: 0;
 }
 
 html.ytaq-watch-wide.ytaq-watch-side ytd-watch-flexy[theater][is-two-columns_]:not([fixed-panels]):not([fullscreen]) #secondary {
+  margin-top: calc(var(--watch-card-height, 0px) + var(--watch-desc-height, 0px) + var(--suisou-space-2) * 3);
   flex: 1;
   width: auto;
   max-width: none;
@@ -256,9 +261,18 @@ html.ytaq-watch-wide.ytaq-watch-side ytd-watch-flexy[theater][is-two-columns_]:n
   z-index: 1000;
 }
 
-html.ytaq-watch-wide.ytaq-watch-side.ytaq-watch-pip ytd-watch-flexy[theater][is-two-columns_]:not([fixed-panels]):not([fullscreen]) ytd-playlist-panel-renderer#playlist {
+html.ytaq-watch-wide.ytaq-watch-side.ytaq-watch-pip ytd-watch-flexy[theater][is-two-columns_]:not([fixed-panels]):not([fullscreen]) ytd-watch-metadata #bottom-row {
   position: fixed;
   top: calc(var(--watch-pip-panel-top) + var(--watch-title-height) + var(--watch-row-height) + var(--suisou-space-2));
+  left: var(--watch-pip-left);
+  width: var(--watch-pip-size);
+  max-height: calc(100vh - var(--watch-pip-panel-top) - var(--watch-title-height) - var(--watch-row-height) - var(--suisou-space-2) * 2);
+  overflow-y: auto;
+}
+
+html.ytaq-watch-wide.ytaq-watch-side.ytaq-watch-pip ytd-watch-flexy[theater][is-two-columns_]:not([fixed-panels]):not([fullscreen]) ytd-playlist-panel-renderer#playlist {
+  position: fixed;
+  top: calc(var(--watch-pip-panel-top) + var(--watch-title-height) + var(--watch-row-height) + var(--watch-desc-height) + var(--suisou-space-2) * 2);
   bottom: var(--suisou-space-2);
   left: var(--watch-pip-left);
   width: var(--watch-pip-size);

@@ -65,6 +65,14 @@
 		root.setProperty('--watch-card-width', player.getBoundingClientRect().width + 'px');
 		root.setProperty('--watch-title-height', title.getBoundingClientRect().height + 'px');
 		root.setProperty('--watch-row-height', row.getBoundingClientRect().height + 'px');
+		const description = document.querySelector('ytd-watch-metadata #bottom-row');
+		if (description) {
+			root.setProperty('--watch-desc-height', description.getBoundingClientRect().height + 'px');
+			if (!observed.has(description)) {
+				observed.add(description);
+				observer.observe(description);
+			}
+		}
 		if (!document.documentElement.classList.contains(PIP_CLASS)) {
 			root.setProperty('--watch-card-height', title.getBoundingClientRect().height + row.getBoundingClientRect().height + 'px');
 		}
