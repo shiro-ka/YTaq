@@ -393,11 +393,6 @@ html.ytaq-watch-wide.ytaq-watch-side.ytaq-watch-pip.ytaq-watch-desc-below:not(.y
   margin: 0;
 }
 
-html.ytaq-watch-wide.ytaq-watch-desc-open ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata #bottom-row > #teaser-carousel,
-html.ytaq-watch-wide.ytaq-watch-side.ytaq-watch-pip.ytaq-watch-desc-below:not(.ytaq-watch-related) ytd-watch-flexy[theater][is-two-columns_]:not([fixed-panels]):not([fullscreen]):not([show-playlist]) ytd-watch-metadata #bottom-row > #teaser-carousel {
-  order: -1;
-}
-
 html.ytaq-watch-wide.ytaq-watch-desc-open ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata #bottom-actions:empty,
 html.ytaq-watch-wide.ytaq-watch-side.ytaq-watch-pip.ytaq-watch-desc-below:not(.ytaq-watch-related) ytd-watch-flexy[theater][is-two-columns_]:not([fixed-panels]):not([fullscreen]):not([show-playlist]) ytd-watch-metadata #bottom-actions:empty {
   display: none;
@@ -407,7 +402,8 @@ html.ytaq-watch-wide ytd-watch-metadata #description-inline-expander #collapse {
   display: none;
 }
 
-.ytaq-watch-desc-btn {
+.ytaq-watch-desc-btn,
+.ytaq-watch-chat-btn {
   flex: none;
   display: inline-flex;
   align-items: center;
@@ -424,20 +420,24 @@ html.ytaq-watch-wide ytd-watch-metadata #description-inline-expander #collapse {
   cursor: pointer;
 }
 
-.ytaq-watch-desc-btn:hover {
+.ytaq-watch-desc-btn:hover,
+.ytaq-watch-chat-btn:hover {
   background: var(--suisou-color-hover);
 }
 
-.ytaq-watch-desc-btn .ytaq-icon {
+.ytaq-watch-desc-btn .ytaq-icon,
+.ytaq-watch-chat-btn .ytaq-icon {
   width: var(--suisou-size-icon);
   height: var(--suisou-size-icon);
 }
 
-html:not(.ytaq-watch-wide) .ytaq-watch-desc-btn {
+html:not(.ytaq-watch-wide) .ytaq-watch-desc-btn,
+html:not(.ytaq-watch-wide) .ytaq-watch-chat-btn {
   display: none;
 }
 
-html.ytaq-watch-desc-open .ytaq-watch-desc-btn {
+html.ytaq-watch-desc-open .ytaq-watch-desc-btn,
+ytd-watch-flexy[fixed-panels] .ytaq-watch-chat-btn {
   border-color: var(--suisou-color-accent);
   background: var(--suisou-color-accent-tint);
 }
@@ -469,4 +469,20 @@ html.ytaq-watch-hold {
 
 html.ytaq-watch-hold body {
   min-height: var(--watch-hold-height);
+}
+
+.ytaq-watch-chat-btn {
+  display: none;
+}
+
+ytd-watch-flexy[should-stamp-chat] ytd-watch-metadata:has(#teaser-carousel:not([hidden]) button) .ytaq-watch-chat-btn {
+  display: inline-flex;
+}
+
+html:not(.ytaq-watch-wide) ytd-watch-flexy ytd-watch-metadata .ytaq-watch-chat-btn {
+  display: none;
+}
+
+html.ytaq-watch-wide ytd-watch-flexy[theater][should-stamp-chat]:not([fullscreen]) ytd-watch-metadata #teaser-carousel {
+  display: none;
 }

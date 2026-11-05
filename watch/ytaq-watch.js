@@ -81,9 +81,21 @@
 		style.setProperty('--watch-desc-room', (button.right - DESC_GAP) + 'px');
 	}
 
+	const chatButton = document.createElement('button');
+	chatButton.type = 'button';
+	chatButton.className = 'ytaq-watch-chat-btn';
+	chatButton.title = 'チャットのリプレイ';
+	chatButton.setAttribute('aria-label', 'チャットのリプレイ');
+	chatButton.append(YTaqIcons.create('chat'));
+	chatButton.addEventListener('click', () => {
+		const page = flexy();
+		const selector = page && page.hasAttribute('fixed-panels') ? '#chat #show-hide-button button' : 'ytd-watch-metadata #teaser-carousel button';
+		document.querySelector(selector)?.click();
+	});
+
 	function placeDescButton() {
 		const actions = document.querySelector('ytd-watch-metadata #actions');
-		if (actions && descButton.parentElement !== actions) actions.prepend(descButton);
+		if (actions && descButton.parentElement !== actions) actions.prepend(descButton, chatButton);
 	}
 
 	document.addEventListener('pointerdown', e => {
