@@ -255,3 +255,19 @@ html.ytaq-watch-wide.ytaq-watch-side ytd-watch-flexy[theater][is-two-columns_]:n
   position: relative;
   z-index: 1000;
 }
+
+html.ytaq-watch-wide.ytaq-watch-side.ytaq-watch-pip ytd-watch-flexy[theater][is-two-columns_]:not([fixed-panels]):not([fullscreen]) ytd-playlist-panel-renderer#playlist {
+  position: fixed;
+  top: calc(var(--watch-pip-panel-top) + var(--watch-title-height) + var(--watch-row-height) + var(--suisou-space-2));
+  bottom: var(--suisou-space-2);
+  left: var(--watch-pip-left);
+  width: var(--watch-pip-size);
+  max-height: none !important;
+  height: auto !important;
+  margin: 0;
+}
+
+html.ytaq-watch-wide.ytaq-watch-side.ytaq-watch-pip ytd-watch-flexy[theater][is-two-columns_]:not([fixed-panels]):not([fullscreen]) ytd-playlist-panel-renderer#playlist #container {
+  height: 100%;
+  max-height: none !important;
+}

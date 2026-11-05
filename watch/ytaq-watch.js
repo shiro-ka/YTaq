@@ -64,6 +64,7 @@
 		const root = document.documentElement.style;
 		root.setProperty('--watch-card-width', player.getBoundingClientRect().width + 'px');
 		root.setProperty('--watch-title-height', title.getBoundingClientRect().height + 'px');
+		root.setProperty('--watch-row-height', row.getBoundingClientRect().height + 'px');
 		if (!document.documentElement.classList.contains(PIP_CLASS)) {
 			root.setProperty('--watch-card-height', title.getBoundingClientRect().height + row.getBoundingClientRect().height + 'px');
 		}
