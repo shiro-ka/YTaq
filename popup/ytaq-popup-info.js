@@ -4,6 +4,7 @@
 	const YTaq = window.YTaq;
 	const IT = () => window.YTaqInnertube;
 
+	const REVEAL_TIMEOUT_MS = 3000;
 	const NEEDS_NEXT = ['avatar', 'like', 'dislike', 'subscribe', 'likeCount'];
 
 	let show = YTaqSettings.defaults('popupInfo');
@@ -90,13 +91,15 @@
 		let next = null;
 		let channelId = null;
 
-		const avatar = want('avatar') ? el('img', 'ytaq-popup-avatar') : null;
+		const avatar = want('avatar') ? el('img') : null;
 		if (avatar) {
 			avatar.alt = '';
-			avatar.hidden = true;
-			avatar.addEventListener('load', () => { avatar.hidden = false; });
-			parts.channelRow.prepend(avatar);
+			const slot = el('span', 'ytaq-popup-avatar');
+			slot.append(avatar);
+			parts.channelRow.prepend(slot);
 		}
+
+		parts.channelRow.classList.add('ytaq-popup-pending');
 
 		const likeBtn = want('like') ? iconButton('ytaq-popup-like', '高評価', 'thumb_up', () => rate('LIKE')) : null;
 		const dislikeBtn = want('dislike') ? iconButton('ytaq-popup-dislike', '低評価', 'thumb_down', () => rate('DISLIKE')) : null;
@@ -228,7 +231,7 @@
 			}
 		}
 
-		IT().call('player', { videoId, contentCheckOk: true, racyCheckOk: true }).then(json => {
+		const playerDone = IT().call('player', { videoId, contentCheckOk: true, racyCheckOk: true }).then(json => {
 			const vd = json.videoDetails || {};
 			const mf = (json.microformat && json.microformat.playerMicroformatRenderer) || {};
 			channelId = vd.channelId || null;
@@ -249,15 +252,17 @@
 			}
 		}).catch(e => YTaq.warn('popup info: player', e.message));
 
-		if (NEEDS_NEXT.some(want)) {
-			IT().call('next', { videoId }).then(json => {
-				next = parseNext(json);
-				if (avatar && next.avatar) avatar.src = next.avatar;
-				for (const b of [likeBtn, dislikeBtn, subBtn]) if (b) b.disabled = false;
-				renderRating();
-				renderSubscribe();
-			}).catch(e => YTaq.warn('popup info: next', e.message));
-		}
+		const nextDone = !NEEDS_NEXT.some(want) ? null : IT().call('next', { videoId }).then(json => {
+			next = parseNext(json);
+			if (avatar && next.avatar) avatar.src = next.avatar;
+			for (const b of [likeBtn, dislikeBtn, subBtn]) if (b) b.disabled = false;
+			renderRating();
+			renderSubscribe();
+		}).catch(e => YTaq.warn('popup info: next', e.message));
+
+		const reveal = () => parts.channelRow.classList.remove('ytaq-popup-pending');
+		Promise.all([playerDone, nextDone]).then(reveal);
+		setTimeout(reveal, REVEAL_TIMEOUT_MS);
 		renderRating();
 	}
 
