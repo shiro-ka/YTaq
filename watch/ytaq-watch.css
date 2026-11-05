@@ -505,3 +505,18 @@ html:not(.ytaq-watch-wide) ytd-watch-flexy ytd-watch-metadata .ytaq-watch-chat-b
 html.ytaq-watch-wide ytd-watch-flexy[theater][should-stamp-chat]:not([fullscreen]) ytd-watch-metadata #teaser-carousel {
   display: none;
 }
+
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata #actions #menu {
+  height: var(--suisou-size-button);
+}
+
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata #actions ytd-menu-renderer {
+  align-items: center;
+  height: var(--suisou-size-button);
+  margin: 0;
+  padding: 0;
+}
+
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata #actions #top-level-buttons-computed {
+  margin: 0;
+}
