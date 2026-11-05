@@ -111,7 +111,7 @@
 }
 
 .ytaq-popup-iframe-container {
-	width: round(down, min(80vw, 1280px, calc((90vh - 170px) * 16 / 9)), 64px);
+	width: round(down, min(calc(100vw - 64px), 1280px, calc((90vh - 170px) * 16 / 9)), 64px);
 	aspect-ratio: 16/9;
 	position: relative;
 	overflow: hidden;
