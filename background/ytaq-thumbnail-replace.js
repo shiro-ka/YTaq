@@ -1,4 +1,4 @@
-const THUMB_RE = /^https:\/\/i9?\.ytimg\.com\/(?:vi|vi_webp)\/([\w-]+)\/(?:default|hqdefault|mqdefault|sddefault|maxresdefault|hq720|oardefault|oar\d)(?:_custom_\d+)?\.(?:jpg|webp)/;
+const THUMB_RE = /^https:\/\/i9?\.ytimg\.com\/(?:vi|vi_webp)\/([\w-]+)\/(?:default|hqdefault|mqdefault|sddefault|maxresdefault|hq720|(oardefault|oar\d))(?:_custom_\d+)?\.(?:jpg|webp)/;
 
 let settings = YTaqSettings.defaults('antibite');
 YTaqSettings.watch('antibite', v => { settings = v; });
@@ -16,8 +16,12 @@ browser.webRequest.onBeforeRequest.addListener(
 		const videoId = match[1];
 		if (noFrames.has(videoId)) return;
 
+		const frame = settings.shortsVertical && match[2] ? 'oar' + settings.thumbnailFrame.slice(-1) : settings.thumbnailFrame;
+		const target = `https://i.ytimg.com/vi/${videoId}/${frame}.jpg`;
+		if (details.url === target) return;
+
 		redirected.set(details.requestId, { videoId, original: details.url });
-		return { redirectUrl: `https://i.ytimg.com/vi/${videoId}/${settings.thumbnailFrame}.jpg` };
+		return { redirectUrl: target };
 	},
 	{
 		urls: ['*://i.ytimg.com/*', '*://i9.ytimg.com/*'],

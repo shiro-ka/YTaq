@@ -155,10 +155,12 @@
 			},
 			sync() {
 				$('antibite', 'thumbnailFrame').disabled = !$('antibite', 'thumbnailEnabled').checked;
+				$('antibite', 'shortsVertical').disabled = !$('antibite', 'thumbnailEnabled').checked;
 			},
 			render(v) {
 				$('antibite', 'thumbnailEnabled').checked = !!v.antibite.thumbnailEnabled;
 				$('antibite', 'thumbnailFrame').value = v.antibite.thumbnailFrame;
+				$('antibite', 'shortsVertical').checked = !!v.antibite.shortsVertical;
 				this.sync();
 				for (const cb of document.querySelectorAll('.ytaq-section-antibite .ytaq-title-place')) {
 					cb.checked = !!v.titleClean.places[cb.value];
@@ -180,7 +182,8 @@
 				return {
 					antibite: {
 						thumbnailEnabled: $('antibite', 'thumbnailEnabled').checked,
-						thumbnailFrame: $('antibite', 'thumbnailFrame').value
+						thumbnailFrame: $('antibite', 'thumbnailFrame').value,
+						shortsVertical: $('antibite', 'shortsVertical').checked
 					},
 					titleClean: { places, rules }
 				};
