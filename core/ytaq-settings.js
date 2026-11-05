@@ -21,6 +21,7 @@
 		watchFitInfo: { key: 'ytaq_watch_fit_info', value: true },
 		watchSide: { key: 'ytaq_watch_side', value: true },
 		watchRelated: { key: 'ytaq_watch_related', value: false },
+		watchDescBelow: { key: 'ytaq_watch_desc_below', value: true },
 		feedShorts: { key: 'ytaq_feed_shorts', value: false },
 		titleClean: {
 			key: 'ytaq_title_clean',

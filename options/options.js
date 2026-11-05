@@ -76,7 +76,7 @@
 
 	const SECTIONS = {
 		theme: {
-			names: ['theme', 'searchGrid', 'watchWide', 'watchFitInfo', 'watchSide', 'watchRelated'],
+			names: ['theme', 'searchGrid', 'watchWide', 'watchFitInfo', 'watchSide', 'watchRelated', 'watchDescBelow'],
 			async init() {
 				palette = await loadPalette();
 				const name = $('theme', 'theme-name');
@@ -96,6 +96,7 @@
 				$('theme', 'watchFitInfo').checked = !!v.watchFitInfo;
 				$('theme', 'watchSide').checked = !!v.watchSide;
 				$('theme', 'watchRelated').checked = !!v.watchRelated;
+				$('theme', 'watchDescBelow').checked = !!v.watchDescBelow;
 				applyTheme(this.collect().theme);
 			},
 			collect() {
@@ -105,7 +106,8 @@
 					watchWide: $('theme', 'watchWide').checked,
 					watchFitInfo: $('theme', 'watchFitInfo').checked,
 					watchSide: $('theme', 'watchSide').checked,
-					watchRelated: $('theme', 'watchRelated').checked
+					watchRelated: $('theme', 'watchRelated').checked,
+					watchDescBelow: $('theme', 'watchDescBelow').checked
 				};
 			}
 		},

@@ -53,9 +53,13 @@
 		const open = document.documentElement.classList.toggle(DESC_CLASS);
 		if (!open) return;
 		placeDesc();
+		expandDesc();
+	});
+
+	function expandDesc() {
 		const expander = document.querySelector('ytd-watch-metadata #description-inline-expander');
 		if (expander && !expander.hasAttribute('is-expanded')) expander.querySelector('#expand')?.click();
-	});
+	}
 
 	function placeDesc() {
 		if (!document.documentElement.classList.contains(DESC_CLASS)) return;
@@ -85,6 +89,8 @@
 
 	function measure() {
 		placeDesc();
+		const classes = document.documentElement.classList;
+		if (classes.contains(PIP_CLASS) && classes.contains('ytaq-watch-desc-below') && !classes.contains('ytaq-watch-related')) expandDesc();
 		const player = document.querySelector('#full-bleed-container');
 		const primary = document.querySelector('ytd-watch-flexy #primary');
 		const title = document.querySelector('ytd-watch-metadata #title-row');
@@ -167,6 +173,11 @@
 	YTaqSettings.watch('watchSide', v => {
 		document.documentElement.classList.toggle('ytaq-watch-side', !!v);
 		refit();
+	});
+
+	YTaqSettings.watch('watchDescBelow', v => {
+		document.documentElement.classList.toggle('ytaq-watch-desc-below', !!v);
+		measure();
 	});
 
 	YTaqSettings.watch('watchRelated', v => {
