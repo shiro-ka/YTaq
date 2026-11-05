@@ -1,0 +1,19 @@
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) #full-bleed-container {
+  box-sizing: border-box;
+  width: min(100% - var(--suisou-space-3) * 2, (100vh - 56px - var(--suisou-space-2) * 2) * 16 / 9);
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  aspect-ratio: 16 / 9;
+  margin: var(--suisou-space-2) auto 0;
+  background: transparent;
+  border-radius: var(--suisou-radius);
+  overflow: clip;
+}
+
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) #player-full-bleed-container {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+}

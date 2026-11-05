@@ -17,6 +17,7 @@
 			value: { avatar: true, description: true, shortsDescInline: false, date: true, like: true, save: true, subscribe: true, folder: true, views: false, likeCount: false, dislike: false }
 		},
 		searchGrid: { key: 'ytaq_search_grid', value: true },
+		watchWide: { key: 'ytaq_watch_wide', value: true },
 		feedShorts: { key: 'ytaq_feed_shorts', value: false },
 		titleClean: {
 			key: 'ytaq_title_clean',
