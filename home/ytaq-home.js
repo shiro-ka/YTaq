@@ -5,6 +5,8 @@
 
 	let clickAction = YTaqSettings.defaults('click');
 	YTaqSettings.watch('click', v => { clickAction = v; });
+	let popupResume = YTaqSettings.defaults('popupResume');
+	YTaqSettings.watch('popupResume', v => { popupResume = !!v; });
 
 	const VIDEO_ID_PATTERNS = [
 		/[?&]v=([\w-]{11})/,
@@ -52,6 +54,12 @@
 		return target.closest ? target.closest('a[href]') : null;
 	}
 
+	function resumeAt(href) {
+		if (!popupResume) return 0;
+		const match = /^(\d+)s?$/.exec(new URL(href).searchParams.get('t') || '');
+		return match ? Number(match[1]) : 0;
+	}
+
 	function isChosenList(a, href) {
 		const params = new URL(href).searchParams;
 		const list = params.get('list');
@@ -95,7 +103,7 @@
 			return;
 		}
 
-		window.YTaqPopup.showVideoPopup(videoId, extractTitle(a), href.includes('/shorts/'));
+		window.YTaqPopup.showVideoPopup(videoId, extractTitle(a), href.includes('/shorts/'), resumeAt(href));
 	}
 
 	YTaq.ready(() => {

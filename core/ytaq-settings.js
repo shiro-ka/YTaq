@@ -11,6 +11,7 @@
 		embedReferer: { key: 'ytaq_embed_referer', value: 'https://example.com/' },
 		embedLogin: { key: 'ytaq_embed_login', value: true },
 		watchHistory: { key: 'ytaq_watch_history', value: true },
+		popupResume: { key: 'ytaq_popup_resume', value: true },
 		antibite: { key: 'ytaq_antibite', value: { thumbnailEnabled: true, thumbnailFrame: 'hq1', shortsVertical: false } },
 		popupInfo: {
 			key: 'ytaq_popup_info',

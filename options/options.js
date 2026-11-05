@@ -115,13 +115,14 @@
 		},
 
 		perf: {
-			names: ['perf', 'click', 'embedReferer', 'embedLogin', 'watchHistory', 'popupInfo'],
+			names: ['perf', 'click', 'embedReferer', 'embedLogin', 'watchHistory', 'popupResume', 'popupInfo'],
 			render(v) {
 				for (const k of PERF_KEYS) $('perf', 'perf-' + k).checked = !!v.perf[k];
 				$('perf', 'click').value = v.click;
 				$('perf', 'embedReferer').value = v.embedReferer;
 				$('perf', 'embedLogin').checked = !!v.embedLogin;
 				$('perf', 'watchHistory').checked = !!v.watchHistory;
+				$('perf', 'popupResume').checked = !!v.popupResume;
 				for (const cb of document.querySelectorAll('.ytaq-popup-info-options input')) cb.checked = !!v.popupInfo[cb.value];
 			},
 			collect() {
@@ -133,6 +134,7 @@
 					embedReferer: $('perf', 'embedReferer').value.trim() || S.defaults('embedReferer'),
 					embedLogin: $('perf', 'embedLogin').checked,
 					watchHistory: $('perf', 'watchHistory').checked,
+					popupResume: $('perf', 'popupResume').checked,
 					popupInfo: Object.fromEntries([...document.querySelectorAll('.ytaq-popup-info-options input')].map(cb => [cb.value, cb.checked]))
 				};
 			}

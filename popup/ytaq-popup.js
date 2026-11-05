@@ -14,7 +14,7 @@
 		return useLoggedInEmbed ? 'https://www.youtube.com' : 'https://www.youtube-nocookie.com';
 	}
 
-	function embedUrl(videoId) {
+	function embedUrl(videoId, start) {
 		const params = new URLSearchParams({
 			autoplay: '1',
 			playsinline: '1',
@@ -22,6 +22,7 @@
 			enablejsapi: '1',
 			origin: location.origin
 		});
+		if (start > 0) params.set('start', String(start));
 		return `${embedHost()}/embed/${videoId}?${params}`;
 	}
 
@@ -87,7 +88,7 @@
 		}
 	}
 
-	function showVideoPopup(videoId, videoTitle, isShorts = false) {
+	function showVideoPopup(videoId, videoTitle, isShorts = false, start = 0) {
 		if (!videoId) return;
 		hideVideoPopup();
 
@@ -171,7 +172,7 @@
 
 		const iframe = document.createElement('iframe');
 		iframe.className = 'ytaq-popup-iframe';
-		iframe.src = embedUrl(videoId);
+		iframe.src = embedUrl(videoId, start);
 		iframe.allow = 'fullscreen';
 		iframe.allowFullscreen = true;
 		iframe.setAttribute('frameborder', '0');
