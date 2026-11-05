@@ -507,7 +507,7 @@
 		if (!data.folders.length) {
 			const p = document.createElement('p');
 			p.setAttribute('data-suisou', 'note');
-			p.textContent = 'フォルダがありません。YouTube のチャンネルのページや動画の下の「＋ フォルダ」から作れます。';
+			p.textContent = 'フォルダがありません。YouTube のチャンネルのページや動画の下のフォルダのボタンから作れます。';
 			box.replaceChildren(p);
 			return;
 		}

@@ -208,7 +208,7 @@
 			if (l) scrollY[c.dataset.folder] = l.scrollTop;
 		}
 		if (!folders.folders.length) {
-			root.replaceChildren(el('p', 'ytaq-feed-empty', 'フォルダがありません。チャンネルのページや動画の下の「＋ フォルダ」から作れます。'));
+			root.replaceChildren(el('p', 'ytaq-feed-empty', 'フォルダがありません。チャンネルのページや動画の下のフォルダのボタンから作れます。'));
 			return;
 		}
 		const cols = el('div', 'ytaq-feed-columns');
