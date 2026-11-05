@@ -151,7 +151,7 @@
 		actions.append(rateBox, tools);
 		bar.append(channelRow, actions);
 		meta.append(head, bar);
-		if (window.YTaqPopupInfo) window.YTaqPopupInfo.build(videoId, { head, channelRow, shorts: isShorts, onClose: f => closers.push(f) });
+		if (window.YTaqPopupInfo) window.YTaqPopupInfo.build(videoId, { head, channelRow, shorts: isShorts, onClose: f => closers.push(f), onChannel: c => onChannel(c) });
 
 		const iframeContainer = document.createElement('div');
 		iframeContainer.className = 'ytaq-popup-iframe-container';
@@ -252,7 +252,7 @@
 		}
 
 		function YTaqRateSave(ch, rate) {
-			if (window.YTaqRate) window.YTaqRate.setStoredRate(ch, rate);
+			window.YTaqChannels.setRate(ch.id, ch.name, rate);
 		}
 
 		rateMinus.addEventListener('click', () => changeRate(currentRate - rateSettings.speedStep));
@@ -270,15 +270,15 @@
 		});
 
 		async function applyStoredRateOnce() {
-			if (appliedStoredRate || !channel || !window.YTaqRate) return;
+			if (appliedStoredRate || !channel) return;
 			appliedStoredRate = true;
-			const stored = await window.YTaqRate.getStoredRate(channel);
+			const stored = await window.YTaqChannels.getRate(channel.id, channel.name);
 			if (!stored || Math.abs(stored - currentRate) < 0.01) return;
 			suppressSaveUntil = performance.now() + 1500;
 			applyRate(iframe, stored);
 			currentRate = stored;
 			renderRate();
-			YTaq.log('popup: rate applied', channel, stored);
+			YTaq.log('popup: rate applied', channel.name, stored);
 		}
 
 		function onReportedRate(rate) {
@@ -287,6 +287,12 @@
 			renderRate();
 			if (performance.now() < suppressSaveUntil) return;
 			if (channel) YTaqRateSave(channel, rate);
+		}
+
+		function onChannel(c) {
+			channel = c;
+			channelName.textContent = c.name;
+			applyStoredRateOnce();
 		}
 
 		messageHandler = e => {
@@ -303,11 +309,7 @@
 
 			if (data.event === 'infoDelivery' && data.info) {
 				const author = data.info.videoData && data.info.videoData.author;
-				if (author && author !== channel) {
-					channel = author;
-					channelName.textContent = author;
-					applyStoredRateOnce();
-				}
+				if (author && !channelName.textContent) channelName.textContent = author;
 				if (typeof data.info.playbackRate === 'number' && !embeddedVideo(iframe)) onReportedRate(data.info.playbackRate);
 				if (typeof data.info.currentTime === 'number') lastTime = data.info.currentTime;
 			}

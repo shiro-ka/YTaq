@@ -16,6 +16,7 @@
     <button class="ytaq-nav" value="antibite" data-suisou-button="block">Antibite</button>
     <button class="ytaq-nav" value="playbackrate" data-suisou-button="block">Playbackrate</button>
     <button class="ytaq-nav" value="folders" data-suisou-button="block">フォルダ</button>
+    <button class="ytaq-nav" value="channels" data-suisou-button="block">チャンネル</button>
   </nav>
 
   <main data-suisou="container-m">
@@ -94,7 +95,7 @@
       </p>
 
       <h3 data-suisou="mt-3" data-suisou-text="fs-16 fw-700">ポップアップに出すもの</h3>
-      <p>概要・公開日・再生数とフォルダは軽い情報（1本約5KB）から、チャンネルのアイコン・高評価・低評価・チャンネル登録・高評価の数は動画のページの情報（1本約72KB）から取ります。どちらも、使う項目をすべてオフにすると取りません。</p>
+      <p>概要・公開日・再生数・フォルダは軽い情報（1本約5KB）から、チャンネルのアイコン・高評価・低評価・チャンネル登録・高評価の数は動画のページの情報（1本約72KB）から取ります。軽い情報は再生速度の読み書きにも使うので、いつも取ります。動画のページの情報は、使う項目をすべてオフにすると取りません。</p>
       <div class="ytaq-popup-info-options" data-suisou-layout="row wrap">
         <label><input type="checkbox" value="avatar"> チャンネルのアイコン</label>
         <label><input type="checkbox" value="description"> 概要</label>
@@ -228,10 +229,18 @@
       <p data-suisou="note" data-suisou-text="fs-12">オフのときは、チャンネルのショートのタブを読まないので、新着の取得が軽くなります。</p>
       <div class="ytaq-folders" data-suisou-layout="stack"></div>
     </section>
+
+    <section class="ytaq-section ytaq-section-channels" data-suisou-layout="stack" hidden>
+      <h2 data-suisou-text="fs-24 fw-700">チャンネル</h2>
+      <p data-suisou="note" data-suisou-text="fs-12">登録チャンネルと、YTaq に設定があるチャンネルが並びます。登録チャンネルは YouTube を開いたときに1日1回読み込みます。</p>
+      <input type="search" class="ytaq-channel-search" placeholder="名前で絞り込む" aria-label="名前で絞り込む">
+      <div class="ytaq-channel-list" data-suisou-layout="stack"></div>
+    </section>
   </main>
 
   <script src="../core/ytaq-settings.js"></script>
   <script src="../folder/ytaq-folder-store.js"></script>
+  <script src="../core/ytaq-channels.js"></script>
   <script src="options.js"></script>
 </body>
 </html>

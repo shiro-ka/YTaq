@@ -4,7 +4,6 @@
 	const YTaq = window.YTaq;
 	const IT = () => window.YTaqInnertube;
 
-	const NEEDS_PLAYER = ['description', 'date', 'views', 'folder'];
 	const NEEDS_NEXT = ['avatar', 'like', 'dislike', 'subscribe', 'likeCount'];
 
 	let show = YTaqSettings.defaults('popupInfo');
@@ -229,27 +228,26 @@
 			}
 		}
 
-		if (NEEDS_PLAYER.some(want)) {
-			IT().call('player', { videoId, contentCheckOk: true, racyCheckOk: true }).then(json => {
-				const vd = json.videoDetails || {};
-				const mf = (json.microformat && json.microformat.playerMicroformatRenderer) || {};
-				channelId = vd.channelId || null;
-				if (folderBtn && channelId) folderBtn.setChannel({ id: channelId, name: vd.author || '' });
-				const bits = [];
-				if (want('date') && mf.publishDate) bits.push(dateFormat.format(new Date(mf.publishDate)));
-				if (want('views') && vd.viewCount) bits.push(numberFormat.format(Number(vd.viewCount)) + ' 回視聴');
-				info.textContent = bits.join(' · ');
-				if (descInline && vd.shortDescription) descInline.textContent = vd.shortDescription;
-				if (descDrop) {
-					if (vd.shortDescription) {
-						descDrop.menu.textContent = vd.shortDescription;
-						descDrop.btn.disabled = false;
-					} else {
-						descDrop.wrap.remove();
-					}
+		IT().call('player', { videoId, contentCheckOk: true, racyCheckOk: true }).then(json => {
+			const vd = json.videoDetails || {};
+			const mf = (json.microformat && json.microformat.playerMicroformatRenderer) || {};
+			channelId = vd.channelId || null;
+			if (channelId && parts.onChannel) parts.onChannel({ id: channelId, name: vd.author || '' });
+			if (folderBtn && channelId) folderBtn.setChannel({ id: channelId, name: vd.author || '' });
+			const bits = [];
+			if (want('date') && mf.publishDate) bits.push(dateFormat.format(new Date(mf.publishDate)));
+			if (want('views') && vd.viewCount) bits.push(numberFormat.format(Number(vd.viewCount)) + ' 回視聴');
+			info.textContent = bits.join(' · ');
+			if (descInline && vd.shortDescription) descInline.textContent = vd.shortDescription;
+			if (descDrop) {
+				if (vd.shortDescription) {
+					descDrop.menu.textContent = vd.shortDescription;
+					descDrop.btn.disabled = false;
+				} else {
+					descDrop.wrap.remove();
 				}
-			}).catch(e => YTaq.warn('popup info: player', e.message));
-		}
+			}
+		}).catch(e => YTaq.warn('popup info: player', e.message));
 
 		if (NEEDS_NEXT.some(want)) {
 			IT().call('next', { videoId }).then(json => {

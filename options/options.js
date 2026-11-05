@@ -269,6 +269,7 @@
 		}
 
 		YTaqFolders.watch(renderFolders);
+		initChannels();
 		const shortsBox = document.querySelector('.ytaq-feed-shorts');
 		S.watch('feedShorts', v => { shortsBox.checked = !!v; });
 		shortsBox.addEventListener('change', () => S.set('feedShorts', shortsBox.checked));
@@ -332,6 +333,124 @@
 			card.append(line);
 		}
 		return card;
+	}
+
+	let channelState = { rates: {}, subs: { fetchedAt: 0, channels: [] }, folders: { folders: [], channels: {} } };
+
+	function allChannels() {
+		const { rates, subs, folders } = channelState;
+		const map = new Map(subs.channels.map(c => [c.id, c]));
+		for (const id of Object.keys(rates)) if (!map.has(id)) map.set(id, { id, name: rates[id].name });
+		for (const f of folders.folders) {
+			for (const id of f.channels) if (!map.has(id)) map.set(id, { id, name: (folders.channels[id] || {}).name || id });
+		}
+		return [...map.values()].sort((a, b) => a.name.localeCompare(b.name, 'ja'));
+	}
+
+	function channelRow(c) {
+		const { rates, folders } = channelState;
+		const row = document.createElement('div');
+		row.className = 'ytaq-channel-row';
+		row.dataset.name = c.name.toLowerCase();
+		row.setAttribute('data-suisou-tray', '');
+		row.setAttribute('data-suisou-layout', 'row middle wrap between');
+
+		const head = document.createElement('div');
+		head.setAttribute('data-suisou-layout', 'row middle wrap');
+		if (c.avatar) {
+			const img = document.createElement('img');
+			img.src = c.avatar;
+			img.alt = '';
+			img.loading = 'lazy';
+			img.referrerPolicy = 'no-referrer';
+			img.setAttribute('data-suisou-item', 'circle');
+			head.append(img);
+		}
+		const name = document.createElement('a');
+		name.href = 'https://www.youtube.com/channel/' + c.id;
+		name.target = '_blank';
+		name.rel = 'noopener';
+		name.textContent = c.name;
+		head.append(name);
+
+		const speed = document.createElement('div');
+		speed.setAttribute('data-suisou-layout', 'row middle wrap');
+		const label = document.createElement('label');
+		label.setAttribute('data-suisou-layout', 'row middle');
+		const input = document.createElement('input');
+		input.type = 'number';
+		input.step = '0.05';
+		input.min = '0.25';
+		input.max = '16';
+		input.className = 'ytaq-channel-rate';
+		input.placeholder = '未設定';
+		input.value = rates[c.id] ? rates[c.id].rate : '';
+		input.addEventListener('change', () => {
+			const rate = parseFloat(input.value);
+			if (!(rate >= 0.25 && rate <= 16)) {
+				input.value = rates[c.id] ? rates[c.id].rate : '';
+				return;
+			}
+			YTaqChannels.setRate(c.id, c.name, rate);
+		});
+		label.append('再生速度', input);
+		const clear = button('消す', { 'data-suisou-button': '' }, () => YTaqChannels.clearRate(c.id));
+		clear.disabled = !rates[c.id];
+		speed.append(label, clear);
+
+		const boxes = document.createElement('div');
+		boxes.setAttribute('data-suisou-layout', 'row middle wrap');
+		for (const f of folders.folders) {
+			const l = document.createElement('label');
+			const cb = document.createElement('input');
+			cb.type = 'checkbox';
+			cb.checked = f.channels.includes(c.id);
+			cb.addEventListener('change', () => YTaqFolders.toggle(f.id, { id: c.id, name: c.name }));
+			l.append(cb, ' ' + f.name);
+			boxes.append(l);
+		}
+
+		const controls = document.createElement('div');
+		controls.setAttribute('data-suisou-layout', 'row middle wrap');
+		controls.append(speed);
+		if (folders.folders.length) controls.append(boxes);
+		row.append(head, controls);
+		return row;
+	}
+
+	function filterChannels() {
+		const q = document.querySelector('.ytaq-channel-search').value.trim().toLowerCase();
+		for (const row of document.querySelectorAll('.ytaq-channel-row')) {
+			row.hidden = !!q && !row.dataset.name.includes(q);
+		}
+	}
+
+	function renderChannels() {
+		const box = document.querySelector('.ytaq-channel-list');
+		if (box.contains(document.activeElement) && document.activeElement.tagName === 'INPUT' && document.activeElement.type === 'number') return;
+		const list = allChannels();
+		if (!list.length) {
+			const p = document.createElement('p');
+			p.setAttribute('data-suisou', 'note');
+			p.textContent = 'まだチャンネルがありません。ログインした状態で YouTube を開くと、登録チャンネルを読み込みます。';
+			box.replaceChildren(p);
+			return;
+		}
+		box.replaceChildren(...list.map(channelRow));
+		filterChannels();
+	}
+
+	function initChannels() {
+		document.querySelector('.ytaq-channel-search').addEventListener('input', filterChannels);
+		YTaqChannels.watch(v => {
+			channelState.rates = v.rates;
+			channelState.subs = v.subs;
+			renderChannels();
+		});
+		YTaqFolders.watch(v => {
+			channelState.folders = v;
+			renderChannels();
+		});
 	}
 
 	function renderFolders(data) {

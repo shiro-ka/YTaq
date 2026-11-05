@@ -2,58 +2,57 @@
 	'use strict';
 
 	const YTaq = window.YTaq;
-	const KEY = 'ytaq_playbackrate';
 
-	function getChannelName() {
-		const el = document.querySelector('ytd-channel-name a, #owner-name a, .ytd-channel-name a');
-		return el ? el.textContent.trim() : null;
+	const watched = new WeakSet();
+	let current = null;
+	let seq = 0;
+
+	function videoIdOfPage() {
+		return location.pathname.startsWith('/watch') ? new URLSearchParams(location.search).get('v') : null;
 	}
 
-	async function getStoredRate(channel) {
-		const map = await YTaq.getStorage(KEY, {});
-		return map[channel] || null;
-	}
-
-	async function setStoredRate(channel, rate) {
-		const map = await YTaq.getStorage(KEY, {});
-		map[channel] = rate;
-		await YTaq.setStorage(KEY, map);
-	}
-
-	function observeRateChanges(video, channel) {
-		if (video.dataset.ytaqRateWatched === channel) return;
-		video.dataset.ytaqRateWatched = channel;
-
+	function observeRateChanges(video) {
+		if (watched.has(video)) return;
+		watched.add(video);
 		video.addEventListener('ratechange', () => {
-			setStoredRate(channel, video.playbackRate);
-			YTaq.log('rate saved:', channel, video.playbackRate);
+			if (!current || current.videoId !== videoIdOfPage()) return;
+			window.YTaqChannels.setRate(current.id, current.name, video.playbackRate);
+			YTaq.log('rate saved:', current.name, video.playbackRate);
 		});
 	}
 
-	async function apply() {
-		if (!location.pathname.startsWith('/watch')) return;
+	async function applyWhenReady() {
+		const token = ++seq;
+		current = null;
+		const videoId = videoIdOfPage();
+		if (!videoId) return;
 
-		const channel = getChannelName();
-		const video = document.querySelector('video');
-		if (!channel || !video) return;
-
-		const rate = await getStoredRate(channel);
-		if (rate && video.playbackRate !== rate) {
-			video.playbackRate = rate;
-			YTaq.log('rate applied:', channel, rate);
+		let json;
+		try {
+			json = await window.YTaqInnertube.call('player', { videoId, contentCheckOk: true, racyCheckOk: true });
+		} catch (e) {
+			YTaq.warn('rate: player', e.message);
+			return;
 		}
-		observeRateChanges(video, channel);
-	}
+		if (token !== seq) return;
+		const details = json.videoDetails || {};
+		if (!details.channelId) return;
 
-	function applyWhenReady() {
-		if (!location.pathname.startsWith('/watch')) return;
-		YTaq.waitFor('ytd-channel-name a, #owner-name a', () => {
-			YTaq.waitFor('video', apply);
+		const rate = await window.YTaqChannels.getRate(details.channelId, details.author);
+		if (token !== seq) return;
+		YTaq.waitFor('video', () => {
+			if (token !== seq) return;
+			const video = document.querySelector('video');
+			if (!video) return;
+			if (rate && video.playbackRate !== rate) {
+				video.playbackRate = rate;
+				YTaq.log('rate applied:', details.author, rate);
+			}
+			current = { id: details.channelId, name: details.author, videoId };
+			observeRateChanges(video);
 		});
 	}
 
 	YTaq.ready(applyWhenReady);
 	YTaq.onNavigate(applyWhenReady);
-
-	window.YTaqRate = { getStoredRate, setStoredRate };
 })();
