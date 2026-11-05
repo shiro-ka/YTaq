@@ -133,6 +133,29 @@
 		refit();
 	});
 
+	function parseTime(text) {
+		const m = text && text.match(/^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s?)?$/);
+		if (!m || !text) return null;
+		return Number(m[1] || 0) * 3600 + Number(m[2] || 0) * 60 + Number(m[3] || 0);
+	}
+
+	document.addEventListener('click', e => {
+		if (!document.documentElement.classList.contains(PIP_CLASS) || !document.documentElement.classList.contains('ytaq-watch-side')) return;
+		if (e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+		const page = flexy();
+		if (!page || !page.matches('[theater][is-two-columns_]:not([fixed-panels]):not([fullscreen])')) return;
+		const a = e.target.closest && e.target.closest('ytd-comments a[href], ytd-watch-metadata a[href]');
+		if (!a) return;
+		const url = new URL(a.href);
+		if (url.searchParams.get('v') !== new URLSearchParams(location.search).get('v')) return;
+		const time = parseTime(url.searchParams.get('t'));
+		const video = document.querySelector('video');
+		if (time === null || !video) return;
+		e.preventDefault();
+		e.stopImmediatePropagation();
+		video.currentTime = time;
+	}, true);
+
 	YTaq.ready(apply);
 	YTaq.onNavigate(apply);
 })();

@@ -22,7 +22,8 @@
 	}
 
 	const RENDERERS = 'ytd-video-renderer, ytd-rich-item-renderer, ytd-grid-video-renderer, ' +
-		'ytd-compact-video-renderer, yt-lockup-view-model';
+		'ytd-compact-video-renderer, yt-lockup-view-model, ytm-shorts-lockup-view-model, ' +
+		'ytm-shorts-lockup-view-model-v2, ytd-reel-item-renderer, .ytaq-feed-item';
 
 	const TITLE_SELECTORS = [
 		'#video-title',
@@ -68,7 +69,7 @@
 		if (t.closest('#ytaq-popup')) return;
 
 		const a = findAnchor(e, t);
-		if (!a) return;
+		if (!a || !a.closest(RENDERERS)) return;
 
 		const href = a.href;
 		if (isChosenList(a, href)) {
