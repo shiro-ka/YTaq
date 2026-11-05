@@ -1,4 +1,4 @@
-const THUMB_RE = /^https:\/\/i9?\.ytimg\.com\/(?:vi|vi_webp)\/([\w-]+)\/(?:default|hqdefault|mqdefault|sddefault|maxresdefault|hq720|oardefault|oar2)(?:_custom_\d+)?\.(?:jpg|webp)/;
+const THUMB_RE = /^https:\/\/i9?\.ytimg\.com\/(?:vi|vi_webp)\/([\w-]+)\/(?:default|hqdefault|mqdefault|sddefault|maxresdefault|hq720|oardefault|oar\d)(?:_custom_\d+)?\.(?:jpg|webp)/;
 
 let settings = YTaqSettings.defaults('antibite');
 YTaqSettings.watch('antibite', v => { settings = v; });
