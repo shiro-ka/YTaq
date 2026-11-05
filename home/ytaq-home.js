@@ -35,7 +35,7 @@
 		const parent = a.closest(RENDERERS);
 		const el = a.matches(TITLE_SELECTORS) ? a : (parent && parent.querySelector(TITLE_SELECTORS)) || a.querySelector(TITLE_SELECTORS);
 		return a.getAttribute('title') ||
-			(el && (el.getAttribute('title') || (el.textContent || '').trim())) ||
+			(el && (el.getAttribute('title') || window.YTaqTitle.originalOf(el).trim())) ||
 			'';
 	}
 

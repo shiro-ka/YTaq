@@ -16,6 +16,7 @@
 	let selector = '';
 	let rules = [];
 	const written = new WeakMap();
+	const originals = new WeakMap();
 
 	function configure(v) {
 		selector = Object.keys(PLACES).filter(k => v.places[k]).map(k => PLACES[k]).join(',');
@@ -54,6 +55,7 @@
 		if (nexts.every((t, i) => t === nodes[i].data)) return;
 		if (!nexts.join('').trim()) return;
 
+		const original = el.textContent;
 		nexts[0] = nexts[0].replace(/^\s+/, '');
 		nexts[nexts.length - 1] = nexts[nexts.length - 1].replace(/\s+$/, '');
 
@@ -61,6 +63,12 @@
 			if (nexts[i] !== nodes[i].data) nodes[i].data = nexts[i];
 			written.set(nodes[i], nodes[i].data);
 		}
+		originals.set(el, { original, cleaned: el.textContent });
+	}
+
+	function originalOf(el) {
+		const entry = originals.get(el);
+		return entry && entry.cleaned === el.textContent ? entry.original : el.textContent;
 	}
 
 	function scan(root) {
@@ -107,6 +115,8 @@
 		const roots = scope.querySelectorAll(RECYCLE_ROOTS);
 		for (let i = 0; i < roots.length; i++) observeRoot(roots[i]);
 	}
+
+	window.YTaqTitle = { originalOf };
 
 	configure(YTaqSettings.defaults('titleClean'));
 
