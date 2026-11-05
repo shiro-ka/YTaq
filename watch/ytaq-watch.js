@@ -33,7 +33,12 @@
 	const DESC_CLASS = 'ytaq-watch-desc-open';
 	const DESC_GAP = 4;
 	const PIP_VISIBLE_RATIO = 0.5;
+	const HOLD_CLASS = 'ytaq-watch-hold';
+	const HOLD_MS = 15000;
+	const HOLD_SETTLE_MS = 1000;
+	let hold = null;
 	const pipObserver = new IntersectionObserver(entries => {
+		if (hold) return;
 		const on = entries[entries.length - 1].intersectionRatio < PIP_VISIBLE_RATIO;
 		document.documentElement.classList.toggle(PIP_CLASS, on);
 		document.documentElement.classList.remove(DESC_CLASS);
@@ -211,6 +216,52 @@
 		e.stopImmediatePropagation();
 		video.currentTime = time;
 	}, true);
+
+	function playlistId() {
+		return new URLSearchParams(location.search).get('list');
+	}
+
+	function endHold() {
+		if (!hold) return;
+		hold = null;
+		document.documentElement.classList.remove(HOLD_CLASS);
+		const player = document.querySelector('#full-bleed-container');
+		if (player) {
+			pipObserver.unobserve(player);
+			pipObserver.observe(player);
+		}
+	}
+
+	function keepPosition(current) {
+		if (hold !== current) return;
+		if (performance.now() > current.until) return endHold();
+		window.scrollTo({ top: current.top, behavior: 'instant' });
+		requestAnimationFrame(() => keepPosition(current));
+	}
+
+	window.addEventListener('yt-navigate-start', () => {
+		const page = flexy();
+		if (hold || !page || !page.hasAttribute('show-playlist')) return;
+		if (!document.documentElement.classList.contains(PIP_CLASS)) return;
+		hold = { top: window.scrollY, list: playlistId(), until: performance.now() + HOLD_MS };
+		document.documentElement.style.setProperty('--watch-hold-height', document.documentElement.scrollHeight + 'px');
+		document.documentElement.classList.add(HOLD_CLASS);
+		keepPosition(hold);
+	}, true);
+
+	window.addEventListener('yt-navigate-finish', () => {
+		if (!hold) return;
+		if (location.pathname.startsWith('/watch') && playlistId() === hold.list) {
+			hold.until = performance.now() + HOLD_SETTLE_MS;
+			return;
+		}
+		endHold();
+		window.scrollTo({ top: 0, behavior: 'instant' });
+	}, true);
+
+	for (const type of ['wheel', 'touchstart', 'keydown']) {
+		window.addEventListener(type, endHold, { capture: true, passive: true });
+	}
 
 	YTaq.ready(apply);
 	YTaq.onNavigate(() => {

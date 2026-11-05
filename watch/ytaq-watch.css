@@ -462,3 +462,11 @@ html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metada
   border: 1px solid var(--suisou-color-line-weak);
   border-radius: var(--suisou-radius);
 }
+
+html.ytaq-watch-hold {
+  scroll-snap-type: none !important;
+}
+
+html.ytaq-watch-hold body {
+  min-height: var(--watch-hold-height);
+}
