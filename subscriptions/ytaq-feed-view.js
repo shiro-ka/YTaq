@@ -13,6 +13,8 @@
 	let resume = {};
 	let resumeOn = YTaqSettings.defaults('popupResume');
 	let resumeRun = 0;
+	let resumeAt = 0;
+	const REUSE_MS = 5 * 60 * 1000;
 
 	const root = document.createElement('div');
 	root.className = 'ytaq-feed-root';
@@ -87,6 +89,7 @@
 
 	async function loadResume() {
 		if (!resumeOn || !window.YTaqInnertube) return;
+		if (Date.now() - resumeAt < REUSE_MS) return;
 		const current = ++resumeRun;
 		try {
 			const json = await window.YTaqInnertube.call('browse', { browseId: 'FEhistory' });
@@ -94,6 +97,7 @@
 			const out = {};
 			collectResume(json, out);
 			resume = out;
+			resumeAt = Date.now();
 			for (const a of root.querySelectorAll('a.ytaq-feed-item')) showResume(a);
 		} catch (e) {
 			YTaq.warn('feed: history', e.message);
@@ -204,6 +208,7 @@
 	const ALL_ID = 'ytaq-all';
 	let allVideos = null;
 	let allRun = 0;
+	let allAt = 0;
 
 	function find(node, test) {
 		if (!node || typeof node !== 'object') return undefined;
@@ -295,6 +300,7 @@
 
 	async function loadAll() {
 		if (!window.YTaqInnertube) return;
+		if (allVideos && Date.now() - allAt < REUSE_MS) return;
 		const current = ++allRun;
 		try {
 			const json = await window.YTaqInnertube.call('browse', { browseId: 'FEsubscriptions' });
@@ -307,6 +313,7 @@
 				out.push(entry);
 			}
 			allVideos = newestFirst(out);
+			allAt = Date.now();
 			render();
 		} catch (e) {
 			YTaq.warn('feed: subscriptions', e.message);
