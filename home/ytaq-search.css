@@ -52,3 +52,8 @@ html.ytaq-search-grid ytd-search ytd-video-renderer #expandable-metadata,
 html.ytaq-search-grid ytd-search ytd-video-renderer yt-interaction {
   display: none !important;
 }
+
+html.ytaq-search-grid ytd-search ytd-video-renderer #video-title {
+  display: block;
+  min-height: 2lh;
+}

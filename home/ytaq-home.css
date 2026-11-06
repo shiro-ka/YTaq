@@ -44,3 +44,7 @@ ytd-rich-item-renderer.style-scope.ytd-rich-grid-renderer yt-lockup-metadata-vie
 ytd-rich-item-renderer.style-scope.ytd-rich-grid-renderer .ytLockupMetadataViewModelMenuButton {
   right: 0 !important;
 }
+
+ytd-rich-item-renderer.style-scope.ytd-rich-grid-renderer .ytLockupMetadataViewModelTitle {
+  min-height: 2lh;
+}
