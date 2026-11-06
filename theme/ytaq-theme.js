@@ -2,7 +2,7 @@
 	'use strict';
 
 	function apply(t) {
-		document.documentElement.setAttribute('data-suisou-theme', t.theme + ' ' + t.accent);
+		document.documentElement.setAttribute('data-ytaq-theme', t.theme + ' ' + t.accent);
 	}
 
 	const DARK = 0x400;

@@ -1,102 +1,102 @@
-html[data-suisou-theme] ytd-app {
-  background: var(--suisou-color-bg) !important;
+html[data-ytaq-theme] ytd-app {
+  background: var(--ytaq-color-bg) !important;
 }
 
-html[data-suisou-theme] ytd-masthead {
-  background: var(--suisou-color-bg) !important;
+html[data-ytaq-theme] ytd-masthead {
+  background: var(--ytaq-color-bg) !important;
 }
 
-html[data-suisou-theme] .ytSearchboxComponentInputBoxDark,
-html[data-suisou-theme] .ytSearchboxComponentSearchButtonDark {
-  background: var(--suisou-color-field) !important;
-  border-color: var(--suisou-color-line-strong) !important;
+html[data-ytaq-theme] .ytSearchboxComponentInputBoxDark,
+html[data-ytaq-theme] .ytSearchboxComponentSearchButtonDark {
+  background: var(--ytaq-color-field) !important;
+  border-color: var(--ytaq-color-line-strong) !important;
 }
 
-html[data-suisou-theme] .ytSearchboxComponentInputBox {
-  border-radius: var(--suisou-radius) 0 0 var(--suisou-radius) !important;
+html[data-ytaq-theme] .ytSearchboxComponentInputBox {
+  border-radius: var(--ytaq-radius) 0 0 var(--ytaq-radius) !important;
 }
 
-html[data-suisou-theme] .ytSearchboxComponentSearchButton {
-  border-radius: 0 var(--suisou-radius) var(--suisou-radius) 0 !important;
+html[data-ytaq-theme] .ytSearchboxComponentSearchButton {
+  border-radius: 0 var(--ytaq-radius) var(--ytaq-radius) 0 !important;
 }
 
-html[data-suisou-theme] tp-yt-app-drawer[persistent] {
-  background: var(--suisou-color-bg) !important;
+html[data-ytaq-theme] tp-yt-app-drawer[persistent] {
+  background: var(--ytaq-color-bg) !important;
 }
 
-html[data-suisou-theme] tp-yt-app-drawer:not([persistent]) {
+html[data-ytaq-theme] tp-yt-app-drawer:not([persistent]) {
   background: transparent !important;
 }
 
-html[data-suisou-theme] tp-yt-app-drawer:not([persistent]) #contentContainer {
-  background: var(--suisou-color-panel) !important;
+html[data-ytaq-theme] tp-yt-app-drawer:not([persistent]) #contentContainer {
+  background: var(--ytaq-color-panel) !important;
 }
 
-html[data-suisou-theme] tp-yt-app-drawer #guide-content {
+html[data-ytaq-theme] tp-yt-app-drawer #guide-content {
   background: transparent !important;
 }
 
-html[data-suisou-theme] tp-yt-app-drawer #scrim {
-  background: var(--suisou-color-backdrop) !important;
+html[data-ytaq-theme] tp-yt-app-drawer #scrim {
+  background: var(--ytaq-color-backdrop) !important;
 }
 
-html[data-suisou-theme] #sections.ytd-guide-renderer>.ytd-guide-renderer:not(:last-child) {
+html[data-ytaq-theme] #sections.ytd-guide-renderer>.ytd-guide-renderer:not(:last-child) {
   border-bottom: none !important;
 }
 
-html[data-suisou-theme] ytd-guide-entry-renderer {
+html[data-ytaq-theme] ytd-guide-entry-renderer {
   width: 100% !important;
 }
 
-html[data-suisou-theme] ytd-guide-entry-renderer:not(:last-child) {
-  margin-bottom: var(--suisou-space-1);
+html[data-ytaq-theme] ytd-guide-entry-renderer:not(:last-child) {
+  margin-bottom: var(--ytaq-space-1);
 }
 
-html[data-suisou-theme] ytd-guide-entry-renderer[active] {
-  background: var(--suisou-color-accent-tint) !important;
+html[data-ytaq-theme] ytd-guide-entry-renderer[active] {
+  background: var(--ytaq-color-accent-tint) !important;
 }
 
-html[data-suisou-theme] ytd-tabbed-page-header tp-yt-app-toolbar {
-  background: var(--suisou-color-bg) !important;
+html[data-ytaq-theme] ytd-tabbed-page-header tp-yt-app-toolbar {
+  background: var(--ytaq-color-bg) !important;
 }
 
-html[data-suisou-theme] ytd-tabbed-page-header #tabs-divider {
+html[data-ytaq-theme] ytd-tabbed-page-header #tabs-divider {
   border-bottom: none !important;
 }
 
-html[data-suisou-theme] yt-contextual-sheet-layout,
-html[data-suisou-theme] ytd-menu-popup-renderer {
-  background: var(--suisou-color-panel) !important;
-  border: 1px solid var(--suisou-color-line-weak) !important;
-  border-radius: var(--suisou-radius) !important;
+html[data-ytaq-theme] yt-contextual-sheet-layout,
+html[data-ytaq-theme] ytd-menu-popup-renderer {
+  background: var(--ytaq-color-panel) !important;
+  border: 1px solid var(--ytaq-color-line-weak) !important;
+  border-radius: var(--ytaq-radius) !important;
   box-sizing: border-box !important;
 }
 
-html[data-suisou-theme] ytd-multi-page-menu-renderer,
-html[data-suisou-theme] tp-yt-paper-dialog,
-html[data-suisou-theme] ytd-mealbar-promo-renderer,
-html[data-suisou-theme] tp-yt-paper-toast {
-  background: var(--suisou-color-panel) !important;
-  border: 1px solid var(--suisou-color-line-weak) !important;
-  border-radius: var(--suisou-radius) !important;
+html[data-ytaq-theme] ytd-multi-page-menu-renderer,
+html[data-ytaq-theme] tp-yt-paper-dialog,
+html[data-ytaq-theme] ytd-mealbar-promo-renderer,
+html[data-ytaq-theme] tp-yt-paper-toast {
+  background: var(--ytaq-color-panel) !important;
+  border: 1px solid var(--ytaq-color-line-weak) !important;
+  border-radius: var(--ytaq-radius) !important;
   box-sizing: border-box !important;
 }
 
-html[data-suisou-theme] ytd-multi-page-menu-renderer ytd-simple-menu-header-renderer,
-html[data-suisou-theme] tp-yt-paper-dialog .scroll-button {
-  background: var(--suisou-color-panel) !important;
+html[data-ytaq-theme] ytd-multi-page-menu-renderer ytd-simple-menu-header-renderer,
+html[data-ytaq-theme] tp-yt-paper-dialog .scroll-button {
+  background: var(--ytaq-color-panel) !important;
 }
 
-html[data-suisou-theme] tp-yt-paper-dialog yt-copy-link-renderer #bar {
-  background: var(--suisou-color-field) !important;
-  border: 1px solid var(--suisou-color-line-strong) !important;
-  border-radius: var(--suisou-radius) !important;
+html[data-ytaq-theme] tp-yt-paper-dialog yt-copy-link-renderer #bar {
+  background: var(--ytaq-color-field) !important;
+  border: 1px solid var(--ytaq-color-line-strong) !important;
+  border-radius: var(--ytaq-radius) !important;
 }
 
-html[data-suisou-theme] yt-dropdown-menu tp-yt-paper-listbox,
-html[data-suisou-theme] yt-sort-filter-sub-menu-renderer tp-yt-paper-listbox {
-  background: var(--suisou-color-panel) !important;
-  border: 1px solid var(--suisou-color-line-weak) !important;
-  border-radius: var(--suisou-radius) !important;
+html[data-ytaq-theme] yt-dropdown-menu tp-yt-paper-listbox,
+html[data-ytaq-theme] yt-sort-filter-sub-menu-renderer tp-yt-paper-listbox {
+  background: var(--ytaq-color-panel) !important;
+  border: 1px solid var(--ytaq-color-line-weak) !important;
+  border-radius: var(--ytaq-radius) !important;
   box-sizing: border-box !important;
 }

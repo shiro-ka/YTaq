@@ -2,7 +2,7 @@ html.ytaq-search-grid ytd-search ytd-item-section-renderer > #contents {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   grid-auto-flow: dense;
-  gap: var(--suisou-space-3);
+  gap: var(--ytaq-space-3);
 }
 
 html.ytaq-search-grid ytd-search ytd-item-section-renderer > #contents > * {
@@ -13,15 +13,15 @@ html.ytaq-search-grid ytd-search ytd-item-section-renderer > #contents > ytd-vid
   grid-column: auto;
   margin: 0 !important;
   max-width: none !important;
-  background: var(--suisou-color-panel);
-  border: 1px solid var(--suisou-color-line-weak);
-  border-radius: var(--suisou-radius);
+  background: var(--ytaq-color-panel);
+  border: 1px solid var(--ytaq-color-line-weak);
+  border-radius: var(--ytaq-radius);
   overflow: clip;
   box-sizing: border-box;
 }
 
 html.ytaq-search-grid ytd-search ytd-item-section-renderer > #contents > ytd-video-renderer:hover {
-  background-image: linear-gradient(var(--suisou-color-hover), var(--suisou-color-hover));
+  background-image: linear-gradient(var(--ytaq-color-hover), var(--ytaq-color-hover));
 }
 
 html.ytaq-search-grid ytd-search ytd-video-renderer #dismissible {
@@ -43,7 +43,7 @@ html.ytaq-search-grid ytd-search ytd-video-renderer ytd-thumbnail yt-image img {
 
 html.ytaq-search-grid ytd-search ytd-video-renderer .text-wrapper {
   max-width: none !important;
-  padding: var(--suisou-space-2) !important;
+  padding: var(--ytaq-space-2) !important;
 }
 
 html.ytaq-search-grid ytd-search ytd-video-renderer .metadata-snippet-container,

@@ -1,105 +1,105 @@
-html[data-suisou-theme] .ytaq-folder {
+html[data-ytaq-theme] .ytaq-folder {
   position: relative;
   display: inline-flex;
   align-self: center;
-  margin-left: var(--suisou-space-2);
+  margin-left: var(--ytaq-space-2);
   font-family: Roboto, Arial, sans-serif;
 }
 
-html[data-suisou-theme] .ytaq-folder-btn {
+html[data-ytaq-theme] .ytaq-folder-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 36px;
   height: 36px;
   padding: 0;
-  border: 1px solid var(--suisou-color-line-strong);
-  border-radius: var(--suisou-radius);
+  border: 1px solid var(--ytaq-color-line-strong);
+  border-radius: var(--ytaq-radius);
   background: transparent;
-  color: var(--suisou-color-text);
+  color: var(--ytaq-color-text);
   cursor: default;
 }
 
-html[data-suisou-theme] .ytaq-folder-btn .ytaq-icon {
-  width: var(--suisou-size-icon);
-  height: var(--suisou-size-icon);
+html[data-ytaq-theme] .ytaq-folder-btn .ytaq-icon {
+  width: var(--ytaq-size-icon);
+  height: var(--ytaq-size-icon);
   fill: currentColor;
 }
 
-html[data-suisou-theme] .ytaq-folder-btn.ytaq-folder-in {
-  border-color: var(--suisou-color-accent);
-  background: var(--suisou-color-accent-tint);
+html[data-ytaq-theme] .ytaq-folder-btn.ytaq-folder-in {
+  border-color: var(--ytaq-color-accent);
+  background: var(--ytaq-color-accent-tint);
 }
 
-html[data-suisou-theme] .ytaq-folder-btn:disabled {
-  color: var(--suisou-color-text-disabled);
+html[data-ytaq-theme] .ytaq-folder-btn:disabled {
+  color: var(--ytaq-color-text-disabled);
 }
 
-html[data-suisou-theme] .ytaq-folder-menu {
+html[data-ytaq-theme] .ytaq-folder-menu {
   display: none;
   position: absolute;
   top: 100%;
   left: 0;
   z-index: 2300;
   min-width: 220px;
-  margin-top: var(--suisou-space-1);
-  padding: var(--suisou-space-2);
+  margin-top: var(--ytaq-space-1);
+  padding: var(--ytaq-space-2);
   flex-direction: column;
-  gap: var(--suisou-space-1);
-  background: var(--suisou-color-panel);
-  border: 1px solid var(--suisou-color-line-weak);
-  border-radius: var(--suisou-radius);
-  color: var(--suisou-color-text);
-  font-size: var(--suisou-fs-14);
+  gap: var(--ytaq-space-1);
+  background: var(--ytaq-color-panel);
+  border: 1px solid var(--ytaq-color-line-weak);
+  border-radius: var(--ytaq-radius);
+  color: var(--ytaq-color-text);
+  font-size: var(--ytaq-fs-14);
 }
 
-html[data-suisou-theme] .ytaq-folder-menu::before {
+html[data-ytaq-theme] .ytaq-folder-menu::before {
   content: "";
   position: absolute;
   inset: -8px 0 auto;
   height: 8px;
 }
 
-html[data-suisou-theme] .ytaq-folder:hover .ytaq-folder-menu,
-html[data-suisou-theme] .ytaq-folder:focus-within .ytaq-folder-menu {
+html[data-ytaq-theme] .ytaq-folder:hover .ytaq-folder-menu,
+html[data-ytaq-theme] .ytaq-folder:focus-within .ytaq-folder-menu {
   display: flex;
 }
 
-html[data-suisou-theme] .ytaq-folder-btn:disabled + .ytaq-folder-menu {
+html[data-ytaq-theme] .ytaq-folder-btn:disabled + .ytaq-folder-menu {
   display: none;
 }
 
-html[data-suisou-theme] .ytaq-folder-row {
+html[data-ytaq-theme] .ytaq-folder-row {
   display: flex;
   align-items: center;
-  gap: var(--suisou-space-2);
-  padding: var(--suisou-space-2);
-  border-radius: var(--suisou-radius-small);
+  gap: var(--ytaq-space-2);
+  padding: var(--ytaq-space-2);
+  border-radius: var(--ytaq-radius-small);
   cursor: pointer;
 }
 
-html[data-suisou-theme] .ytaq-folder-row:hover {
-  background: var(--suisou-color-hover);
+html[data-ytaq-theme] .ytaq-folder-row:hover {
+  background: var(--ytaq-color-hover);
 }
 
-html[data-suisou-theme] .ytaq-folder-row input {
-  accent-color: var(--suisou-color-accent);
+html[data-ytaq-theme] .ytaq-folder-row input {
+  accent-color: var(--ytaq-color-accent);
   margin: 0;
 }
 
-html[data-suisou-theme] .ytaq-folder-new {
-  margin-top: var(--suisou-space-1);
-  height: var(--suisou-size-button);
-  padding: 0 var(--suisou-space-2);
-  border: 1px solid var(--suisou-color-line-strong);
-  border-radius: var(--suisou-radius);
-  background: var(--suisou-color-field);
-  color: var(--suisou-color-text);
-  font: var(--suisou-fs-14) Roboto, Arial, sans-serif;
+html[data-ytaq-theme] .ytaq-folder-new {
+  margin-top: var(--ytaq-space-1);
+  height: var(--ytaq-size-button);
+  padding: 0 var(--ytaq-space-2);
+  border: 1px solid var(--ytaq-color-line-strong);
+  border-radius: var(--ytaq-radius);
+  background: var(--ytaq-color-field);
+  color: var(--ytaq-color-text);
+  font: var(--ytaq-fs-14) Roboto, Arial, sans-serif;
 }
 
-html[data-suisou-theme] .ytaq-folder-new:focus-visible,
-html[data-suisou-theme] .ytaq-folder-btn:focus-visible {
-  outline: 2px solid var(--suisou-color-accent);
+html[data-ytaq-theme] .ytaq-folder-new:focus-visible,
+html[data-ytaq-theme] .ytaq-folder-btn:focus-visible {
+  outline: 2px solid var(--ytaq-color-accent);
   outline-offset: 2px;
 }

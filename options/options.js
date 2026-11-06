@@ -4,19 +4,19 @@
 	const S = YTaqSettings;
 	const FIRST = 'channels';
 	const PERF_KEYS = Object.keys(S.defaults('perf'));
-	const THEME_BLOCK = /^\[data-suisou-theme~="([a-z]+)"\] \{/gm;
-	const ACCENT_BLOCK = /^\[data-suisou-theme~="([a-z]+)"\]\[data-suisou-theme~="([a-z]+)"\] \{/gm;
+	const THEME_BLOCK = /^\[data-ytaq-theme~="([a-z]+)"\] \{/gm;
+	const ACCENT_BLOCK = /^\[data-ytaq-theme~="([a-z]+)"\]\[data-ytaq-theme~="([a-z]+)"\] \{/gm;
 
 	function $(section, cls) {
 		return document.querySelector(`.ytaq-section-${section} .ytaq-${cls}`);
 	}
 
 	function applyTheme(t) {
-		document.documentElement.setAttribute('data-suisou-theme', t.theme + ' ' + t.accent);
+		document.documentElement.setAttribute('data-ytaq-theme', t.theme + ' ' + t.accent);
 	}
 
 	async function loadPalette() {
-		const css = await (await fetch(chrome.runtime.getURL('suisou-palette.css'))).text();
+		const css = await (await fetch(chrome.runtime.getURL('ytaq-palette.css'))).text();
 		const map = new Map();
 		for (const m of css.matchAll(THEME_BLOCK)) map.set(m[1], []);
 		for (const m of css.matchAll(ACCENT_BLOCK)) if (map.has(m[1])) map.get(m[1]).push(m[2]);
@@ -38,7 +38,7 @@
 	function ruleRow(rule) {
 		const row = document.createElement('div');
 		row.className = 'ytaq-title-rule';
-		row.setAttribute('data-suisou-layout', 'row middle wrap');
+		row.setAttribute('data-ytaq-layout', 'row middle wrap');
 		const on = document.createElement('input');
 		on.type = 'checkbox';
 		on.className = 'ytaq-title-on';
@@ -57,7 +57,7 @@
 		const remove = document.createElement('button');
 		remove.type = 'button';
 		remove.textContent = '削除';
-		remove.setAttribute('data-suisou-button', '');
+		remove.setAttribute('data-ytaq-button', '');
 		remove.addEventListener('click', () => {
 			row.remove();
 			SECTIONS.antibite.test();
@@ -211,20 +211,20 @@
 				const box = $('mute', 'muteChannels');
 				if (!this.channels.length) {
 					const p = document.createElement('p');
-					p.setAttribute('data-suisou', 'note');
+					p.setAttribute('data-ytaq', 'note');
 					p.textContent = 'ミュートしたチャンネルはありません。';
 					box.replaceChildren(p);
 					return;
 				}
 				box.replaceChildren(...this.channels.map((c, i) => {
 					const row = document.createElement('div');
-					row.setAttribute('data-suisou-layout', 'row');
+					row.setAttribute('data-ytaq-layout', 'row');
 					const name = document.createElement('span');
 					name.textContent = c.name || c.handle || c.id;
 					const sub = document.createElement('span');
-					sub.setAttribute('data-suisou', 'note');
+					sub.setAttribute('data-ytaq', 'note');
 					sub.textContent = c.handle || c.id || '';
-					row.append(name, sub, button('解除', { 'data-suisou-button': 'outline' }, () => {
+					row.append(name, sub, button('解除', { 'data-ytaq-button': 'outline' }, () => {
 						this.channels.splice(i, 1);
 						this.renderChannels();
 					}));
@@ -284,8 +284,8 @@
 	function showMessage(section, text, tone) {
 		const slot = document.querySelector(`.ytaq-section-${section} .ytaq-message`);
 		const p = document.createElement('p');
-		p.setAttribute('data-suisou-item', 'notice');
-		p.setAttribute('data-suisou', tone);
+		p.setAttribute('data-ytaq-item', 'notice');
+		p.setAttribute('data-ytaq', tone);
 		p.textContent = text;
 		slot.replaceChildren(p);
 		setTimeout(() => { if (p.parentNode) p.remove(); }, 3000);
@@ -399,11 +399,11 @@
 
 	function folderCard(data, folder, index) {
 		const card = document.createElement('div');
-		card.setAttribute('data-suisou-tray', '');
-		card.setAttribute('data-suisou-layout', 'stack');
+		card.setAttribute('data-ytaq-tray', '');
+		card.setAttribute('data-ytaq-layout', 'stack');
 
 		const row = document.createElement('div');
-		row.setAttribute('data-suisou-layout', 'row middle wrap');
+		row.setAttribute('data-ytaq-layout', 'row middle wrap');
 		const name = document.createElement('input');
 		name.type = 'text';
 		name.value = folder.name;
@@ -416,11 +416,11 @@
 		name.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) name.blur(); });
 		name.addEventListener('blur', commit);
 
-		const up = button('上へ', { 'data-suisou-button': 'outline' }, () => YTaqFolders.moveFolder(folder.id, -1));
+		const up = button('上へ', { 'data-ytaq-button': 'outline' }, () => YTaqFolders.moveFolder(folder.id, -1));
 		up.disabled = index === 0;
-		const down = button('下へ', { 'data-suisou-button': 'outline' }, () => YTaqFolders.moveFolder(folder.id, 1));
+		const down = button('下へ', { 'data-ytaq-button': 'outline' }, () => YTaqFolders.moveFolder(folder.id, 1));
 		down.disabled = index === data.folders.length - 1;
-		const del = button('削除', { 'data-suisou-button': 'outline', 'data-suisou': 'error' }, () => {
+		const del = button('削除', { 'data-ytaq-button': 'outline', 'data-ytaq': 'error' }, () => {
 			if (del.dataset.confirm) return YTaqFolders.deleteFolder(folder.id);
 			del.dataset.confirm = '1';
 			del.textContent = '本当に削除';
@@ -430,19 +430,19 @@
 
 		if (!folder.channels.length) {
 			const p = document.createElement('p');
-			p.setAttribute('data-suisou', 'note');
+			p.setAttribute('data-ytaq', 'note');
 			p.textContent = 'チャンネルが入っていません';
 			card.append(p);
 		}
 		for (const id of folder.channels) {
 			const line = document.createElement('div');
-			line.setAttribute('data-suisou-layout', 'row middle between');
+			line.setAttribute('data-ytaq-layout', 'row middle between');
 			const label = document.createElement('a');
 			label.href = 'https://www.youtube.com/channel/' + id;
 			label.target = '_blank';
 			label.rel = 'noopener';
 			label.textContent = (data.channels[id] || {}).name || id;
-			line.append(label, button('外す', { 'data-suisou-button': '' }, () => YTaqFolders.removeChannel(folder.id, id)));
+			line.append(label, button('外す', { 'data-ytaq-button': '' }, () => YTaqFolders.removeChannel(folder.id, id)));
 			card.append(line);
 		}
 		return card;
@@ -475,18 +475,18 @@
 		const row = document.createElement('div');
 		row.className = 'ytaq-channel-row';
 		row.dataset.name = c.name.toLowerCase();
-		row.setAttribute('data-suisou-tray', '');
-		row.setAttribute('data-suisou-layout', 'row middle wrap between');
+		row.setAttribute('data-ytaq-tray', '');
+		row.setAttribute('data-ytaq-layout', 'row middle wrap between');
 
 		const head = document.createElement('div');
-		head.setAttribute('data-suisou-layout', 'row middle wrap');
+		head.setAttribute('data-ytaq-layout', 'row middle wrap');
 		if (c.avatar) {
 			const img = document.createElement('img');
 			img.src = c.avatar;
 			img.alt = '';
 			img.loading = 'lazy';
 			img.referrerPolicy = 'no-referrer';
-			img.setAttribute('data-suisou-item', 'circle');
+			img.setAttribute('data-ytaq-item', 'circle');
 			head.append(img);
 		}
 		const name = document.createElement('a');
@@ -498,14 +498,14 @@
 		if (subs.fetchedAt && !subs.channels.some(x => x.id === c.id)) {
 			const tag = document.createElement('span');
 			tag.textContent = '未登録';
-			tag.setAttribute('data-suisou-item', 'tag');
+			tag.setAttribute('data-ytaq-item', 'tag');
 			head.append(tag);
 		}
 
 		const speed = document.createElement('div');
-		speed.setAttribute('data-suisou-layout', 'row middle wrap');
+		speed.setAttribute('data-ytaq-layout', 'row middle wrap');
 		const label = document.createElement('label');
-		label.setAttribute('data-suisou-layout', 'row middle');
+		label.setAttribute('data-ytaq-layout', 'row middle');
 		const input = document.createElement('input');
 		input.type = 'number';
 		input.step = '0.05';
@@ -523,12 +523,12 @@
 			YTaqChannels.setRate(c.id, c.name, rate);
 		});
 		label.append('再生速度', input);
-		const clear = button('消す', { 'data-suisou-button': '' }, () => YTaqChannels.clearRate(c.id));
+		const clear = button('消す', { 'data-ytaq-button': '' }, () => YTaqChannels.clearRate(c.id));
 		clear.disabled = !rates[c.id];
 		speed.append(label, clear);
 
 		const boxes = document.createElement('div');
-		boxes.setAttribute('data-suisou-layout', 'row middle wrap');
+		boxes.setAttribute('data-ytaq-layout', 'row middle wrap');
 		for (const f of folders.folders) {
 			const l = document.createElement('label');
 			const cb = document.createElement('input');
@@ -540,7 +540,7 @@
 		}
 
 		const controls = document.createElement('div');
-		controls.setAttribute('data-suisou-layout', 'row middle wrap');
+		controls.setAttribute('data-ytaq-layout', 'row middle wrap');
 		controls.append(speed);
 		if (folders.folders.length) controls.append(boxes);
 		row.append(head, controls);
@@ -563,7 +563,7 @@
 		const list = allChannels();
 		if (!list.length) {
 			const p = document.createElement('p');
-			p.setAttribute('data-suisou', 'note');
+			p.setAttribute('data-ytaq', 'note');
 			p.textContent = 'まだチャンネルがありません。ログインした状態で YouTube を開くと、登録チャンネルを読み込みます。';
 			box.replaceChildren(p);
 			return;
@@ -573,10 +573,10 @@
 			if (!rows.length) return [];
 			const group = document.createElement('div');
 			group.className = 'ytaq-channel-group';
-			group.setAttribute('data-suisou-layout', 'stack');
+			group.setAttribute('data-ytaq-layout', 'stack');
 			const h = document.createElement('h3');
 			h.textContent = `${title}（${rows.length}）`;
-			h.setAttribute('data-suisou-text', 'fs-16 fw-700');
+			h.setAttribute('data-ytaq-text', 'fs-16 fw-700');
 			group.append(h, ...rows.map(channelRow));
 			return [group];
 		}));
@@ -605,7 +605,7 @@
 		if (box.contains(document.activeElement) && document.activeElement.tagName === 'INPUT') return;
 		if (!data.folders.length) {
 			const p = document.createElement('p');
-			p.setAttribute('data-suisou', 'note');
+			p.setAttribute('data-ytaq', 'note');
 			p.textContent = 'フォルダがありません。YouTube のチャンネルのページや動画の下のフォルダのボタンから作れます。';
 			box.replaceChildren(p);
 			return;

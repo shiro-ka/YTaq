@@ -66,7 +66,7 @@
         "mute/ytaq-mute.js"
       ],
       "css": [
-        "suisou-palette.css",
+        "ytaq-palette.css",
         "ytaq-variables.css",
         "ytaq-style.css",
         "perf/ytaq-perf.css",
