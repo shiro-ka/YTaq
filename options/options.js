@@ -205,7 +205,7 @@
 		},
 
 		mute: {
-			names: ['mute'],
+			names: ['mute', 'hideWatched'],
 			channels: [],
 			renderChannels() {
 				const box = $('mute', 'muteChannels');
@@ -236,6 +236,8 @@
 				$('mute', 'commentWords').checked = !!v.mute.commentWords;
 				this.channels = (v.mute.channels || []).slice();
 				this.renderChannels();
+				$('mute', 'watchedPercent').value = v.hideWatched.percent;
+				for (const cb of document.querySelectorAll('.ytaq-watchedPlaces input')) cb.checked = !!v.hideWatched.places[cb.value];
 			},
 			collect() {
 				const words = $('mute', 'words').value.split('\n').map(w => w.trim()).filter(Boolean);
@@ -248,7 +250,13 @@
 						return '正規表現が正しくありません: ' + w;
 					}
 				}
-				return { mute: { words, channels: this.channels, commentWords: $('mute', 'commentWords').checked } };
+				const percent = Math.round(Number($('mute', 'watchedPercent').value));
+				if (!(percent >= 1 && percent <= 100)) return '見た割合は 1〜100 で入れてください。';
+				const places = Object.fromEntries([...document.querySelectorAll('.ytaq-watchedPlaces input')].map(cb => [cb.value, cb.checked]));
+				return {
+					mute: { words, channels: this.channels, commentWords: $('mute', 'commentWords').checked },
+					hideWatched: { percent, places }
+				};
 			}
 		},
 

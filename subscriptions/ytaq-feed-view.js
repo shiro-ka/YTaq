@@ -14,6 +14,8 @@
 	let resumeOn = YTaqSettings.defaults('popupResume');
 	let resumeRun = 0;
 	let resumeAt = 0;
+	let watched = {};
+	let hideWatchedFeed = false;
 	const REUSE_MS = 5 * 60 * 1000;
 
 	const root = document.createElement('div');
@@ -60,12 +62,16 @@
 	function showResume(a) {
 		const id = a.dataset.video;
 		a.href = watchHref(id);
+		const percent = watched[id] || 0;
+		if (percent) a.dataset.watched = percent;
+		else delete a.dataset.watched;
 		const thumb = a.querySelector('.ytaq-feed-thumb');
 		if (!thumb) return;
 		let bar = thumb.querySelector('.ytaq-feed-progress');
 		const seconds = Number(a.dataset.seconds);
-		const at = resumeOn ? resume[id] : 0;
-		if (!at || !seconds) {
+		const at = resume[id] || 0;
+		const width = percent || (at && seconds ? at / seconds * 100 : 0);
+		if (!width) {
 			if (bar) bar.remove();
 			return;
 		}
@@ -73,7 +79,23 @@
 			bar = el('span', 'ytaq-feed-progress');
 			thumb.append(bar);
 		}
-		bar.style.width = Math.min(100, at / seconds * 100) + '%';
+		bar.style.width = Math.min(100, width) + '%';
+	}
+
+	function collectWatched(json) {
+		const out = {};
+		const walk = node => {
+			if (Array.isArray(node)) return node.forEach(walk);
+			if (!node || typeof node !== 'object') return;
+			const l = node.lockupViewModel;
+			if (l && l.contentId && !(l.contentId in out)) {
+				const bar = find(l, n => n.thumbnailOverlayProgressBarViewModel && typeof n.thumbnailOverlayProgressBarViewModel.startPercent === 'number');
+				if (bar) out[l.contentId] = bar.thumbnailOverlayProgressBarViewModel.startPercent;
+			}
+			for (const k in node) walk(node[k]);
+		};
+		walk(json);
+		return out;
 	}
 
 	function collectResume(node, out) {
@@ -88,7 +110,7 @@
 	}
 
 	async function loadResume() {
-		if (!resumeOn || !window.YTaqInnertube) return;
+		if (!(resumeOn || hideWatchedFeed) || !window.YTaqInnertube) return;
 		if (Date.now() - resumeAt < REUSE_MS) return;
 		const current = ++resumeRun;
 		try {
@@ -96,7 +118,8 @@
 			if (current !== resumeRun) return;
 			const out = {};
 			collectResume(json, out);
-			resume = out;
+			resume = resumeOn ? out : {};
+			watched = collectWatched(json);
 			resumeAt = Date.now();
 			for (const a of root.querySelectorAll('a.ytaq-feed-item')) showResume(a);
 		} catch (e) {
@@ -437,6 +460,11 @@
 			loadAll();
 		}
 	}
+
+	YTaqSettings.watch('hideWatched', v => {
+		hideWatchedFeed = !!(v.places && v.places.feed);
+		if (hideWatchedFeed && onPage() && !native) loadResume();
+	});
 
 	YTaqSettings.watch('popupResume', v => {
 		resumeOn = !!v;

@@ -186,10 +186,47 @@
 		mark(target || el, rules.any ? test(el) : false);
 	}
 
+	const WATCHED_ATTR = 'data-ytaq-watched';
+	const WATCHED_BAR = '.ytThumbnailOverlayProgressBarHostWatchedProgressBarSegment, ytd-thumbnail-overlay-resume-playback-renderer #progress';
+	let hide = { percent: 90, places: {} };
+	let hideOn = false;
+
+	function placeOf(el) {
+		if (el.classList.contains('ytaq-feed-item')) return 'feed';
+		const path = location.pathname;
+		if (path === '/') return 'home';
+		if (path === '/results') return 'search';
+		if (path === '/watch') return el.closest('#related, ytd-watch-next-secondary-results-renderer') ? 'related' : null;
+		if (path === '/feed/subscriptions') return 'subs';
+		if (CHANNEL_PAGE.test(path)) return 'channel';
+		if (path.startsWith('/hashtag/') || path.startsWith('/feed/explore') || path.startsWith('/feed/trending') || path === '/gaming') return 'explore';
+		return null;
+	}
+
+	function percentOf(el) {
+		if (el.dataset && el.dataset.watched) return Number(el.dataset.watched);
+		const bar = el.querySelector(WATCHED_BAR);
+		return bar ? parseFloat(bar.style.width) || 0 : 0;
+	}
+
+	function watchedPass(items) {
+		for (const el of items) {
+			const place = placeOf(el);
+			const on = hideOn && !!place && !!hide.places[place] && percentOf(el) >= hide.percent;
+			el.toggleAttribute(WATCHED_ATTR, on);
+		}
+	}
+
 	function scanAll() {
 		const onChannelPage = CHANNEL_PAGE.test(location.pathname);
+		const items = [];
 		for (const el of document.querySelectorAll(VIDEOS)) {
 			if (el.matches('yt-lockup-view-model, ytm-shorts-lockup-view-model, ytm-shorts-lockup-view-model-v2') && el.parentElement && el.parentElement.closest(OUTER)) continue;
+			items.push(el);
+		}
+		watchedPass(items);
+		const muting = rules.any || dirty;
+		if (muting) for (const el of items) {
 			if (onChannelPage && !el.classList.contains('ytaq-feed-item')) {
 				mark(el, false);
 				seen.delete(el);
@@ -199,6 +236,7 @@
 		}
 		for (const el of document.querySelectorAll(COMMENTS)) {
 			commentButton(el);
+			if (!muting) continue;
 			const thread = el.closest('ytd-comment-thread-renderer');
 			const top = thread && !el.closest('#replies') ? thread : null;
 			check(el, commentMuted, top || el);
@@ -372,19 +410,27 @@
 
 	let scheduled = false;
 	let dirty = false;
+	let hideDirty = false;
 	function schedule() {
 		if (scheduled) return;
 		scheduled = true;
 		requestAnimationFrame(() => {
 			scheduled = false;
-			if (rules.any || dirty) scanAll();
+			if (rules.any || dirty || hideOn || hideDirty) scanAll();
 			else for (const el of document.querySelectorAll(COMMENTS)) commentButton(el);
+			hideDirty = false;
 			dirty = rules.any;
 			channelNotice();
 		});
 	}
 
 	YTaqSettings.watch('mute', configure);
+	YTaqSettings.watch('hideWatched', v => {
+		hide = { percent: Number(v.percent) || 0, places: v.places || {} };
+		hideOn = Object.values(hide.places).some(Boolean);
+		hideDirty = true;
+		schedule();
+	});
 	YTaq.getStorage(OWNERS_KEY, {}).then(v => {
 		for (const [k, h] of Object.entries(v || {})) if (!owners.has(k)) owners.set(k, h);
 		version++;

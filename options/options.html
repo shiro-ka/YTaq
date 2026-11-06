@@ -252,6 +252,21 @@
       <h3 data-suisou="mt-3" data-suisou-text="fs-16 fw-700">チャンネル</h3>
       <p data-suisou="note" data-suisou-text="fs-12">動画とコメントを隠します。チャンネルのページでは隠しません。</p>
       <div class="ytaq-muteChannels" data-suisou-layout="stack"></div>
+      <h3 data-suisou="mt-3" data-suisou-text="fs-16 fw-700">見た動画を隠す</h3>
+      <label data-suisou-layout="row">
+        <input type="number" class="ytaq-watchedPercent" min="1" max="100" step="1" style="width: 6em">
+        % 以上見た動画を隠す
+      </label>
+      <div class="ytaq-watchedPlaces" data-suisou-layout="row wrap">
+        <label><input type="checkbox" value="home"> ホーム</label>
+        <label><input type="checkbox" value="search"> 検索</label>
+        <label><input type="checkbox" value="related"> 関連動画</label>
+        <label><input type="checkbox" value="feed"> フォルダの一覧</label>
+        <label><input type="checkbox" value="subs"> 登録チャンネル（YouTube の一覧）</label>
+        <label><input type="checkbox" value="channel"> チャンネルのページ</label>
+        <label><input type="checkbox" value="explore"> ハッシュタグ・探索</label>
+      </div>
+      <p data-suisou="note" data-suisou-text="fs-12">サムネイルの赤い線で見た割合を判断します。Shorts は割合が分からないので隠しません。</p>
       <div data-suisou-layout="row" data-suisou="mt-3">
         <button class="ytaq-save" data-suisou="accent" data-suisou-button="outline">保存</button>
         <button class="ytaq-reset" data-suisou-button="outline">デフォルトに戻す</button>

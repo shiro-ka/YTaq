@@ -26,6 +26,10 @@
 		watchCloseReplay: { key: 'ytaq_watch_close_replay', value: true },
 		feedShorts: { key: 'ytaq_feed_shorts', value: false },
 		mute: { key: 'ytaq_mute', value: { words: [], channels: [], commentWords: false } },
+		hideWatched: {
+			key: 'ytaq_hide_watched',
+			value: { percent: 90, places: { home: false, search: false, related: false, feed: false, subs: false, channel: false, explore: false } }
+		},
 		titleClean: {
 			key: 'ytaq_title_clean',
 			value: {

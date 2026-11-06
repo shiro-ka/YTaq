@@ -127,3 +127,7 @@ ytd-menu-popup-renderer:has(.ytaq-mute-row) {
   height: auto !important;
   max-height: none !important;
 }
+
+[data-ytaq-watched] {
+  display: none !important;
+}
