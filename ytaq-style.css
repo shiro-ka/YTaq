@@ -71,3 +71,24 @@ html[data-suisou-theme] ytd-menu-popup-renderer {
   border-radius: var(--suisou-radius) !important;
   box-sizing: border-box !important;
 }
+
+html[data-suisou-theme] ytd-multi-page-menu-renderer,
+html[data-suisou-theme] tp-yt-paper-dialog,
+html[data-suisou-theme] ytd-mealbar-promo-renderer,
+html[data-suisou-theme] tp-yt-paper-toast {
+  background: var(--suisou-color-panel) !important;
+  border: 1px solid var(--suisou-color-line-weak) !important;
+  border-radius: var(--suisou-radius) !important;
+  box-sizing: border-box !important;
+}
+
+html[data-suisou-theme] ytd-multi-page-menu-renderer ytd-simple-menu-header-renderer,
+html[data-suisou-theme] tp-yt-paper-dialog .scroll-button {
+  background: var(--suisou-color-panel) !important;
+}
+
+html[data-suisou-theme] tp-yt-paper-dialog yt-copy-link-renderer #bar {
+  background: var(--suisou-color-field) !important;
+  border: 1px solid var(--suisou-color-line-strong) !important;
+  border-radius: var(--suisou-radius) !important;
+}
