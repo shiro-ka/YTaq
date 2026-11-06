@@ -33,15 +33,20 @@
 		const comments = [];
 		let next = null;
 		for (const item of items) {
-			if (item.commentThreadRenderer) {
-				const key = find(item.commentThreadRenderer, o => typeof o.commentKey === 'string', [])[0];
+			const thread = item.commentThreadRenderer;
+			const view = thread ? thread.commentViewModel : item.commentViewModel;
+			if (view) {
+				const key = find(view, o => typeof o.commentKey === 'string', [])[0];
 				const p = key && payloads[key.commentKey];
-				if (p) comments.push(p);
+				if (p) comments.push({ p, replies: thread && thread.replies ? firstToken(thread.replies) : null });
 			} else if (item.continuationItemRenderer) {
 				next = firstToken(item.continuationItemRenderer);
 			}
 		}
-		return { comments, next };
+		const sorts = (find(json, o => o.sortFilterSubMenuRenderer, [])[0] || { sortFilterSubMenuRenderer: { subMenuItems: [] } })
+			.sortFilterSubMenuRenderer.subMenuItems.map(i => ({ title: i.title, token: firstToken(i), selected: !!i.selected })).filter(i => i.token);
+		const create = find(json, o => typeof o.createCommentParams === 'string', [])[0];
+		return { comments, next, sorts, createParams: create ? create.createCommentParams : null };
 	}
 
 	function handleOf(name) {
@@ -75,13 +80,18 @@
 	function create(videoId, options) {
 		const seek = options.seek;
 		const root = el('aside', 'ytaq-popup-comments');
-		const head = el('div', 'ytaq-popup-comments-head', 'コメント');
+		const head = el('div', 'ytaq-popup-comments-head');
+		const sortBox = el('div', 'ytaq-popup-comments-sort');
+		head.append(el('span', 'ytaq-popup-comments-title', 'コメント'), sortBox);
+		const writeBox = el('div', 'ytaq-popup-comments-write');
+		writeBox.hidden = true;
 		const list = el('div', 'ytaq-popup-comments-list');
-		root.append(head, list);
+		root.append(head, writeBox, list);
 
 		let next = null;
 		let loading = false;
 		let started = false;
+		let want = { commentReplies: false, commentWrite: false };
 
 		function muted(p) {
 			const a = p.author || {};
@@ -119,6 +129,84 @@
 			return r;
 		}
 
+		function thread(c) {
+			const r = row(c.p);
+			const count = String((c.p.toolbar && c.p.toolbar.replyCount) || '').trim();
+			if (want.commentReplies && c.replies && /[1-9]/.test(count)) {
+				const box = el('div', 'ytaq-popup-comment-replies');
+				box.append(moreButton('返信 ' + count + ' 件', c.replies, box));
+				r.append(box);
+			}
+			return r;
+		}
+
+		function moreButton(label, token, box) {
+			const b = el('button', 'ytaq-popup-comment-more', label);
+			b.type = 'button';
+			b.addEventListener('click', async () => {
+				b.disabled = true;
+				try {
+					const page = parsePage(await IT().call('next', { continuation: token }));
+					b.remove();
+					box.append(...page.comments.map(c => row(c.p)));
+					if (page.next) box.append(moreButton('ほかの返信', page.next, box));
+				} catch (e) {
+					YTaq.warn('popup comments: replies', e.message);
+					b.disabled = false;
+				}
+			});
+			return b;
+		}
+
+		function renderSorts(sorts) {
+			if (sortBox.childElementCount || sorts.length < 2) return;
+			sorts.forEach((s, i) => {
+				const b = el('button', 'ytaq-popup-comments-sort-btn', s.title);
+				b.type = 'button';
+				b.classList.toggle('ytaq-popup-comments-sort-on', s.selected || (i === 0 && !sorts.some(x => x.selected)));
+				b.addEventListener('click', () => {
+					if (b.classList.contains('ytaq-popup-comments-sort-on')) return;
+					for (const x of sortBox.children) x.classList.toggle('ytaq-popup-comments-sort-on', x === b);
+					list.replaceChildren();
+					next = null;
+					note('読み込み中…');
+					load(s.token);
+				});
+				sortBox.append(b);
+			});
+		}
+
+		function renderWrite(params) {
+			if (!want.commentWrite || !params || writeBox.childElementCount) return;
+			const text = el('textarea', 'ytaq-popup-comments-text');
+			text.rows = 2;
+			text.placeholder = 'コメントを書く';
+			const send = el('button', 'ytaq-popup-comments-send', '送信');
+			send.type = 'button';
+			send.disabled = true;
+			const status = el('span', 'ytaq-popup-comments-status');
+			text.addEventListener('input', () => { send.disabled = !text.value.trim(); });
+			send.addEventListener('click', async () => {
+				const body = text.value.trim();
+				if (!body) return;
+				send.disabled = true;
+				status.textContent = '送信中…';
+				try {
+					await IT().call('comment/create_comment', { commentText: body, createCommentParams: params });
+					text.value = '';
+					status.textContent = '送信しました';
+				} catch (e) {
+					YTaq.warn('popup comments: create', e.message);
+					status.textContent = '送信できませんでした';
+					send.disabled = false;
+				}
+			});
+			const row = el('div', 'ytaq-popup-comments-write-row');
+			row.append(status, send);
+			writeBox.append(text, row);
+			writeBox.hidden = false;
+		}
+
 		function note(text) {
 			const n = list.querySelector('.ytaq-popup-comments-note') || el('p', 'ytaq-popup-comments-note');
 			n.textContent = text;
@@ -132,8 +220,10 @@
 				const page = parsePage(await IT().call('next', { continuation: token }));
 				const n = list.querySelector('.ytaq-popup-comments-note');
 				if (n) n.remove();
-				list.append(...page.comments.map(row));
+				list.append(...page.comments.map(thread));
 				next = page.next;
+				renderSorts(page.sorts);
+				renderWrite(page.createParams);
 				if (!list.querySelector('.ytaq-popup-comment')) note('コメントはありません');
 			} catch (e) {
 				YTaq.warn('popup comments', e.message);
@@ -146,6 +236,7 @@
 		async function start() {
 			if (started || !IT()) return;
 			started = true;
+			want = Object.assign(want, await YTaqSettings.get('popupInfo'));
 			note('読み込み中…');
 			try {
 				const json = await IT().call('next', { videoId });

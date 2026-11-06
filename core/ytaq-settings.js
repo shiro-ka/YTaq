@@ -15,7 +15,7 @@
 		antibite: { key: 'ytaq_antibite', value: { thumbnailEnabled: true, thumbnailFrame: 'hq1', shortsVertical: false } },
 		popupInfo: {
 			key: 'ytaq_popup_info',
-			value: { avatar: true, description: true, shortsDescInline: false, date: true, like: true, save: true, subscribe: true, folder: true, views: false, likeCount: false, dislike: false }
+			value: { avatar: true, description: true, shortsDescInline: false, date: true, like: true, save: true, subscribe: true, folder: true, views: false, likeCount: false, dislike: false, commentReplies: false, commentWrite: false }
 		},
 		searchGrid: { key: 'ytaq_search_grid', value: true },
 		watchWide: { key: 'ytaq_watch_wide', value: true },
