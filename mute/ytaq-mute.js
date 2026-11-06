@@ -4,6 +4,7 @@
 	const YTaq = window.YTaq;
 
 	const ATTR = 'data-ytaq-muted';
+	const PENDING_ATTR = 'data-ytaq-mute-pending';
 	const VIDEOS = 'ytd-rich-item-renderer, ytd-video-renderer, ytd-compact-video-renderer, ytd-grid-video-renderer, ' +
 		'ytd-reel-item-renderer, yt-lockup-view-model, ytm-shorts-lockup-view-model, ytm-shorts-lockup-view-model-v2, .ytaq-feed-item';
 	const OUTER = 'ytd-rich-item-renderer, ytd-video-renderer, ytd-compact-video-renderer, ytd-grid-video-renderer, ytd-reel-item-renderer';
@@ -88,10 +89,79 @@
 		return t.getAttribute('title') || original.trim();
 	}
 
+	function shortsOwner(el) {
+		const links = el.querySelectorAll(CHANNEL_LINKS);
+		if (links.length || (el.dataset && el.dataset.channel)) return undefined;
+		const a = el.querySelector('a[href^="/shorts/"]');
+		const m = a && /^\/shorts\/([\w-]{11})/.exec(a.getAttribute('href'));
+		if (!m) return undefined;
+		if (owners.has(m[1])) return owners.get(m[1]);
+		lookup(m[1]);
+		return null;
+	}
+
 	function videoMuted(el) {
+		if (wordMuted(titleOf(el))) return true;
 		const id = el.dataset && el.dataset.channel;
-		if (channelMuted(el.querySelectorAll(CHANNEL_LINKS), id)) return true;
-		return wordMuted(titleOf(el));
+		if (rules.ids.size || rules.handles.size) {
+			const owner = shortsOwner(el);
+			if (owner === null) return PENDING;
+			if (owner) return rules.handles.has(owner) || rules.ids.has(handleIds['/' + owner]);
+		}
+		return channelMuted(el.querySelectorAll(CHANNEL_LINKS), id);
+	}
+
+	const PENDING = 'pending';
+	const OWNERS_KEY = 'ytaq_short_owners';
+	const OWNERS_MAX = 3000;
+	const LOOKUPS_AT_ONCE = 4;
+	const owners = new Map();
+	const queue = [];
+	const asked = new Set();
+	let running = 0;
+	let saveTimer = 0;
+
+	function lookup(videoId) {
+		if (asked.has(videoId)) return;
+		asked.add(videoId);
+		queue.push(videoId);
+		pump();
+	}
+
+	function pump() {
+		while (running < LOOKUPS_AT_ONCE && queue.length) {
+			const videoId = queue.shift();
+			running++;
+			fetchOwner(videoId).then(handle => {
+				owners.set(videoId, handle);
+				saveOwners();
+			}).finally(() => {
+				running--;
+				version++;
+				schedule();
+				pump();
+			});
+		}
+	}
+
+	async function fetchOwner(videoId) {
+		try {
+			const url = 'https://www.youtube.com/oembed?format=json&url=' + encodeURIComponent('https://www.youtube.com/shorts/' + videoId);
+			const res = await fetch(url, { credentials: 'omit' });
+			if (!res.ok) return '';
+			const json = await res.json();
+			return handleOf(new URL(json.author_url).pathname) || '';
+		} catch {
+			return '';
+		}
+	}
+
+	function saveOwners() {
+		clearTimeout(saveTimer);
+		saveTimer = setTimeout(() => {
+			while (owners.size > OWNERS_MAX) owners.delete(owners.keys().next().value);
+			chrome.storage.local.set({ [OWNERS_KEY]: Object.fromEntries(owners) });
+		}, 2000);
 	}
 
 	function commentMuted(el) {
@@ -102,16 +172,16 @@
 		return wordMuted(content && content.textContent);
 	}
 
-	function mark(el, on) {
-		if (on) el.setAttribute(ATTR, '');
-		else el.removeAttribute(ATTR);
+	function mark(el, state) {
+		el.toggleAttribute(ATTR, state === true);
+		el.toggleAttribute(PENDING_ATTR, state === PENDING);
 	}
 
 	function check(el, test, target) {
 		const key = version + '|' + el.textContent.length + '|' + (el.querySelector('a[href]') || {}).href;
 		if (seen.get(el) === key) return;
 		seen.set(el, key);
-		mark(target || el, rules.any && test(el));
+		mark(target || el, rules.any ? test(el) : false);
 	}
 
 	function scanAll() {
@@ -143,6 +213,12 @@
 	}
 
 	YTaqSettings.watch('mute', configure);
+	YTaq.getStorage(OWNERS_KEY, {}).then(v => {
+		for (const [k, h] of Object.entries(v || {})) if (!owners.has(k)) owners.set(k, h);
+		version++;
+		schedule();
+	});
+
 	YTaq.getStorage('ytaq_channel_handles', {}).then(v => {
 		handleIds = v || {};
 		version++;

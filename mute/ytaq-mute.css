@@ -1,3 +1,7 @@
 [data-ytaq-muted] {
   display: none !important;
 }
+
+[data-ytaq-mute-pending] {
+  visibility: hidden;
+}
