@@ -137,6 +137,14 @@
 		openLink.href = `https://www.youtube.com/watch?v=${videoId}`;
 		openLink.target = '_blank';
 		openLink.rel = 'noopener';
+		const openAtNow = e => {
+			if (e.type === 'auxclick' && e.button !== 1) return;
+			const t = Math.floor(playedSeconds());
+			openLink.href = `https://www.youtube.com/watch?v=${videoId}` + (t > 0 ? `&t=${t}s` : '');
+			command(iframe, 'pauseVideo');
+		};
+		openLink.addEventListener('click', openAtNow);
+		openLink.addEventListener('auxclick', openAtNow);
 
 		const rateBox = document.createElement('div');
 		rateBox.className = 'ytaq-popup-rate';
