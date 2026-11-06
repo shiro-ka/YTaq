@@ -232,6 +232,8 @@
 	let allVideos = null;
 	let allRun = 0;
 	let allAt = 0;
+	let allNext = null;
+	let allMoreLoading = false;
 
 	function find(node, test) {
 		if (!node || typeof node !== 'object') return undefined;
@@ -321,6 +323,30 @@
 		return aged.map(a => a.entry);
 	}
 
+	function entriesOf(json) {
+		return [...collect(json, 'lockupViewModel', []).map(fromLockup), ...collect(json, 'shortsLockupViewModel', []).map(fromShort)].filter(Boolean);
+	}
+
+	function lastToken(json) {
+		const conts = collect(json, 'continuationItemRenderer', []);
+		for (let i = conts.length - 1; i >= 0; i--) {
+			const hit = find(conts[i], n => n.continuationCommand && n.continuationCommand.token);
+			if (hit) return hit.continuationCommand.token;
+		}
+		return null;
+	}
+
+	function merge(old, added) {
+		const seenIds = new Set();
+		const out = [];
+		for (const entry of [...old, ...added]) {
+			if (seenIds.has(entry.id)) continue;
+			seenIds.add(entry.id);
+			out.push(entry);
+		}
+		return newestFirst(out);
+	}
+
 	async function loadAll() {
 		if (!window.YTaqInnertube) return;
 		if (allVideos && Date.now() - allAt < REUSE_MS) return;
@@ -328,18 +354,29 @@
 		try {
 			const json = await window.YTaqInnertube.call('browse', { browseId: 'FEsubscriptions' });
 			if (current !== allRun) return;
-			const out = [];
-			const seenIds = new Set();
-			for (const entry of [...collect(json, 'lockupViewModel', []).map(fromLockup), ...collect(json, 'shortsLockupViewModel', []).map(fromShort)]) {
-				if (!entry || seenIds.has(entry.id)) continue;
-				seenIds.add(entry.id);
-				out.push(entry);
-			}
-			allVideos = newestFirst(out);
+			allVideos = merge([], entriesOf(json));
+			allNext = lastToken(json);
 			allAt = Date.now();
 			render();
 		} catch (e) {
 			YTaq.warn('feed: subscriptions', e.message);
+		}
+	}
+
+	async function loadMoreAll() {
+		if (!allNext || allMoreLoading || !window.YTaqInnertube) return;
+		allMoreLoading = true;
+		const run = allRun;
+		try {
+			const json = await window.YTaqInnertube.call('browse', { continuation: allNext });
+			if (run !== allRun) return;
+			allVideos = merge(allVideos || [], entriesOf(json));
+			allNext = lastToken(json);
+			render();
+		} catch (e) {
+			YTaq.warn('feed: subscriptions more', e.message);
+		} finally {
+			allMoreLoading = false;
 		}
 	}
 
@@ -352,6 +389,9 @@
 		const list = el('div', 'ytaq-feed-list');
 		if (videos && videos.length) list.append(...videos.map(e => item(e.id, e.v)));
 		else list.append(el('p', 'ytaq-feed-empty', videos ? '新着はありません' : '読み込み中…'));
+		list.addEventListener('scroll', () => {
+			if (list.scrollTop + list.clientHeight >= list.scrollHeight - 400) loadMoreAll();
+		});
 		col.append(head, list);
 		return col;
 	}
