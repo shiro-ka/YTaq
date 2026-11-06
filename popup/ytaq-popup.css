@@ -78,6 +78,7 @@
 	flex: none;
 }
 
+.ytaq-popup-comment-btn,
 .ytaq-popup-open-original,
 .ytaq-popup-close {
 	background: none;
@@ -94,6 +95,7 @@
 	            color var(--suisou-duration-fast) var(--suisou-ease);
 }
 
+.ytaq-popup-comment-btn .ytaq-icon,
 .ytaq-popup-open-original .ytaq-icon {
 	width: var(--suisou-size-icon);
 	height: var(--suisou-size-icon);
@@ -104,6 +106,7 @@
 	height: var(--suisou-size-icon);
 }
 
+.ytaq-popup-comment-btn:hover,
 .ytaq-popup-open-original:hover,
 .ytaq-popup-close:hover {
 	background: var(--suisou-color-hover);
@@ -503,3 +506,161 @@ html[data-suisou-theme] .ytaq-popup-channel-row .ytaq-folder-btn {
 	font-size: var(--suisou-fs-12);
 }
 
+
+.ytaq-popup-comment-btn-on {
+	background: var(--suisou-color-accent-tint) !important;
+	color: var(--suisou-color-text) !important;
+}
+
+.ytaq-popup-comments {
+	display: none;
+}
+
+.ytaq-popup-content.ytaq-popup-with-comments {
+	display: grid;
+	grid-template-columns: auto 360px;
+	grid-template-areas: "video side" "meta side";
+}
+
+.ytaq-popup-with-comments .ytaq-popup-iframe-container {
+	grid-area: video;
+	width: round(down, min(calc(100vw - 64px - 360px), 1280px, calc((90vh - 170px) * 16 / 9)), 64px);
+}
+
+.ytaq-popup-with-comments .ytaq-popup-meta {
+	grid-area: meta;
+}
+
+.ytaq-popup-with-comments .ytaq-popup-comments {
+	grid-area: side;
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+	contain: size;
+	border-left: 1px solid var(--suisou-color-line-weak);
+}
+
+.ytaq-popup-comments-head {
+	flex: none;
+	padding: var(--suisou-space-2) var(--suisou-space-3);
+	border-bottom: 1px solid var(--suisou-color-line-weak);
+	color: var(--suisou-color-text);
+	font: 700 var(--suisou-fs-14) Roboto, Arial, sans-serif;
+}
+
+.ytaq-popup-comments-list {
+	flex: 1;
+	min-height: 0;
+	overflow-y: auto;
+	scrollbar-width: thin;
+	scrollbar-color: var(--suisou-color-line-strong) transparent;
+	padding: var(--suisou-space-1) 0;
+}
+
+.ytaq-popup-comment {
+	padding: var(--suisou-space-2) var(--suisou-space-3);
+	font: 400 var(--suisou-fs-14)/var(--suisou-lh-14) Roboto, Arial, sans-serif;
+	color: var(--suisou-color-text);
+}
+
+.ytaq-popup-comment[hidden] {
+	display: none;
+}
+
+.ytaq-popup-comment-meta {
+	display: flex;
+	align-items: center;
+	gap: var(--suisou-space-2);
+	color: var(--suisou-color-text-note);
+	font-size: var(--suisou-fs-12);
+}
+
+.ytaq-popup-comment-author {
+	color: var(--suisou-color-text);
+	font-weight: 500;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.ytaq-popup-comment-mute {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 24px;
+	height: 24px;
+	margin-left: auto;
+	padding: 0;
+	border: 0;
+	border-radius: var(--suisou-radius-small);
+	background: transparent;
+	color: var(--suisou-color-text-note);
+	cursor: pointer;
+	visibility: hidden;
+}
+
+.ytaq-popup-comment:hover .ytaq-popup-comment-mute,
+.ytaq-popup-comment-mute:focus-visible {
+	visibility: visible;
+}
+
+.ytaq-popup-comment-mute:hover {
+	background: var(--suisou-color-hover);
+	color: var(--suisou-color-text);
+}
+
+.ytaq-popup-comment-mute .ytaq-icon {
+	width: var(--suisou-size-icon-small);
+	height: var(--suisou-size-icon-small);
+	fill: currentColor;
+}
+
+.ytaq-popup-comment-text {
+	margin-top: var(--suisou-space-1);
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+}
+
+.ytaq-popup-comment-time {
+	padding: 0;
+	border: 0;
+	background: none;
+	color: var(--suisou-color-accent);
+	font: inherit;
+	cursor: pointer;
+}
+
+.ytaq-popup-comment-time:hover {
+	text-decoration: underline;
+}
+
+.ytaq-popup-comment-likes {
+	margin-top: var(--suisou-space-1);
+	color: var(--suisou-color-text-note);
+	font-size: var(--suisou-fs-12);
+}
+
+.ytaq-popup-comments-note {
+	padding: var(--suisou-space-3);
+	color: var(--suisou-color-text-note);
+	font: 400 var(--suisou-fs-14) Roboto, Arial, sans-serif;
+}
+
+@media (max-width: 960px) {
+	.ytaq-popup-content.ytaq-popup-with-comments {
+		grid-template-columns: auto;
+		grid-template-areas: "video" "meta";
+	}
+
+	.ytaq-popup-with-comments .ytaq-popup-iframe-container {
+		width: round(down, min(calc(100vw - 64px), 1280px, calc((90vh - 170px) * 16 / 9)), 64px);
+	}
+
+	.ytaq-popup-with-comments .ytaq-popup-comments {
+		grid-area: video;
+		justify-self: end;
+		z-index: 4;
+		width: min(360px, 100%);
+		background: var(--suisou-color-panel);
+	}
+}

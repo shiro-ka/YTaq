@@ -149,6 +149,31 @@
 		tools.className = 'ytaq-popup-tools';
 		tools.append(openLink, closeBtn);
 
+		let comments = null;
+		if (!isShorts && window.YTaqPopupComments) {
+			const commentBtn = document.createElement('button');
+			commentBtn.className = 'ytaq-popup-comment-btn';
+			commentBtn.append(YTaqIcons.create('chat'));
+			commentBtn.title = 'コメント';
+			commentBtn.setAttribute('aria-label', 'コメント');
+			commentBtn.addEventListener('click', () => {
+				if (!comments) {
+					comments = window.YTaqPopupComments.create(videoId, {
+						seek: seconds => {
+							command(iframe, 'seekTo', [seconds, true]);
+							command(iframe, 'playVideo');
+						},
+						onClose: f => closers.push(f)
+					});
+					content.append(comments.el);
+				}
+				const open = content.classList.toggle('ytaq-popup-with-comments');
+				commentBtn.classList.toggle('ytaq-popup-comment-btn-on', open);
+				if (open) comments.start();
+			});
+			tools.prepend(commentBtn);
+		}
+
 		actions.append(rateBox, tools);
 		bar.append(channelRow, actions);
 		meta.append(head, bar);
