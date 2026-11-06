@@ -267,3 +267,11 @@ html.ytaq-feed-on .ytaq-feed-root {
 .ytaq-feed-menu-confirm {
   color: var(--suisou-color-error);
 }
+
+.ytaq-feed-progress {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  background: oklch(58% 0.24 27);
+}

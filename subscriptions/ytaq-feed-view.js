@@ -55,6 +55,25 @@
 		return '/watch?v=' + id + (resumeOn && resume[id] ? '&t=' + resume[id] + 's' : '');
 	}
 
+	function showResume(a) {
+		const id = a.dataset.video;
+		a.href = watchHref(id);
+		const thumb = a.querySelector('.ytaq-feed-thumb');
+		if (!thumb) return;
+		let bar = thumb.querySelector('.ytaq-feed-progress');
+		const seconds = Number(a.dataset.seconds);
+		const at = resumeOn ? resume[id] : 0;
+		if (!at || !seconds) {
+			if (bar) bar.remove();
+			return;
+		}
+		if (!bar) {
+			bar = el('span', 'ytaq-feed-progress');
+			thumb.append(bar);
+		}
+		bar.style.width = Math.min(100, at / seconds * 100) + '%';
+	}
+
 	function collectResume(node, out) {
 		if (Array.isArray(node)) {
 			for (const n of node) collectResume(n, out);
@@ -75,7 +94,7 @@
 			const out = {};
 			collectResume(json, out);
 			resume = out;
-			for (const a of root.querySelectorAll('a.ytaq-feed-item')) a.href = watchHref(a.dataset.video);
+			for (const a of root.querySelectorAll('a.ytaq-feed-item')) showResume(a);
 		} catch (e) {
 			YTaq.warn('feed: history', e.message);
 		}
@@ -84,8 +103,8 @@
 	function item(id, v) {
 		const d = v.detail || {};
 		const a = el('a', 'ytaq-feed-item');
-		a.href = watchHref(id);
 		a.dataset.video = id;
+		if (d.seconds) a.dataset.seconds = d.seconds;
 		if (v.channel) a.dataset.channel = v.channel;
 
 		const thumb = el('div', 'ytaq-feed-thumb');
@@ -109,6 +128,7 @@
 		body.append(meta);
 
 		a.append(thumb, body);
+		showResume(a);
 		return a;
 	}
 
@@ -291,7 +311,7 @@
 	YTaqSettings.watch('popupResume', v => {
 		resumeOn = !!v;
 		if (resumeOn && onPage() && !native) loadResume();
-		for (const a of root.querySelectorAll('a.ytaq-feed-item')) a.href = watchHref(a.dataset.video);
+		for (const a of root.querySelectorAll('a.ytaq-feed-item')) showResume(a);
 	});
 
 	YTaqSettings.watch('feedShorts', v => {
