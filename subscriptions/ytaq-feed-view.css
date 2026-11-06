@@ -37,7 +37,8 @@ html.ytaq-feed-on .ytaq-feed-root {
 
 .ytaq-feed-column-head {
   display: flex;
-  align-items: baseline;
+  align-items: center;
+  min-height: var(--suisou-size-button);
   justify-content: space-between;
   gap: var(--suisou-space-2);
   padding: var(--suisou-space-3) var(--suisou-space-3) var(--suisou-space-2);

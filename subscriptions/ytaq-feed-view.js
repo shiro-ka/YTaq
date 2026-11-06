@@ -117,13 +117,13 @@
 
 		const body = el('div', 'ytaq-feed-body');
 		body.append(el('span', 'ytaq-feed-title', v.title));
-		const name = (folders.channels[v.channel] || {}).name;
+		const name = v.channelName || (folders.channels[v.channel] || {}).name;
 		if (name) body.append(el('span', 'ytaq-feed-channel', name));
 
 		const meta = el('span', 'ytaq-feed-meta');
 		if (d.upcoming) meta.append(el('span', 'ytaq-feed-badge ytaq-feed-badge-upcoming', '配信予定'), document.createTextNode(dtf.format(d.published || v.published)));
 		else if (d.liveNow) meta.append(el('span', 'ytaq-feed-badge ytaq-feed-badge-live', 'ライブ'));
-		else meta.append(document.createTextNode(ago(v.published)));
+		else meta.append(document.createTextNode(v.agoText || ago(v.published)));
 		if (d.short) meta.append(el('span', 'ytaq-feed-badge', 'Shorts'));
 		body.append(meta);
 
@@ -201,6 +201,104 @@
 		return wrap;
 	}
 
+	const ALL_ID = 'ytaq-all';
+	let allVideos = null;
+	let allRun = 0;
+
+	function find(node, test) {
+		if (!node || typeof node !== 'object') return undefined;
+		if (test(node)) return node;
+		for (const k in node) {
+			const hit = find(node[k], test);
+			if (hit !== undefined) return hit;
+		}
+		return undefined;
+	}
+
+	function collect(node, key, out) {
+		if (Array.isArray(node)) {
+			for (const n of node) collect(n, key, out);
+			return out;
+		}
+		if (!node || typeof node !== 'object') return out;
+		if (node[key]) out.push(node[key]);
+		for (const k in node) if (k !== key) collect(node[k], key, out);
+		return out;
+	}
+
+	function parseSeconds(text) {
+		if (!/^\d+(:\d{2}){1,2}$/.test(text || '')) return 0;
+		return text.split(':').reduce((sum, n) => sum * 60 + Number(n), 0);
+	}
+
+	function fromLockup(l) {
+		if (!l.contentId || (l.contentType && l.contentType !== 'LOCKUP_CONTENT_TYPE_VIDEO')) return null;
+		const meta = l.metadata && l.metadata.lockupMetadataViewModel;
+		if (!meta) return null;
+		const rows = find(meta, n => Array.isArray(n.metadataRows));
+		const parts = rows ? rows.metadataRows.map(r => (r.metadataParts || []).map(p => p.text && p.text.content).filter(Boolean)) : [];
+		const badge = find(l.contentImage, n => n.thumbnailBadgeViewModel);
+		const b = badge ? badge.thumbnailBadgeViewModel : {};
+		const channel = find(meta, n => typeof n.browseId === 'string' && n.browseId.startsWith('UC'));
+		const last = parts.length > 1 ? parts[parts.length - 1] : [];
+		return {
+			id: l.contentId,
+			v: {
+				title: meta.title && meta.title.content || '',
+				channel: channel ? channel.browseId : null,
+				channelName: parts[0] && parts[0][0] || '',
+				agoText: last[last.length - 1] || '',
+				detail: {
+					seconds: parseSeconds(b.text),
+					liveNow: /LIVE/.test(b.badgeStyle || ''),
+					upcoming: /UPCOMING/.test(b.badgeStyle || ''),
+					short: false
+				}
+			}
+		};
+	}
+
+	function fromShort(sh) {
+		const w = find(sh, n => n.reelWatchEndpoint);
+		const id = w && w.reelWatchEndpoint.videoId;
+		if (!id) return null;
+		const title = find(sh, n => n.primaryText && n.primaryText.content);
+		return { id, v: { title: title ? title.primaryText.content : '', channel: null, channelName: '', agoText: '', detail: { seconds: 0, short: true } } };
+	}
+
+	async function loadAll() {
+		if (!window.YTaqInnertube) return;
+		const current = ++allRun;
+		try {
+			const json = await window.YTaqInnertube.call('browse', { browseId: 'FEsubscriptions' });
+			if (current !== allRun) return;
+			const out = [];
+			const seenIds = new Set();
+			for (const entry of [...collect(json, 'lockupViewModel', []).map(fromLockup), ...collect(json, 'shortsLockupViewModel', []).map(fromShort)]) {
+				if (!entry || seenIds.has(entry.id)) continue;
+				seenIds.add(entry.id);
+				out.push(entry);
+			}
+			allVideos = out;
+			render();
+		} catch (e) {
+			YTaq.warn('feed: subscriptions', e.message);
+		}
+	}
+
+	function allColumn() {
+		const col = el('section', 'ytaq-feed-column');
+		col.dataset.folder = ALL_ID;
+		const head = el('header', 'ytaq-feed-column-head');
+		const videos = allVideos ? allVideos.filter(e => visible(e.v)) : null;
+		head.append(el('span', 'ytaq-feed-column-name', '登録チャンネル'), el('span', 'ytaq-feed-column-count', videos ? videos.length + ' 本' : ''));
+		const list = el('div', 'ytaq-feed-list');
+		if (videos && videos.length) list.append(...videos.map(e => item(e.id, e.v)));
+		else list.append(el('p', 'ytaq-feed-empty', videos ? '新着はありません' : '読み込み中…'));
+		col.append(head, list);
+		return col;
+	}
+
 	function column(folder) {
 		const col = el('section', 'ytaq-feed-column');
 		col.dataset.folder = folder.id;
@@ -262,13 +360,10 @@
 			const l = c.querySelector('.ytaq-feed-list');
 			if (l) scrollY[c.dataset.folder] = l.scrollTop;
 		}
-		if (!folders.folders.length) {
-			root.replaceChildren(el('p', 'ytaq-feed-empty', 'フォルダがありません。チャンネルのページや動画の下のフォルダのボタンから作れます。'));
-			return;
-		}
 		const cols = el('div', 'ytaq-feed-columns');
-		cols.append(...folders.folders.map(column));
+		cols.append(allColumn(), ...folders.folders.map(column));
 		root.replaceChildren(cols);
+		if (!folders.folders.length) root.append(el('p', 'ytaq-feed-empty', 'フォルダはチャンネルのページや動画の下のフォルダのボタンから作れます。'));
 		cols.scrollLeft = scrollX;
 		for (const c of cols.querySelectorAll('.ytaq-feed-column')) {
 			const y = scrollY[c.dataset.folder];
@@ -305,6 +400,7 @@
 		if (!native) {
 			chrome.runtime.sendMessage({ type: 'ytaq-feed-refresh' });
 			loadResume();
+			loadAll();
 		}
 	}
 
