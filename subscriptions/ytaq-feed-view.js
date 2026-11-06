@@ -241,17 +241,21 @@
 		const b = badge ? badge.thumbnailBadgeViewModel : {};
 		const channel = find(meta, n => typeof n.browseId === 'string' && n.browseId.startsWith('UC'));
 		const last = parts.length > 1 ? parts[parts.length - 1] : [];
+		const agoText = last[last.length - 1] || '';
+		const when = /(\d{4})\/(\d{1,2})\/(\d{1,2})\s+(\d{1,2}):(\d{2})/.exec(agoText);
+		const upcoming = /UPCOMING/.test(b.badgeStyle || '') || b.text === '配信予定' || /予定/.test(agoText);
 		return {
 			id: l.contentId,
 			v: {
 				title: meta.title && meta.title.content || '',
 				channel: channel ? channel.browseId : null,
 				channelName: parts[0] && parts[0][0] || '',
-				agoText: last[last.length - 1] || '',
+				agoText,
 				detail: {
 					seconds: parseSeconds(b.text),
 					liveNow: /LIVE/.test(b.badgeStyle || ''),
-					upcoming: /UPCOMING/.test(b.badgeStyle || ''),
+					upcoming,
+					published: when ? new Date(+when[1], when[2] - 1, +when[3], +when[4], +when[5]).getTime() : undefined,
 					short: false
 				}
 			}
@@ -264,6 +268,29 @@
 		if (!id) return null;
 		const title = find(sh, n => n.primaryText && n.primaryText.content);
 		return { id, v: { title: title ? title.primaryText.content : '', channel: null, channelName: '', agoText: '', detail: { seconds: 0, short: true } } };
+	}
+
+	const AGE_UNITS = { 秒: 1e3, 分: 6e4, 時間: 36e5, 日: 864e5, 週間: 6048e5, か月: 2592e6, ヶ月: 2592e6, 年: 31536e6 };
+
+	function ageOf(entry) {
+		const known = feed && feed.videos[entry.id];
+		if (known && known.published) return Date.now() - known.published;
+		const d = entry.v.detail;
+		if (d.upcoming) return d.published ? Date.now() - d.published : -1;
+		if (d.liveNow) return -1;
+		const m = /(\d+)\s*(秒|分|時間|日|週間|か月|ヶ月|年)前/.exec(entry.v.agoText || '');
+		return m ? Number(m[1]) * AGE_UNITS[m[2]] : null;
+	}
+
+	function newestFirst(entries) {
+		let last = -1;
+		const aged = entries.map((entry, index) => {
+			const age = ageOf(entry);
+			if (age !== null) last = age;
+			return { entry, index, age: age === null ? last : age };
+		});
+		aged.sort((a, b) => a.age - b.age || a.index - b.index);
+		return aged.map(a => a.entry);
 	}
 
 	async function loadAll() {
@@ -279,7 +306,7 @@
 				seenIds.add(entry.id);
 				out.push(entry);
 			}
-			allVideos = out;
+			allVideos = newestFirst(out);
 			render();
 		} catch (e) {
 			YTaq.warn('feed: subscriptions', e.message);

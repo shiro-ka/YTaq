@@ -118,6 +118,8 @@
 						clientVersion: cfg.clientVersion,
 						hl: cfg.hl,
 						gl: cfg.gl,
+						timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+						utcOffsetMinutes: -new Date().getTimezoneOffset(),
 						visitorData: cfg.visitorData || undefined
 					}
 				}
