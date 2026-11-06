@@ -91,11 +91,11 @@
 		return t.getAttribute('title') || original.trim();
 	}
 
-	function shortsOwner(el) {
+	function linklessOwner(el) {
 		const links = el.querySelectorAll(CHANNEL_LINKS);
 		if (links.length || (el.dataset && el.dataset.channel)) return undefined;
-		const a = el.querySelector('a[href^="/shorts/"]');
-		const m = a && /^\/shorts\/([\w-]{11})/.exec(a.getAttribute('href'));
+		const a = el.querySelector('a[href^="/shorts/"], a[href^="/watch?v="]');
+		const m = a && /^\/(?:shorts\/|watch\?v=)([\w-]{11})/.exec(a.getAttribute('href'));
 		if (!m) return undefined;
 		if (owners.has(m[1])) return owners.get(m[1]);
 		lookup(m[1]);
@@ -106,7 +106,7 @@
 		if (wordMuted(titleOf(el))) return true;
 		const id = el.dataset && el.dataset.channel;
 		if (rules.ids.size || rules.handles.size) {
-			const owner = shortsOwner(el);
+			const owner = linklessOwner(el);
 			if (owner === null) return PENDING;
 			if (owner) return rules.handles.has(owner) || rules.ids.has(handleIds['/' + owner]);
 		}
@@ -148,7 +148,7 @@
 
 	async function fetchOwner(videoId) {
 		try {
-			const url = 'https://www.youtube.com/oembed?format=json&url=' + encodeURIComponent('https://www.youtube.com/shorts/' + videoId);
+			const url = 'https://www.youtube.com/oembed?format=json&url=' + encodeURIComponent('https://www.youtube.com/watch?v=' + videoId);
 			const res = await fetch(url, { credentials: 'omit' });
 			if (!res.ok) return '';
 			const json = await res.json();
