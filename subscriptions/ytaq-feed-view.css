@@ -156,9 +156,7 @@ html.ytaq-feed-on .ytaq-feed-root {
 }
 
 .ytaq-feed-empty {
-  flex: 0 0 240px;
-  align-self: flex-start;
-  margin: var(--ytaq-space-3) 0 0;
+  margin: var(--ytaq-space-3);
   color: var(--ytaq-color-text-note);
   font-size: var(--ytaq-fs-14);
 }
