@@ -459,8 +459,8 @@
 		}
 		const cols = el('div', 'ytaq-feed-columns');
 		cols.append(allColumn(), ...folders.folders.map(column));
+		if (!folders.folders.length) cols.append(el('p', 'ytaq-feed-empty', 'フォルダはチャンネルのページや動画の下のフォルダのボタンから作れます。'));
 		root.replaceChildren(cols);
-		if (!folders.folders.length) root.append(el('p', 'ytaq-feed-empty', 'フォルダはチャンネルのページや動画の下のフォルダのボタンから作れます。'));
 		cols.scrollLeft = scrollX;
 		for (const c of cols.querySelectorAll('.ytaq-feed-column')) {
 			const y = scrollY[c.dataset.folder];
