@@ -10,6 +10,9 @@
 	let native = false;
 	let folders = { folders: [], channels: {} };
 	let feed = null;
+	let resume = {};
+	let resumeOn = YTaqSettings.defaults('popupResume');
+	let resumeRun = 0;
 
 	const root = document.createElement('div');
 	root.className = 'ytaq-feed-root';
@@ -48,10 +51,41 @@
 		return e;
 	}
 
+	function watchHref(id) {
+		return '/watch?v=' + id + (resumeOn && resume[id] ? '&t=' + resume[id] + 's' : '');
+	}
+
+	function collectResume(node, out) {
+		if (Array.isArray(node)) {
+			for (const n of node) collectResume(n, out);
+			return;
+		}
+		if (!node || typeof node !== 'object') return;
+		const w = node.watchEndpoint;
+		if (w && w.videoId && w.startTimeSeconds > 0 && !(w.videoId in out)) out[w.videoId] = w.startTimeSeconds;
+		for (const k in node) collectResume(node[k], out);
+	}
+
+	async function loadResume() {
+		if (!resumeOn || !window.YTaqInnertube) return;
+		const current = ++resumeRun;
+		try {
+			const json = await window.YTaqInnertube.call('browse', { browseId: 'FEhistory' });
+			if (current !== resumeRun) return;
+			const out = {};
+			collectResume(json, out);
+			resume = out;
+			for (const a of root.querySelectorAll('a.ytaq-feed-item')) a.href = watchHref(a.dataset.video);
+		} catch (e) {
+			YTaq.warn('feed: history', e.message);
+		}
+	}
+
 	function item(id, v) {
 		const d = v.detail || {};
 		const a = el('a', 'ytaq-feed-item');
-		a.href = '/watch?v=' + id;
+		a.href = watchHref(id);
+		a.dataset.video = id;
 
 		const thumb = el('div', 'ytaq-feed-thumb');
 		const img = el('img');
@@ -247,8 +281,17 @@
 		if (manager && root.parentElement !== manager) manager.appendChild(root);
 		if (toggle.parentElement !== document.body) document.body.appendChild(toggle);
 		toggle.textContent = native ? 'フォルダの新着に戻る' : 'YouTube の一覧を見る';
-		if (!native) chrome.runtime.sendMessage({ type: 'ytaq-feed-refresh' });
+		if (!native) {
+			chrome.runtime.sendMessage({ type: 'ytaq-feed-refresh' });
+			loadResume();
+		}
 	}
+
+	YTaqSettings.watch('popupResume', v => {
+		resumeOn = !!v;
+		if (resumeOn && onPage() && !native) loadResume();
+		for (const a of root.querySelectorAll('a.ytaq-feed-item')) a.href = watchHref(a.dataset.video);
+	});
 
 	YTaqSettings.watch('feedShorts', v => {
 		withShorts = !!v;
