@@ -25,6 +25,7 @@
 		watchDescBelow: { key: 'ytaq_watch_desc_below', value: true },
 		watchCloseReplay: { key: 'ytaq_watch_close_replay', value: true },
 		feedShorts: { key: 'ytaq_feed_shorts', value: false },
+		mute: { key: 'ytaq_mute', value: { words: [], channels: [], commentWords: false } },
 		titleClean: {
 			key: 'ytaq_title_clean',
 			value: {

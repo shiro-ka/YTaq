@@ -86,6 +86,7 @@
 		const a = el('a', 'ytaq-feed-item');
 		a.href = watchHref(id);
 		a.dataset.video = id;
+		if (v.channel) a.dataset.channel = v.channel;
 
 		const thumb = el('div', 'ytaq-feed-thumb');
 		const img = el('img');

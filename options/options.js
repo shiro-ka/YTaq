@@ -204,6 +204,54 @@
 			}
 		},
 
+		mute: {
+			names: ['mute'],
+			channels: [],
+			renderChannels() {
+				const box = $('mute', 'muteChannels');
+				if (!this.channels.length) {
+					const p = document.createElement('p');
+					p.setAttribute('data-suisou', 'note');
+					p.textContent = 'ミュートしたチャンネルはありません。';
+					box.replaceChildren(p);
+					return;
+				}
+				box.replaceChildren(...this.channels.map((c, i) => {
+					const row = document.createElement('div');
+					row.setAttribute('data-suisou-layout', 'row');
+					const name = document.createElement('span');
+					name.textContent = c.name || c.handle || c.id;
+					const sub = document.createElement('span');
+					sub.setAttribute('data-suisou', 'note');
+					sub.textContent = c.handle || c.id || '';
+					row.append(name, sub, button('解除', { 'data-suisou-button': 'outline' }, () => {
+						this.channels.splice(i, 1);
+						this.renderChannels();
+					}));
+					return row;
+				}));
+			},
+			render(v) {
+				$('mute', 'words').value = v.mute.words.join('\n');
+				$('mute', 'commentWords').checked = !!v.mute.commentWords;
+				this.channels = (v.mute.channels || []).slice();
+				this.renderChannels();
+			},
+			collect() {
+				const words = $('mute', 'words').value.split('\n').map(w => w.trim()).filter(Boolean);
+				for (const w of words) {
+					const m = /^\/(.+)\/([a-z]*)$/.exec(w);
+					if (!m) continue;
+					try {
+						new RegExp(m[1], m[2]);
+					} catch (e) {
+						return '正規表現が正しくありません: ' + w;
+					}
+				}
+				return { mute: { words, channels: this.channels, commentWords: $('mute', 'commentWords').checked } };
+			}
+		},
+
 		playbackrate: {
 			names: ['playbackrate'],
 			render(v) {

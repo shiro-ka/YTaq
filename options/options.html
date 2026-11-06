@@ -17,6 +17,7 @@
     <button class="ytaq-nav" value="antibite" data-suisou-button="block">Antibite</button>
     <button class="ytaq-nav" value="playbackrate" data-suisou-button="block">Playbackrate</button>
     <button class="ytaq-nav" value="folders" data-suisou-button="block">フォルダ</button>
+    <button class="ytaq-nav" value="mute" data-suisou-button="block">ミュート</button>
   </nav>
 
   <main data-suisou="container-m">
@@ -235,6 +236,24 @@
       <label><input type="checkbox" class="ytaq-feed-shorts"> フォルダの新着に Shorts も出す</label>
       <p data-suisou="note" data-suisou-text="fs-12">オフのときは、チャンネルのショートのタブを読まないので、新着の取得が軽くなります。</p>
       <div class="ytaq-folders" data-suisou-layout="stack"></div>
+    </section>
+
+    <section class="ytaq-section ytaq-section-mute" data-suisou-layout="stack" hidden>
+      <h2 data-suisou-text="fs-24 fw-700">ミュート</h2>
+      <label data-suisou-layout="stack">
+        単語（1行に1つ。/…/ で囲むと正規表現）
+        <textarea class="ytaq-words" rows="8" data-suisou="w-full"></textarea>
+      </label>
+      <p data-suisou="note" data-suisou-text="fs-12">動画のタイトルに含まれていたら隠します。全角と半角、大文字と小文字は区別しません。</p>
+      <label><input type="checkbox" class="ytaq-commentWords"> 単語ミュートをコメントにもかける</label>
+      <h3 data-suisou="mt-3" data-suisou-text="fs-16 fw-700">チャンネル</h3>
+      <p data-suisou="note" data-suisou-text="fs-12">動画とコメントを隠します。チャンネルのページでは隠しません。</p>
+      <div class="ytaq-muteChannels" data-suisou-layout="stack"></div>
+      <div data-suisou-layout="row" data-suisou="mt-3">
+        <button class="ytaq-save" data-suisou="accent" data-suisou-button="outline">保存</button>
+        <button class="ytaq-reset" data-suisou-button="outline">デフォルトに戻す</button>
+      </div>
+      <div class="ytaq-message"></div>
     </section>
 
     <section class="ytaq-section ytaq-section-channels" data-suisou-layout="stack">

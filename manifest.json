@@ -61,7 +61,8 @@
         "watch/ytaq-watch.js",
         "rate/ytaq-rate-manager.js",
         "rate/ytaq-rate-ui.js",
-        "title/ytaq-title.js"
+        "title/ytaq-title.js",
+        "mute/ytaq-mute.js"
       ],
       "css": [
         "suisou-palette.css",
@@ -74,7 +75,8 @@
         "watch/ytaq-watch.css",
         "subscriptions/ytaq-feed-view.css",
         "folder/ytaq-folder.css",
-        "rate/ytaq-rate-manager.css"
+        "rate/ytaq-rate-manager.css",
+        "mute/ytaq-mute.css"
       ],
       "all_frames": false,
       "run_at": "document_start"

@@ -2,7 +2,7 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
-css_files=$(ls ytaq-style.css perf/ytaq-perf.css popup/*.css home/*.css watch/*.css subscriptions/*.css folder/*.css rate/*.css)
+css_files=$(ls ytaq-style.css perf/ytaq-perf.css popup/*.css home/*.css watch/*.css subscriptions/*.css folder/*.css rate/*.css mute/*.css)
 
 missing=0
 for v in $(grep -ho 'var(--suisou-[a-z0-9-]*' $css_files | sed 's/var(//' | sort -u); do
@@ -18,7 +18,7 @@ fi
 
 rm -f YTaq.xpi
 targets="manifest.json content.js suisou-palette.css ytaq-variables.css ytaq-style.css \
-  core theme perf background popup home watch rate title folder subscriptions options icons"
+  core theme perf background popup home watch rate title folder subscriptions mute options icons"
 if command -v zip >/dev/null; then
   zip -r -FS YTaq.xpi $targets -x '*.DS_Store' -x 'perf/measure.js' >/dev/null
 else
