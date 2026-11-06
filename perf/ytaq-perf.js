@@ -6,6 +6,7 @@
 		lazyOffscreen: 'ytaq-lazy-offscreen',
 		ambient: 'ytaq-no-ambient',
 		animations: 'ytaq-no-anim',
+		hideHomeShorts: 'ytaq-no-home-shorts',
 		hideShorts: 'ytaq-no-shorts'
 	};
 

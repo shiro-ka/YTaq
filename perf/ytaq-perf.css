@@ -41,6 +41,7 @@ html.ytaq-no-ambient #cinematics-container {
 	display: none !important;
 }
 
+html.ytaq-no-home-shorts ytd-two-column-browse-results-renderer[page-subtype="home"] ytd-rich-section-renderer:has(ytd-rich-shelf-renderer[is-shorts]),
 html.ytaq-no-shorts ytd-rich-shelf-renderer[is-shorts],
 html.ytaq-no-shorts ytd-reel-shelf-renderer,
 html.ytaq-no-shorts ytm-shorts-lockup-view-model,

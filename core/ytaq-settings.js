@@ -6,7 +6,7 @@
 		customCss: { key: 'ytaq_custom_css', value: '' },
 		perf: {
 			key: 'ytaq_perf',
-			value: { hoverPreview: true, lazyOffscreen: false, ambient: true, animations: false, hideShorts: false }
+			value: { hoverPreview: true, lazyOffscreen: false, ambient: true, animations: false, hideHomeShorts: true, hideShorts: false }
 		},
 		click: { key: 'ytaq_click', value: 'popup' },
 		embedReferer: { key: 'ytaq_embed_referer', value: 'https://example.com/' },

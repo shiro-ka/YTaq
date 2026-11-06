@@ -168,8 +168,11 @@
       <label><input type="checkbox" class="ytaq-perf-animations"> アニメーション/トランジションを止める</label>
 
       <h3 data-ytaq="mt-3" data-ytaq-text="fs-16 fw-700">Shorts</h3>
-      <p>Shorts の列は複数の video を同時に抱えます。好みが分かれるので既定は OFF。</p>
-      <label><input type="checkbox" class="ytaq-perf-hideShorts"> Shorts の列を隠す</label>
+      <p>Shorts の列は複数の video を同時に抱えます。ホームの列は既定で隠します。検索やサイドバーも含めて隠すかは好みが分かれるので既定は OFF。</p>
+      <div data-ytaq-layout="row wrap">
+        <label><input type="checkbox" class="ytaq-perf-hideHomeShorts"> ホームの Shorts の列を隠す</label>
+        <label><input type="checkbox" class="ytaq-perf-hideShorts"> すべての Shorts の列を隠す</label>
+      </div>
 
       <div data-ytaq-layout="row" data-ytaq="mt-3">
         <button class="ytaq-save" data-ytaq="accent" data-ytaq-button="outline">保存</button>
