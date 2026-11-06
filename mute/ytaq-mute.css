@@ -9,7 +9,7 @@
 .ytaq-mute-row {
   display: flex;
   align-items: center;
-  gap: var(--suisou-space-3);
+  gap: 12px;
   min-height: 40px;
   padding: 0 var(--suisou-space-3);
   color: var(--suisou-color-text);
