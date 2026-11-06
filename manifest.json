@@ -43,6 +43,7 @@
       ],
       "js": [
         "core/ytaq-settings.js",
+        "core/ytaq-color.js",
         "theme/ytaq-theme.js",
         "core/ytaq-core.js",
         "core/ytaq-innertube.js",

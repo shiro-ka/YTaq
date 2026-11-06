@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>YTaq Setting</title>
   <link rel="stylesheet" href="ytaq-ui.css">
+  <link rel="stylesheet" href="options.css">
 </head>
 <body data-ytaq-body="shell doc">
   <header data-ytaq="p-3">
@@ -28,10 +29,19 @@
         テーマ
         <select class="ytaq-theme-name"></select>
       </label>
+      <label data-ytaq-layout="stack" hidden>
+        テーマの色相
+        <input type="range" class="ytaq-primary-hue ytaq-hue" min="0" max="359" step="1">
+      </label>
       <label data-ytaq-layout="stack">
         アクセント
         <select class="ytaq-theme-accent"></select>
       </label>
+      <label data-ytaq-layout="stack" hidden>
+        アクセントの色相
+        <input type="range" class="ytaq-accent-hue ytaq-hue" min="0" max="359" step="1">
+      </label>
+      <p class="ytaq-accent-note" data-ytaq="note" hidden></p>
       <label><input type="checkbox" class="ytaq-searchGrid"> 検索結果を縦のカードで並べる</label>
       <label><input type="checkbox" class="ytaq-watchWide"> 動画のページで動画を全幅にする</label>
       <label><input type="checkbox" class="ytaq-watchFitInfo"> タイトルとボタンまで画面に収まる大きさにする</label>
@@ -39,6 +49,10 @@
       <label><input type="checkbox" class="ytaq-watchRelated"> 関連動画を出す</label>
       <label><input type="checkbox" class="ytaq-watchDescBelow"> 関連動画を出さないときは、固定した動画の下に概要を出す</label>
       <label><input type="checkbox" class="ytaq-watchCloseReplay"> 配信アーカイブのチャットを自動で閉じる</label>
+      <label data-ytaq-layout="stack">
+        カスタム CSS
+        <textarea class="ytaq-customCss" rows="6" data-ytaq="w-full" spellcheck="false" placeholder="html { --ytaq-color-bg: oklch(18% 0.05 150); }"></textarea>
+      </label>
       <div data-ytaq-layout="row" data-ytaq="mt-3">
         <button class="ytaq-save" data-ytaq="accent" data-ytaq-button="outline">保存</button>
         <button class="ytaq-reset" data-ytaq-button="outline">デフォルトに戻す</button>
@@ -295,6 +309,7 @@
   </main>
 
   <script src="../core/ytaq-settings.js"></script>
+  <script src="../core/ytaq-color.js"></script>
   <script src="../folder/ytaq-folder-store.js"></script>
   <script src="../core/ytaq-channels.js"></script>
   <script src="options.js"></script>

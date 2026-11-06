@@ -2,7 +2,8 @@
 	'use strict';
 
 	const TABLE = {
-		theme: { key: 'ytaq_theme', value: { theme: 'trench', accent: 'blue' } },
+		theme: { key: 'ytaq_theme', value: { theme: 'trench', accent: 'blue', primaryHue: 270, accentHue: 255 } },
+		customCss: { key: 'ytaq_custom_css', value: '' },
 		perf: {
 			key: 'ytaq_perf',
 			value: { hoverPreview: true, lazyOffscreen: false, ambient: true, animations: false, hideShorts: false }

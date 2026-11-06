@@ -12,7 +12,15 @@
 	}
 
 	function applyTheme(t) {
-		document.documentElement.setAttribute('data-ytaq-theme', t.theme + ' ' + t.accent);
+		YTaqColor.apply(document.documentElement, t);
+	}
+
+	const SEMANTIC_NAMES = { error: 'エラー', warning: '注意', success: '成功' };
+
+	function hueBand(colorAt) {
+		const stops = [];
+		for (let h = 0; h <= 360; h += 15) stops.push(colorAt(h % 360));
+		return `linear-gradient(to right, ${stops.join(', ')})`;
 	}
 
 	async function loadPalette() {
@@ -23,14 +31,15 @@
 		return map;
 	}
 
-	function fillSelect(select, values, selected) {
-		select.replaceChildren(...values.map(v => {
+	function fillSelect(select, values, selected, custom) {
+		const all = custom ? [...values, 'custom'] : values;
+		select.replaceChildren(...all.map(v => {
 			const option = document.createElement('option');
 			option.value = v;
-			option.textContent = v;
+			option.textContent = v === 'custom' ? 'カスタム' : v;
 			return option;
 		}));
-		select.value = values.includes(selected) ? selected : values[0];
+		select.value = all.includes(selected) ? selected : all[0];
 	}
 
 	let palette = new Map();
@@ -76,21 +85,46 @@
 
 	const SECTIONS = {
 		theme: {
-			names: ['theme', 'searchGrid', 'watchWide', 'watchFitInfo', 'watchSide', 'watchRelated', 'watchDescBelow', 'watchCloseReplay'],
+			names: ['theme', 'customCss', 'searchGrid', 'watchWide', 'watchFitInfo', 'watchSide', 'watchRelated', 'watchDescBelow', 'watchCloseReplay'],
 			async init() {
 				palette = await loadPalette();
 				const name = $('theme', 'theme-name');
 				const accent = $('theme', 'theme-accent');
+				const update = () => {
+					const t = this.collect().theme;
+					applyTheme(t);
+					this.sliders(t);
+				};
 				name.addEventListener('change', () => {
-					fillSelect(accent, palette.get(name.value) || [], accent.value);
-					applyTheme(this.collect().theme);
+					fillSelect(accent, this.accents(name.value), accent.value, true);
+					update();
 				});
-				accent.addEventListener('change', () => applyTheme(this.collect().theme));
+				accent.addEventListener('change', update);
+				$('theme', 'primary-hue').addEventListener('input', update);
+				$('theme', 'accent-hue').addEventListener('input', update);
+			},
+			accents(theme) {
+				return palette.get(theme === 'custom' ? YTaqColor.CUSTOM_BASE : theme) || [];
+			},
+			sliders(t) {
+				const primary = $('theme', 'primary-hue');
+				const accent = $('theme', 'accent-hue');
+				primary.closest('label').hidden = t.theme !== 'custom';
+				accent.closest('label').hidden = t.accent !== 'custom';
+				primary.style.background = hueBand(h => YTaqColor.primarySwatch(h));
+				accent.style.background = hueBand(h => YTaqColor.accentSwatch(t, h));
+				const near = YTaqColor.nearSemantic(t);
+				const note = $('theme', 'accent-note');
+				note.hidden = !near;
+				note.textContent = near ? `${SEMANTIC_NAMES[near]}の色と見分けにくい色です` : '';
 			},
 			render(v) {
 				const name = $('theme', 'theme-name');
-				fillSelect(name, [...palette.keys()], v.theme.theme);
-				fillSelect($('theme', 'theme-accent'), palette.get(name.value) || [], v.theme.accent);
+				fillSelect(name, [...palette.keys()], v.theme.theme, true);
+				fillSelect($('theme', 'theme-accent'), this.accents(name.value), v.theme.accent, true);
+				$('theme', 'primary-hue').value = v.theme.primaryHue;
+				$('theme', 'accent-hue').value = v.theme.accentHue;
+				$('theme', 'customCss').value = v.customCss || '';
 				$('theme', 'searchGrid').checked = !!v.searchGrid;
 				$('theme', 'watchWide').checked = !!v.watchWide;
 				$('theme', 'watchFitInfo').checked = !!v.watchFitInfo;
@@ -98,11 +132,19 @@
 				$('theme', 'watchRelated').checked = !!v.watchRelated;
 				$('theme', 'watchDescBelow').checked = !!v.watchDescBelow;
 				$('theme', 'watchCloseReplay').checked = !!v.watchCloseReplay;
-				applyTheme(this.collect().theme);
+				const t = this.collect().theme;
+				applyTheme(t);
+				this.sliders(t);
 			},
 			collect() {
 				return {
-					theme: { theme: $('theme', 'theme-name').value, accent: $('theme', 'theme-accent').value },
+					theme: {
+						theme: $('theme', 'theme-name').value,
+						accent: $('theme', 'theme-accent').value,
+						primaryHue: Number($('theme', 'primary-hue').value),
+						accentHue: Number($('theme', 'accent-hue').value)
+					},
+					customCss: $('theme', 'customCss').value,
 					searchGrid: $('theme', 'searchGrid').checked,
 					watchWide: $('theme', 'watchWide').checked,
 					watchFitInfo: $('theme', 'watchFitInfo').checked,

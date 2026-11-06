@@ -1,3 +1,4 @@
+@layer ytaq-base {
 [data-ytaq-theme] {
   --ytaq-color-hover: oklch(55.00% 0.0000 0 / 0.1);
   --ytaq-color-line-weak: oklch(100.00% 0.0000 0 / 0.15);
@@ -265,4 +266,4 @@
   --ytaq-color-accent: oklch(80.00% 0.0779 355);
   --ytaq-color-accent-tint: oklch(44.00% 0.0500 355);
 }
-
+}

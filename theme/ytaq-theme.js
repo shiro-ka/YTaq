@@ -2,7 +2,22 @@
 	'use strict';
 
 	function apply(t) {
-		document.documentElement.setAttribute('data-ytaq-theme', t.theme + ' ' + t.accent);
+		YTaqColor.apply(document.documentElement, t, 'ytaq-base');
+	}
+
+	function customCss(text) {
+		const root = document.documentElement;
+		let style = root.querySelector(':scope > style.ytaq-custom-css');
+		if (!text || !text.trim()) {
+			if (style) style.remove();
+			return;
+		}
+		if (!style) {
+			style = document.createElement('style');
+			style.className = 'ytaq-custom-css';
+		}
+		style.textContent = text;
+		root.append(style);
 	}
 
 	const DARK = 0x400;
@@ -31,6 +46,7 @@
 	forceDark();
 	apply(YTaqSettings.defaults('theme'));
 	YTaqSettings.watch('theme', apply);
+	YTaqSettings.watch('customCss', customCss);
 
 	function grid(on) {
 		document.documentElement.classList.toggle('ytaq-search-grid', !!on);
