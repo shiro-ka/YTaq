@@ -332,10 +332,53 @@
 
 		YTaqFolders.watch(renderFolders);
 		initChannels();
+		initBackup();
 		const shortsBox = document.querySelector('.ytaq-feed-shorts');
 		S.watch('feedShorts', v => { shortsBox.checked = !!v; });
 		shortsBox.addEventListener('change', () => S.set('feedShorts', shortsBox.checked));
 	});
+
+	const BACKUP_SKIP = new Set(['ytaq_feed', 'ytaq_short_owners', 'ytaq_subs', 'ytaq_channel_handles', 'ytaq_innertube', 'ytaq_channel_lists', 'ytaq_playbackrate']);
+
+	function backupKeys(all) {
+		return Object.keys(all).filter(k => k.startsWith('ytaq_') && !BACKUP_SKIP.has(k));
+	}
+
+	function initBackup() {
+		const file = document.querySelector('.ytaq-backup-file');
+		document.querySelector('.ytaq-backup-export').addEventListener('click', async () => {
+			const all = await new Promise(ok => chrome.storage.local.get(null, ok));
+			const data = Object.fromEntries(backupKeys(all).map(k => [k, all[k]]));
+			const body = JSON.stringify({ app: 'YTaq', version: chrome.runtime.getManifest().version, exportedAt: new Date().toISOString(), data }, null, 2);
+			const a = document.createElement('a');
+			a.href = URL.createObjectURL(new Blob([body], { type: 'application/json' }));
+			a.download = 'ytaq-' + new Date().toISOString().slice(0, 10) + '.json';
+			a.click();
+			setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+			showMessage('backup', '書き出しました。', 'success');
+		});
+		document.querySelector('.ytaq-backup-import').addEventListener('click', () => file.click());
+		file.addEventListener('change', async () => {
+			const f = file.files[0];
+			file.value = '';
+			if (!f) return;
+			let parsed;
+			try {
+				parsed = JSON.parse(await f.text());
+			} catch (e) {
+				return showMessage('backup', 'ファイルを読めませんでした。', 'error');
+			}
+			if (!parsed || parsed.app !== 'YTaq' || !parsed.data || typeof parsed.data !== 'object') {
+				return showMessage('backup', 'YTaq の書き出したファイルではありません。', 'error');
+			}
+			const incoming = Object.fromEntries(Object.entries(parsed.data).filter(([k]) => k.startsWith('ytaq_') && !BACKUP_SKIP.has(k)));
+			if (!confirm('今の設定・フォルダ・ミュート・速度を、このファイルの中身に入れ替えます。')) return;
+			const all = await new Promise(ok => chrome.storage.local.get(null, ok));
+			await new Promise(ok => chrome.storage.local.remove(backupKeys(all), ok));
+			await new Promise(ok => chrome.storage.local.set(incoming, ok));
+			location.reload();
+		});
+	}
 
 	function button(label, attrs, fn) {
 		const b = document.createElement('button');

@@ -18,6 +18,7 @@
     <button class="ytaq-nav" value="playbackrate" data-suisou-button="block">Playbackrate</button>
     <button class="ytaq-nav" value="folders" data-suisou-button="block">フォルダ</button>
     <button class="ytaq-nav" value="mute" data-suisou-button="block">ミュート</button>
+    <button class="ytaq-nav" value="backup" data-suisou-button="block">書き出し・読み込み</button>
   </nav>
 
   <main data-suisou="container-m">
@@ -255,6 +256,18 @@
         <button class="ytaq-save" data-suisou="accent" data-suisou-button="outline">保存</button>
         <button class="ytaq-reset" data-suisou-button="outline">デフォルトに戻す</button>
       </div>
+      <div class="ytaq-message"></div>
+    </section>
+
+    <section class="ytaq-section ytaq-section-backup" data-suisou-layout="stack" hidden>
+      <h2 data-suisou-text="fs-24 fw-700">書き出し・読み込み</h2>
+      <p>設定・フォルダ・ミュート・チャンネルごとの速度を1つのファイルにします。新着など、YouTube から取り直せるものは入れません。</p>
+      <div data-suisou-layout="row">
+        <button class="ytaq-backup-export" data-suisou-button="outline">書き出す</button>
+        <button class="ytaq-backup-import" data-suisou-button="outline">読み込む</button>
+        <input type="file" class="ytaq-backup-file" accept="application/json,.json" hidden>
+      </div>
+      <p data-suisou="note" data-suisou-text="fs-12">読み込むと、今の設定はファイルの中身に入れ替わります。</p>
       <div class="ytaq-message"></div>
     </section>
 
