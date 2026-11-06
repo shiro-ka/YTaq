@@ -282,7 +282,7 @@
 		row.setAttribute('role', 'menuitem');
 		row.tabIndex = 0;
 		row.dataset.video = videoId;
-		row.append(YTaqIcons.create('block'), document.createTextNode('チャンネルをミュート'));
+		row.append(YTaqIcons.create('visibility_off'), document.createTextNode('チャンネルをミュート'));
 		row.addEventListener('click', async e => {
 			e.stopPropagation();
 			document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', keyCode: 27, bubbles: true }));
@@ -336,7 +336,7 @@
 		b.className = 'ytaq-mute-comment';
 		b.title = 'このチャンネルをミュート';
 		b.setAttribute('aria-label', 'このチャンネルをミュート');
-		b.append(YTaqIcons.create('block'));
+		b.append(YTaqIcons.create('visibility_off'));
 		b.addEventListener('click', e => {
 			e.preventDefault();
 			e.stopPropagation();
@@ -365,7 +365,7 @@
 		b.type = 'button';
 		b.className = NOTICE;
 		b.title = 'ミュートを解除';
-		b.append(YTaqIcons.create('block'), document.createTextNode('ミュート中'));
+		b.append(YTaqIcons.create('visibility_off'), document.createTextNode('ミュート中'));
 		b.addEventListener('click', () => removeChannel(c));
 		host.append(b);
 	}

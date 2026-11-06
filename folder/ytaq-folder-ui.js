@@ -67,7 +67,7 @@
 			mute.type = 'button';
 			mute.className = 'ytaq-folder-row ytaq-folder-mute';
 			const muted = !!channel && !!window.YTaqMute && window.YTaqMute.isChannelMuted(channel);
-			mute.append(YTaqIcons.create('block'), document.createTextNode(muted ? 'ミュートを解除' : 'このチャンネルをミュート'));
+			mute.append(YTaqIcons.create('visibility_off'), document.createTextNode(muted ? 'ミュートを解除' : 'このチャンネルをミュート'));
 			mute.disabled = !channel;
 			mute.addEventListener('click', () => {
 				if (self.channel && window.YTaqMute) window.YTaqMute.toggleChannel(self.channel);
