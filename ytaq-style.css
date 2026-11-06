@@ -63,3 +63,11 @@ html[data-suisou-theme] ytd-tabbed-page-header tp-yt-app-toolbar {
 html[data-suisou-theme] ytd-tabbed-page-header #tabs-divider {
   border-bottom: none !important;
 }
+
+html[data-suisou-theme] yt-contextual-sheet-layout,
+html[data-suisou-theme] ytd-menu-popup-renderer {
+  background: var(--suisou-color-panel) !important;
+  border: 1px solid var(--suisou-color-line-weak) !important;
+  border-radius: var(--suisou-radius) !important;
+  box-sizing: border-box !important;
+}
