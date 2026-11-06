@@ -79,7 +79,7 @@
 		const popup = document.getElementById('ytaq-popup');
 		if (popup) popup.remove();
 		if (escHandler) {
-			document.removeEventListener('keydown', escHandler);
+			document.removeEventListener('keydown', escHandler, true);
 			escHandler = null;
 		}
 		if (messageHandler) {
@@ -338,12 +338,16 @@
 				if (author && !channelName.textContent) channelName.textContent = author;
 				if (typeof data.info.playbackRate === 'number' && !embeddedVideo(iframe)) onReportedRate(data.info.playbackRate);
 				if (typeof data.info.currentTime === 'number') lastTime = data.info.currentTime;
+				if (typeof data.info.playerState === 'number') lastState = data.info.playerState;
+				if (typeof data.info.muted === 'boolean') lastMuted = data.info.muted;
 			}
 		};
 		window.addEventListener('message', messageHandler);
 
 		const HISTORY_MIN_SECONDS = 5;
 		let lastTime = 0;
+		let lastState = -1;
+		let lastMuted = false;
 		let historySession = null;
 		let historyTimer = null;
 
@@ -405,10 +409,62 @@
 			if (e.target === popup) hideVideoPopup();
 		});
 
-		escHandler = e => {
-			if (e.key === 'Escape') hideVideoPopup();
+		const PLAYING = 1;
+		const SEEK_SECONDS = 5;
+
+		function togglePlay() {
+			const v = embeddedVideo(iframe);
+			if (v) return v.paused ? v.play() : v.pause();
+			command(iframe, lastState === PLAYING ? 'pauseVideo' : 'playVideo');
+		}
+
+		function seekBy(delta) {
+			const v = embeddedVideo(iframe);
+			if (v) {
+				v.currentTime = Math.max(0, v.currentTime + delta);
+				return;
+			}
+			command(iframe, 'seekTo', [Math.max(0, lastTime + delta), true]);
+		}
+
+		function toggleMute() {
+			const v = embeddedVideo(iframe);
+			if (v) {
+				v.muted = !v.muted;
+				return;
+			}
+			command(iframe, lastMuted ? 'unMute' : 'mute');
+		}
+
+		const KEYS = {
+			k: togglePlay,
+			ArrowLeft: () => seekBy(-SEEK_SECONDS),
+			ArrowRight: () => seekBy(SEEK_SECONDS),
+			'>': () => changeRate(currentRate + rateSettings.speedStep),
+			'<': () => changeRate(currentRate - rateSettings.speedStep),
+			m: toggleMute,
+			f: () => {
+				if (document.fullscreenElement) document.exitFullscreen();
+				else iframe.requestFullscreen().catch(() => {});
+			},
+			c: () => {
+				const b = content.querySelector('.ytaq-popup-comment-btn');
+				if (b) b.click();
+			}
 		};
-		document.addEventListener('keydown', escHandler);
+
+		escHandler = e => {
+			if (e.key === 'Escape') return hideVideoPopup();
+			if (e.ctrlKey || e.metaKey || e.altKey || e.isComposing) return;
+			const t = e.target;
+			if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+			const fn = KEYS[e.key] || (e.key.length === 1 ? KEYS[e.key.toLowerCase()] : null);
+			if (!fn) return;
+			e.preventDefault();
+			e.stopPropagation();
+			fn();
+		};
+		document.addEventListener('keydown', escHandler, true);
 
 		document.body.appendChild(popup);
 	}
