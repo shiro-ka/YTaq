@@ -52,6 +52,8 @@
 	}
 
 	function configure(v) {
+		current = v;
+		dirty = true;
 		const words = (v.words || []).map(w => String(w).trim()).filter(Boolean).map(compileWord).filter(Boolean);
 		const ids = new Set();
 		const handles = new Set();
@@ -61,7 +63,7 @@
 		}
 		rules = { words, ids, handles, commentWords: !!v.commentWords, any: words.length > 0 || ids.size > 0 || handles.size > 0 };
 		version++;
-		scanAll();
+		schedule();
 	}
 
 	function channelMuted(links, id) {
@@ -196,19 +198,189 @@
 			check(el, videoMuted);
 		}
 		for (const el of document.querySelectorAll(COMMENTS)) {
+			commentButton(el);
 			const thread = el.closest('ytd-comment-thread-renderer');
 			const top = thread && !el.closest('#replies') ? thread : null;
 			check(el, commentMuted, top || el);
 		}
 	}
 
+	let current = { words: [], channels: [], commentWords: false };
+
+	function sameChannel(a, b) {
+		return (a.id && b.id && a.id === b.id) || (a.handle && b.handle && a.handle.toLowerCase() === b.handle.toLowerCase());
+	}
+
+	function isChannelMuted(c) {
+		return current.channels.some(x => sameChannel(x, c));
+	}
+
+	async function fill(c) {
+		const out = { id: c.id || null, handle: c.handle || null, name: c.name || '' };
+		if (!out.id && out.handle) out.id = handleIds['/' + out.handle.toLowerCase()] || null;
+		if (!out.id && out.handle && window.YTaqFolders) out.id = await window.YTaqFolders.resolveChannel('/' + out.handle).catch(() => null);
+		if (out.id && !out.handle) {
+			const h = Object.keys(handleIds).find(k => handleIds[k] === out.id);
+			if (h) out.handle = h.slice(1);
+		}
+		if (out.id && !out.handle && window.YTaqInnertube) {
+			try {
+				const json = await window.YTaqInnertube.call('browse', { browseId: out.id });
+				const meta = json.metadata && json.metadata.channelMetadataRenderer;
+				if (meta) {
+					out.handle = handleOf(new URL(meta.vanityChannelUrl || meta.channelUrl || '', location.origin).pathname);
+					out.name = out.name || meta.title || '';
+				}
+			} catch (e) {
+				YTaq.warn('mute: browse', e.message);
+			}
+		}
+		return out;
+	}
+
+	async function ownerOfVideo(videoId) {
+		const json = await window.YTaqInnertube.call('player', { videoId });
+		const d = json.videoDetails || {};
+		const mf = (json.microformat && json.microformat.playerMicroformatRenderer) || {};
+		return { id: d.channelId || null, handle: handleOf(new URL(mf.ownerProfileUrl || '/', location.origin).pathname), name: d.author || '' };
+	}
+
+	async function addChannel(c) {
+		const entry = await fill(c);
+		if (!entry.id && !entry.handle) return;
+		const v = await YTaqSettings.get('mute');
+		if (v.channels.some(x => sameChannel(x, entry))) return;
+		v.channels.push(entry);
+		await YTaqSettings.set('mute', v);
+	}
+
+	async function removeChannel(c) {
+		const v = await YTaqSettings.get('mute');
+		v.channels = v.channels.filter(x => !sameChannel(x, c));
+		await YTaqSettings.set('mute', v);
+	}
+
+	function toggleChannel(c) {
+		return isChannelMuted(c) ? removeChannel(c) : addChannel(c);
+	}
+
+	window.YTaqMute = { isChannelMuted, addChannel, removeChannel, toggleChannel, ownerOfVideo };
+
+	const MENU_ROW = 'ytaq-mute-row';
+	const MENU_MARGIN = 8;
+	let menuItem = null;
+
+	function videoIdOf(item) {
+		const a = item.querySelector('a[href*="/watch?v="], a[href^="/shorts/"]');
+		const m = a && /(?:v=|\/shorts\/)([\w-]{11})/.exec(a.getAttribute('href'));
+		return m ? m[1] : null;
+	}
+
+	function menuRow(videoId, item) {
+		const row = document.createElement('div');
+		row.className = MENU_ROW;
+		row.setAttribute('role', 'menuitem');
+		row.tabIndex = 0;
+		row.dataset.video = videoId;
+		row.append(YTaqIcons.create('block'), document.createTextNode('チャンネルをミュート'));
+		row.addEventListener('click', async e => {
+			e.stopPropagation();
+			document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', keyCode: 27, bubbles: true }));
+			const id = item.dataset && item.dataset.channel;
+			try {
+				const owner = id ? { id } : await ownerOfVideo(videoId);
+				await addChannel(owner);
+			} catch (err) {
+				YTaq.warn('mute: menu', err.message);
+			}
+		});
+		return row;
+	}
+
+	function injectMenu(tries) {
+		if (!menuItem) return;
+		const sheet = [...document.querySelectorAll('yt-sheet-view-model, ytd-menu-popup-renderer')].find(m => m.getBoundingClientRect().height > 0);
+		const list = sheet && (sheet.querySelector('yt-list-view-model') || sheet.querySelector('#items') || sheet);
+		if (!list) {
+			if (tries > 0) setTimeout(() => injectMenu(tries - 1), 50);
+			return;
+		}
+		const videoId = videoIdOf(menuItem);
+		for (const old of document.querySelectorAll('.' + MENU_ROW)) old.remove();
+		if (!videoId) return;
+		list.append(menuRow(videoId, menuItem));
+		requestAnimationFrame(() => keepOnScreen(sheet.closest('tp-yt-iron-dropdown') || sheet));
+	}
+
+	function keepOnScreen(box) {
+		const r = box.getBoundingClientRect();
+		const over = r.bottom - (window.innerHeight - MENU_MARGIN);
+		if (over <= 0) return;
+		box.style.top = Math.max(MENU_MARGIN, r.top - over) + 'px';
+	}
+
+	document.addEventListener('click', e => {
+		const button = e.target.closest && e.target.closest('button');
+		if (!button) return;
+		const item = button.closest(VIDEOS);
+		if (!item || button.closest('a[href]')) return;
+		menuItem = item;
+		setTimeout(() => injectMenu(10), 50);
+	}, true);
+
+	function commentButton(comment) {
+		const header = comment.querySelector('#header-author');
+		if (!header || header.querySelector('.ytaq-mute-comment')) return;
+		const b = document.createElement('button');
+		b.type = 'button';
+		b.className = 'ytaq-mute-comment';
+		b.title = 'このチャンネルをミュート';
+		b.setAttribute('aria-label', 'このチャンネルをミュート');
+		b.append(YTaqIcons.create('block'));
+		b.addEventListener('click', e => {
+			e.preventDefault();
+			e.stopPropagation();
+			const author = comment.querySelector('#author-text');
+			const handle = author && handleOf(author.getAttribute('href'));
+			const id = author && idOf(author.getAttribute('href'));
+			if (handle || id) addChannel({ handle, id, name: author.textContent.trim() });
+		});
+		header.append(b);
+	}
+
+	const NOTICE = 'ytaq-mute-notice';
+
+	function channelNotice() {
+		const old = document.querySelector('.' + NOTICE);
+		const m = CHANNEL_PAGE.exec(location.pathname);
+		const host = m && document.querySelector('yt-flexible-actions-view-model');
+		const c = m ? { handle: handleOf('/' + m[1]), id: idOf('/' + m[1]) } : null;
+		if (!host || !isChannelMuted(c)) {
+			if (old) old.remove();
+			return;
+		}
+		if (old && old.parentElement === host) return;
+		if (old) old.remove();
+		const b = document.createElement('button');
+		b.type = 'button';
+		b.className = NOTICE;
+		b.title = 'ミュートを解除';
+		b.append(YTaqIcons.create('block'), document.createTextNode('ミュート中'));
+		b.addEventListener('click', () => removeChannel(c));
+		host.append(b);
+	}
+
 	let scheduled = false;
+	let dirty = false;
 	function schedule() {
 		if (scheduled) return;
 		scheduled = true;
 		requestAnimationFrame(() => {
 			scheduled = false;
-			if (rules.any) scanAll();
+			if (rules.any || dirty) scanAll();
+			else for (const el of document.querySelectorAll(COMMENTS)) commentButton(el);
+			dirty = rules.any;
+			channelNotice();
 		});
 	}
 
