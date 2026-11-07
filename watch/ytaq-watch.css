@@ -596,3 +596,17 @@ html.ytaq-watch-morph::view-transition-old(root) {
 html.ytaq-watch-morph::view-transition-new(root) {
   animation: none;
 }
+
+html.ytaq-watch-morph::view-transition-group(ytaq-watch-comments) {
+  z-index: 1;
+}
+
+html.ytaq-watch-morph::view-transition-group(ytaq-watch-title),
+html.ytaq-watch-morph::view-transition-group(ytaq-watch-row),
+html.ytaq-watch-morph::view-transition-group(ytaq-watch-desc) {
+  z-index: 2;
+}
+
+html.ytaq-watch-morph::view-transition-group(ytaq-watch-player) {
+  z-index: 3;
+}
