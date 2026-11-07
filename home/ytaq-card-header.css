@@ -1,44 +1,44 @@
-html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] yt-lockup-metadata-view-model:has(.ytLockupMetadataViewModelAvatar) {
+html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] yt-lockup-metadata-view-model:has(.ytLockupMetadataViewModelAvatar):has(.ytContentMetadataViewModelMetadataRow:first-child > span:first-child a:is([href^="/@"], [href^="/channel/"])) {
   position: relative !important;
   padding-top: calc(var(--ytaq-size-circle) + var(--ytaq-space-2) * 2) !important;
 }
 
-html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] yt-lockup-metadata-view-model:has(.ytLockupMetadataViewModelAvatar) :is(.ytLockupMetadataViewModelTextContainer, .ytLockupMetadataViewModelMetadata, yt-content-metadata-view-model, .ytContentMetadataViewModelMetadataRow) {
+html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] yt-lockup-metadata-view-model:has(.ytLockupMetadataViewModelAvatar):has(.ytContentMetadataViewModelMetadataRow:first-child > span:first-child a:is([href^="/@"], [href^="/channel/"])) :is(.ytLockupMetadataViewModelTextContainer, .ytLockupMetadataViewModelMetadata, yt-content-metadata-view-model, .ytContentMetadataViewModelMetadataRow) {
   position: static !important;
 }
 
-html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] .ytLockupMetadataViewModelAvatar {
+html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] yt-lockup-metadata-view-model:has(.ytLockupMetadataViewModelAvatar):has(.ytContentMetadataViewModelMetadataRow:first-child > span:first-child a:is([href^="/@"], [href^="/channel/"])) .ytLockupMetadataViewModelAvatar {
   position: absolute;
   top: var(--ytaq-space-2);
   left: var(--ytaq-space-2);
   margin: 0 !important;
 }
 
-html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] .ytLockupMetadataViewModelAvatar :is(yt-decorated-avatar-view-model, yt-avatar-shape, .ytSpecAvatarShapeHost, img) {
+html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] yt-lockup-metadata-view-model:has(.ytLockupMetadataViewModelAvatar):has(.ytContentMetadataViewModelMetadataRow:first-child > span:first-child a:is([href^="/@"], [href^="/channel/"])) .ytLockupMetadataViewModelAvatar :is(yt-decorated-avatar-view-model, yt-avatar-shape, .ytSpecAvatarShapeHost, img) {
   width: var(--ytaq-size-circle) !important;
   height: var(--ytaq-size-circle) !important;
 }
 
-html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] yt-lockup-metadata-view-model:has(.ytLockupMetadataViewModelAvatar) .ytContentMetadataViewModelMetadataRow:first-child > span:first-child:has(a[href^="/@"], a[href^="/channel/"]) {
+html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] yt-lockup-metadata-view-model:has(.ytLockupMetadataViewModelAvatar):has(.ytContentMetadataViewModelMetadataRow:first-child > span:first-child a:is([href^="/@"], [href^="/channel/"])) .ytContentMetadataViewModelMetadataRow:first-child > span:first-child {
   position: absolute;
   top: var(--ytaq-space-2);
   left: calc(var(--ytaq-size-circle) + var(--ytaq-space-2) * 2);
   right: calc(var(--ytaq-size-button) + var(--ytaq-space-2));
-  height: var(--ytaq-size-circle);
-  display: flex;
-  align-items: center;
+  display: block;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
   font-size: var(--ytaq-fs-14);
-  line-height: var(--ytaq-lh-14);
+  line-height: var(--ytaq-size-circle);
 }
 
-html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] yt-lockup-metadata-view-model:has(.ytLockupMetadataViewModelAvatar) .ytContentMetadataViewModelMetadataRow:first-child > span:first-child:has(a[href^="/@"], a[href^="/channel/"]) + .ytContentMetadataViewModelDelimiter {
+html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] yt-lockup-metadata-view-model:has(.ytLockupMetadataViewModelAvatar):has(.ytContentMetadataViewModelMetadataRow:first-child > span:first-child a:is([href^="/@"], [href^="/channel/"])) .ytContentMetadataViewModelMetadataRow:first-child > span:first-child + .ytContentMetadataViewModelDelimiter,
+html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] yt-lockup-metadata-view-model:has(.ytLockupMetadataViewModelAvatar):has(.ytContentMetadataViewModelMetadataRow:first-child > span:first-child a:is([href^="/@"], [href^="/channel/"])) .ytContentMetadataViewModelMetadataRow:first-child > span:first-child + .ytContentMetadataViewModelIcon,
+html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] yt-lockup-metadata-view-model:has(.ytLockupMetadataViewModelAvatar):has(.ytContentMetadataViewModelMetadataRow:first-child > span:first-child a:is([href^="/@"], [href^="/channel/"])) .ytContentMetadataViewModelMetadataRow:first-child > span:first-child + .ytContentMetadataViewModelIcon + .ytContentMetadataViewModelDelimiter {
   display: none;
 }
 
-html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] yt-lockup-metadata-view-model:has(.ytLockupMetadataViewModelAvatar) .ytLockupMetadataViewModelMenuButton {
+html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] yt-lockup-metadata-view-model:has(.ytLockupMetadataViewModelAvatar):has(.ytContentMetadataViewModelMetadataRow:first-child > span:first-child a:is([href^="/@"], [href^="/channel/"])) .ytLockupMetadataViewModelMenuButton {
   position: absolute !important;
   top: var(--ytaq-space-2) !important;
   right: var(--ytaq-space-1) !important;

@@ -49,6 +49,6 @@ ytd-rich-item-renderer.style-scope.ytd-rich-grid-renderer .ytLockupMetadataViewM
   min-height: 2lh;
 }
 
-html.ytaq-hide-card-badges ytd-rich-item-renderer[rendered-from-rich-grid] yt-content-metadata-view-model .ytContentMetadataViewModelMetadataRow:not(:has(.ytContentMetadataViewModelDelimiter, a[href^="/@"], a[href^="/channel/"])) {
+html.ytaq-hide-card-badges ytd-rich-item-renderer[rendered-from-rich-grid] yt-content-metadata-view-model .ytContentMetadataViewModelMetadataRow:has(> .ytContentMetadataViewModelBadge):not(:has(.ytContentMetadataViewModelDelimiter, a[href^="/@"], a[href^="/channel/"])) {
   display: none !important;
 }
