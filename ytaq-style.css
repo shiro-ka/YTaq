@@ -20,6 +20,18 @@ html[data-ytaq-theme] .ytSearchboxComponentSearchButton {
   border-radius: 0 var(--ytaq-radius) var(--ytaq-radius) 0 !important;
 }
 
+html[data-ytaq-theme] .ytSearchboxComponentInnerSearchIcon {
+  display: none !important;
+}
+
+html[data-ytaq-theme] .ytSearchboxComponentInputBoxHasFocus:not(.ytSearchboxComponentInputBoxUnified) {
+  margin-left: 32px !important;
+}
+
+html[data-ytaq-theme] .ytSearchboxComponentInputBoxHasFocus:not(.ytSearchboxComponentInputBoxMultimodal) {
+  padding-left: 16px !important;
+}
+
 html[data-ytaq-theme] tp-yt-app-drawer[persistent] {
   background: var(--ytaq-color-bg) !important;
 }
