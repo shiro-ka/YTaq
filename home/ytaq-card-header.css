@@ -1,0 +1,82 @@
+html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] .ytLockupViewModelHost:has(.ytLockupMetadataViewModelAvatar) {
+  position: relative;
+  padding-top: calc(var(--ytaq-size-circle) + var(--ytaq-space-2) * 2);
+}
+
+html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] .ytLockupViewModelHost:has(.ytLockupMetadataViewModelAvatar) :is(.ytLockupViewModelMetadata, yt-lockup-metadata-view-model, .ytLockupMetadataViewModelTextContainer, .ytLockupMetadataViewModelMetadata, yt-content-metadata-view-model, .ytContentMetadataViewModelMetadataRow) {
+  position: static !important;
+}
+
+html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] .ytLockupMetadataViewModelAvatar {
+  position: absolute;
+  top: var(--ytaq-space-2);
+  left: var(--ytaq-space-2);
+  margin: 0 !important;
+}
+
+html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] .ytLockupMetadataViewModelAvatar :is(yt-decorated-avatar-view-model, yt-avatar-shape, .ytSpecAvatarShapeHost, img) {
+  width: var(--ytaq-size-circle) !important;
+  height: var(--ytaq-size-circle) !important;
+}
+
+html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] .ytLockupViewModelHost:has(.ytLockupMetadataViewModelAvatar) .ytContentMetadataViewModelMetadataRow:first-child > span:first-child:has(a[href^="/@"], a[href^="/channel/"]) {
+  position: absolute;
+  top: var(--ytaq-space-2);
+  left: calc(var(--ytaq-size-circle) + var(--ytaq-space-2) * 2);
+  right: calc(var(--ytaq-size-button) + var(--ytaq-space-2));
+  height: var(--ytaq-size-circle);
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: var(--ytaq-fs-14);
+  line-height: var(--ytaq-lh-14);
+}
+
+html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] .ytLockupViewModelHost:has(.ytLockupMetadataViewModelAvatar) .ytContentMetadataViewModelMetadataRow:first-child > span:first-child:has(a[href^="/@"], a[href^="/channel/"]) + .ytContentMetadataViewModelDelimiter {
+  display: none;
+}
+
+html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] .ytLockupViewModelHost:has(.ytLockupMetadataViewModelAvatar) .ytLockupMetadataViewModelMenuButton {
+  position: absolute !important;
+  top: var(--ytaq-space-2) !important;
+  right: var(--ytaq-space-1) !important;
+}
+
+html.ytaq-card-header.ytaq-search-grid ytd-search ytd-item-section-renderer > #contents > ytd-video-renderer:has(#channel-info #channel-thumbnail) #dismissible {
+  position: relative;
+  padding-top: calc(var(--ytaq-size-circle) + var(--ytaq-space-2) * 2);
+}
+
+html.ytaq-card-header.ytaq-search-grid ytd-search ytd-item-section-renderer > #contents > ytd-video-renderer:has(#channel-info #channel-thumbnail) :is(.text-wrapper, #meta) {
+  position: static !important;
+}
+
+html.ytaq-card-header.ytaq-search-grid ytd-search ytd-item-section-renderer > #contents > ytd-video-renderer #channel-info:has(#channel-thumbnail) {
+  position: absolute;
+  top: var(--ytaq-space-2);
+  left: var(--ytaq-space-2);
+  right: var(--ytaq-space-2);
+  height: var(--ytaq-size-circle);
+  display: flex;
+  align-items: center;
+  gap: var(--ytaq-space-2);
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+html.ytaq-card-header.ytaq-search-grid ytd-search ytd-video-renderer #channel-info #channel-thumbnail {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+html.ytaq-card-header.ytaq-search-grid ytd-search ytd-video-renderer #channel-info #channel-thumbnail :is(yt-img-shadow, img) {
+  width: var(--ytaq-size-circle) !important;
+  height: var(--ytaq-size-circle) !important;
+}
+
+html.ytaq-card-header.ytaq-search-grid ytd-search ytd-video-renderer #channel-info ytd-channel-name {
+  min-width: 0;
+  overflow: hidden;
+}

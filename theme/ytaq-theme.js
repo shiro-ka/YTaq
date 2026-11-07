@@ -59,6 +59,13 @@
 		for (const k in places) document.documentElement.classList.toggle('ytaq-compact-' + k, !!places[k]);
 	}
 
+	function header(on) {
+		document.documentElement.classList.toggle('ytaq-card-header', !!on);
+	}
+
+	header(YTaqSettings.defaults('cardHeader'));
+	YTaqSettings.watch('cardHeader', header);
+
 	compact(YTaqSettings.defaults('compactCards'));
 	YTaqSettings.watch('compactCards', compact);
 })();

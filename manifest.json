@@ -75,6 +75,7 @@
         "home/ytaq-home.css",
         "home/ytaq-search.css",
         "home/ytaq-compact.css",
+        "home/ytaq-card-header.css",
         "watch/ytaq-watch.css",
         "subscriptions/ytaq-feed-view.css",
         "folder/ytaq-folder.css",
