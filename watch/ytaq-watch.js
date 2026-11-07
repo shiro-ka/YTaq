@@ -239,9 +239,15 @@
 	let closeReplay = false;
 	let replayRun = 0;
 
+	const REPLAY_POLL_MS = 100;
+	const REPLAY_MAX_POLLS = 200;
+
 	function chatIsReplay() {
+		const frame = document.querySelector('#chat iframe#chatframe');
+		if (!frame) return false;
+		if ((frame.getAttribute('src') || '').includes('/live_chat_replay')) return true;
 		try {
-			return document.querySelector('#chat iframe#chatframe').contentWindow.location.pathname === '/live_chat_replay';
+			return frame.contentWindow.location.pathname === '/live_chat_replay';
 		} catch {
 			return false;
 		}
@@ -254,10 +260,13 @@
 			if (current !== replayRun || !closeReplay || !location.pathname.startsWith('/watch')) return;
 			const page = flexy();
 			if (page && page.hasAttribute('fixed-panels') && chatIsReplay()) {
-				document.querySelector('#chat #show-hide-button button')?.click();
-				return;
+				const button = document.querySelector('#chat #show-hide-button button');
+				if (button) {
+					button.click();
+					return;
+				}
 			}
-			if (++polls < MAX_POLLS) setTimeout(step, POLL_MS);
+			if (++polls < REPLAY_MAX_POLLS) setTimeout(step, REPLAY_POLL_MS);
 		};
 		step();
 	}
