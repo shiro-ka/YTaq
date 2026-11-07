@@ -32,6 +32,10 @@ html[data-ytaq-theme] .ytSearchboxComponentInputBoxHasFocus:not(.ytSearchboxComp
   padding-left: 16px !important;
 }
 
+html[data-ytaq-theme] .ytSearchboxComponentHost:has(.ytSearchboxComponentInputBoxHasFocus:not(.ytSearchboxComponentInputBoxUnified)) > .ytSearchboxComponentSuggestionsContainer {
+  margin-left: 32px !important;
+}
+
 html[data-ytaq-theme] tp-yt-app-drawer[persistent] {
   background: var(--ytaq-color-bg) !important;
 }
