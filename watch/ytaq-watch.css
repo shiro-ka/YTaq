@@ -20,7 +20,7 @@ html.ytaq-watch-boot::after,
 html.ytaq-watch-boot body::before {
   content: "";
   position: fixed;
-  z-index: 1;
+  z-index: 2000;
   left: var(--watch-boot-left);
   box-sizing: border-box;
   width: var(--watch-boot-width);
@@ -33,6 +33,7 @@ html.ytaq-watch-boot body::before {
 html.ytaq-watch-boot body::before {
   top: calc(56px + var(--ytaq-space-2));
   height: var(--watch-boot-player);
+  border: none;
 }
 
 html.ytaq-watch-boot::before {
