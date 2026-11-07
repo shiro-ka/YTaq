@@ -1,9 +1,9 @@
-html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] .ytLockupViewModelHost:has(.ytLockupMetadataViewModelAvatar) {
-  position: relative;
-  padding-top: calc(var(--ytaq-size-circle) + var(--ytaq-space-2) * 2);
+html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] yt-lockup-metadata-view-model:has(.ytLockupMetadataViewModelAvatar) {
+  position: relative !important;
+  padding-top: calc(var(--ytaq-size-circle) + var(--ytaq-space-2) * 2) !important;
 }
 
-html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] .ytLockupViewModelHost:has(.ytLockupMetadataViewModelAvatar) :is(.ytLockupViewModelMetadata, yt-lockup-metadata-view-model, .ytLockupMetadataViewModelTextContainer, .ytLockupMetadataViewModelMetadata, yt-content-metadata-view-model, .ytContentMetadataViewModelMetadataRow) {
+html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] yt-lockup-metadata-view-model:has(.ytLockupMetadataViewModelAvatar) :is(.ytLockupMetadataViewModelTextContainer, .ytLockupMetadataViewModelMetadata, yt-content-metadata-view-model, .ytContentMetadataViewModelMetadataRow) {
   position: static !important;
 }
 
@@ -19,7 +19,7 @@ html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] .ytLockupM
   height: var(--ytaq-size-circle) !important;
 }
 
-html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] .ytLockupViewModelHost:has(.ytLockupMetadataViewModelAvatar) .ytContentMetadataViewModelMetadataRow:first-child > span:first-child:has(a[href^="/@"], a[href^="/channel/"]) {
+html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] yt-lockup-metadata-view-model:has(.ytLockupMetadataViewModelAvatar) .ytContentMetadataViewModelMetadataRow:first-child > span:first-child:has(a[href^="/@"], a[href^="/channel/"]) {
   position: absolute;
   top: var(--ytaq-space-2);
   left: calc(var(--ytaq-size-circle) + var(--ytaq-space-2) * 2);
@@ -34,22 +34,22 @@ html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] .ytLockupV
   line-height: var(--ytaq-lh-14);
 }
 
-html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] .ytLockupViewModelHost:has(.ytLockupMetadataViewModelAvatar) .ytContentMetadataViewModelMetadataRow:first-child > span:first-child:has(a[href^="/@"], a[href^="/channel/"]) + .ytContentMetadataViewModelDelimiter {
+html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] yt-lockup-metadata-view-model:has(.ytLockupMetadataViewModelAvatar) .ytContentMetadataViewModelMetadataRow:first-child > span:first-child:has(a[href^="/@"], a[href^="/channel/"]) + .ytContentMetadataViewModelDelimiter {
   display: none;
 }
 
-html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] .ytLockupViewModelHost:has(.ytLockupMetadataViewModelAvatar) .ytLockupMetadataViewModelMenuButton {
+html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] yt-lockup-metadata-view-model:has(.ytLockupMetadataViewModelAvatar) .ytLockupMetadataViewModelMenuButton {
   position: absolute !important;
   top: var(--ytaq-space-2) !important;
   right: var(--ytaq-space-1) !important;
 }
 
-html.ytaq-card-header.ytaq-search-grid ytd-search ytd-item-section-renderer > #contents > ytd-video-renderer:has(#channel-info #channel-thumbnail) #dismissible {
-  position: relative;
-  padding-top: calc(var(--ytaq-size-circle) + var(--ytaq-space-2) * 2);
+html.ytaq-card-header.ytaq-search-grid ytd-search ytd-item-section-renderer > #contents > ytd-video-renderer:has(#channel-info #channel-thumbnail) .text-wrapper {
+  position: relative !important;
+  padding-top: calc(var(--ytaq-size-circle) + var(--ytaq-space-2) * 2) !important;
 }
 
-html.ytaq-card-header.ytaq-search-grid ytd-search ytd-item-section-renderer > #contents > ytd-video-renderer:has(#channel-info #channel-thumbnail) :is(.text-wrapper, #meta) {
+html.ytaq-card-header.ytaq-search-grid ytd-search ytd-item-section-renderer > #contents > ytd-video-renderer:has(#channel-info #channel-thumbnail) #meta {
   position: static !important;
 }
 
