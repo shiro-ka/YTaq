@@ -41,16 +41,58 @@
 	const pipObserver = new IntersectionObserver(entries => {
 		if (hold) return;
 		const on = entries[entries.length - 1].intersectionRatio < PIP_VISIBLE_RATIO;
+		document.documentElement.classList.toggle(PIP_CLASS, on);
+		document.documentElement.classList.remove(DESC_CLASS);
+		refit();
+	}, { rootMargin: '-56px 0px 0px 0px', threshold: [PIP_VISIBLE_RATIO] });
+
+	let morphing = false;
+
+	function snapped(el) {
+		return el && Math.abs(el.getBoundingClientRect().top - parseFloat(getComputedStyle(el).scrollMarginTop)) < 4;
+	}
+
+	function scrollable(e, selector, down) {
+		const box = e.target.closest && e.target.closest(selector);
+		if (!box) return false;
+		return down ? box.scrollTop + box.clientHeight < box.scrollHeight - 1 : box.scrollTop > 0;
+	}
+
+	function morph(on, target) {
 		const classes = document.documentElement.classList;
-		const change = () => {
+		morphing = true;
+		classes.add(MORPH_CLASS);
+		document.startViewTransition(() => {
 			classes.toggle(PIP_CLASS, on);
 			classes.remove(DESC_CLASS);
+			measure();
+			target.scrollIntoView({ block: 'start', behavior: 'instant' });
 			refit();
-		};
-		if (classes.contains(PIP_CLASS) === on || !classes.contains('ytaq-watch-side') || !document.startViewTransition || matchMedia('(prefers-reduced-motion: reduce)').matches) return change();
-		classes.add(MORPH_CLASS);
-		document.startViewTransition(change).finished.finally(() => classes.remove(MORPH_CLASS));
-	}, { rootMargin: '-56px 0px 0px 0px', threshold: [PIP_VISIBLE_RATIO] });
+		}).finished.finally(() => {
+			morphing = false;
+			classes.remove(MORPH_CLASS);
+		});
+	}
+
+	window.addEventListener('wheel', e => {
+		if (morphing) return e.preventDefault();
+		const classes = document.documentElement.classList;
+		const page = flexy();
+		if (hold || !e.deltaY || Math.abs(e.deltaX) > Math.abs(e.deltaY) || e.ctrlKey) return;
+		if (!classes.contains(CLASS) || !classes.contains('ytaq-watch-side') || !document.startViewTransition || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+		if (!page || !page.matches('[theater][is-two-columns_]:not([fixed-panels]):not([fullscreen])')) return;
+		const player = document.querySelector('#full-bleed-container');
+		const comments = document.querySelector('ytd-comments');
+		if (!player || !comments) return;
+		const pip = classes.contains(PIP_CLASS);
+		if (!pip && e.deltaY > 0 && snapped(player) && !scrollable(e, 'ytd-watch-metadata #bottom-row', true)) {
+			e.preventDefault();
+			morph(true, comments);
+		} else if (pip && e.deltaY < 0 && snapped(comments) && !scrollable(e, 'ytd-comments, ytd-watch-metadata #bottom-row, #related, ytd-playlist-panel-renderer #items', false)) {
+			e.preventDefault();
+			morph(false, player);
+		}
+	}, { passive: false, capture: true });
 
 	const observer = new ResizeObserver(measure);
 	const observed = new Set();
