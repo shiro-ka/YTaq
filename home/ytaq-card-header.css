@@ -23,7 +23,7 @@ html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] yt-lockup-
   position: absolute;
   top: var(--ytaq-space-2);
   left: calc(var(--ytaq-size-circle) + var(--ytaq-space-2) * 2);
-  right: calc(var(--ytaq-size-button) + var(--ytaq-space-2));
+  right: calc(var(--ytaq-size-button) + var(--ytaq-space-3));
   display: block;
   overflow: hidden;
   white-space: nowrap;
