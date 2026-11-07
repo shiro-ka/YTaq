@@ -529,17 +529,6 @@ html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metada
   display: none;
 }
 
-html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata .ytaq-folder-menu {
-  top: auto;
-  bottom: 100%;
-  margin-top: 0;
-  margin-bottom: var(--ytaq-space-1);
-}
-
-html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata .ytaq-folder-menu::before {
-  inset: auto 0 -8px;
-}
-
 html.ytaq-replay-hide ytd-watch-flexy[fixed-panels] #panels-full-bleed-container {
   display: none !important;
 }

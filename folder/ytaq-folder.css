@@ -60,6 +60,19 @@ html[data-ytaq-theme] .ytaq-folder-menu::before {
   height: 8px;
 }
 
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata .ytaq-folder-menu,
+html[data-ytaq-theme] .ytaq-popup-content .ytaq-folder-menu {
+  top: auto;
+  bottom: 100%;
+  margin-top: 0;
+  margin-bottom: var(--ytaq-space-1);
+}
+
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata .ytaq-folder-menu::before,
+html[data-ytaq-theme] .ytaq-popup-content .ytaq-folder-menu::before {
+  inset: auto 0 -8px;
+}
+
 html[data-ytaq-theme] .ytaq-folder:hover .ytaq-folder-menu,
 html[data-ytaq-theme] .ytaq-folder:focus-within .ytaq-folder-menu {
   display: flex;
