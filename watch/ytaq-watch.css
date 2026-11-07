@@ -1,3 +1,7 @@
+html.ytaq-watch-wide {
+  scrollbar-gutter: stable;
+}
+
 html.ytaq-watch-wide.ytaq-watch-fit {
   --watch-info-height: 109px;
 }
