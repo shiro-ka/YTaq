@@ -109,7 +109,7 @@
 	function measure() {
 		placeDesc();
 		const classes = document.documentElement.classList;
-		if (classes.contains(PIP_CLASS) && classes.contains('ytaq-watch-desc-below') && !classes.contains('ytaq-watch-related')) expandDesc();
+		if (classes.contains('ytaq-watch-side') && classes.contains('ytaq-watch-desc-below') && !classes.contains('ytaq-watch-related')) expandDesc();
 		const player = document.querySelector('#full-bleed-container');
 		const primary = document.querySelector('ytd-watch-flexy #primary');
 		const title = document.querySelector('ytd-watch-metadata #title-row');
