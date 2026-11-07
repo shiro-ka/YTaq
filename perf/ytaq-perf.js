@@ -91,6 +91,16 @@
 	shorts(YTaqSettings.defaults('shortsHide'));
 	YTaqSettings.watch('shortsHide', shorts);
 
+	function homeHide(v) {
+		const root = document.documentElement;
+		if (!root) return;
+		root.classList.toggle('ytaq-home-hide-shelves', !!v.shelves);
+		root.classList.toggle('ytaq-home-hide-playlists', !!v.playlists);
+	}
+
+	homeHide(YTaqSettings.defaults('homeHide'));
+	YTaqSettings.watch('homeHide', homeHide);
+
 	YTaqSettings.onChange('perf', v => {
 		settings = v;
 		applyClasses();

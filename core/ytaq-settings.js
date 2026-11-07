@@ -32,6 +32,7 @@
 		watchCloseReplay: { key: 'ytaq_watch_close_replay', value: true },
 		feedShorts: { key: 'ytaq_feed_shorts', value: false },
 		mute: { key: 'ytaq_mute', value: { words: [], channels: [], commentWords: false } },
+		homeHide: { key: 'ytaq_home_hide', value: { shelves: true, playlists: false } },
 		hideWatched: {
 			key: 'ytaq_hide_watched',
 			value: { percent: 90, places: { home: true, search: false, related: false, feed: false, subs: false, channel: false, explore: false } }

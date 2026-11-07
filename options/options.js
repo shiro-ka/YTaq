@@ -260,7 +260,7 @@
 		},
 
 		mute: {
-			names: ['mute', 'hideWatched'],
+			names: ['mute', 'hideWatched', 'homeHide'],
 			channels: [],
 			renderChannels() {
 				const box = $('mute', 'muteChannels');
@@ -293,6 +293,8 @@
 				this.renderChannels();
 				$('mute', 'watchedPercent').value = v.hideWatched.percent;
 				for (const cb of document.querySelectorAll('.ytaq-watchedPlaces input')) cb.checked = !!v.hideWatched.places[cb.value];
+				$('mute', 'homeHideShelves').checked = !!v.homeHide.shelves;
+				$('mute', 'homeHidePlaylists').checked = !!v.homeHide.playlists;
 			},
 			collect() {
 				const words = $('mute', 'words').value.split('\n').map(w => w.trim()).filter(Boolean);
@@ -310,7 +312,8 @@
 				const places = Object.fromEntries([...document.querySelectorAll('.ytaq-watchedPlaces input')].map(cb => [cb.value, cb.checked]));
 				return {
 					mute: { words, channels: this.channels, commentWords: $('mute', 'commentWords').checked },
-					hideWatched: { percent, places }
+					hideWatched: { percent, places },
+					homeHide: { shelves: $('mute', 'homeHideShelves').checked, playlists: $('mute', 'homeHidePlaylists').checked }
 				};
 			}
 		},

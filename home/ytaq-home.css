@@ -52,3 +52,8 @@ ytd-rich-item-renderer.style-scope.ytd-rich-grid-renderer .ytLockupMetadataViewM
 html.ytaq-hide-card-badges ytd-rich-item-renderer[rendered-from-rich-grid] yt-content-metadata-view-model .ytContentMetadataViewModelMetadataRow:has(> .ytContentMetadataViewModelBadge):not(:has(.ytContentMetadataViewModelDelimiter, a[href^="/@"], a[href^="/channel/"])) {
   display: none !important;
 }
+
+html.ytaq-home-hide-shelves ytd-browse[page-subtype="home"] ytd-rich-section-renderer:not(:has(ytd-rich-shelf-renderer[is-shorts])),
+html.ytaq-home-hide-playlists ytd-browse[page-subtype="home"] ytd-rich-item-renderer:has(yt-collection-thumbnail-view-model) {
+  display: none !important;
+}
