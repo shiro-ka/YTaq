@@ -315,6 +315,12 @@
 			YTaq.log('popup: rate applied', channel.name, stored);
 		}
 
+		function syncRate(v) {
+			if (Math.abs(v.playbackRate - currentRate) < 0.01) return;
+			suppressSaveUntil = performance.now() + 1500;
+			v.playbackRate = currentRate;
+		}
+
 		function onReportedRate(rate) {
 			if (!(rate > 0) || Math.abs(rate - currentRate) < 0.01) return;
 			currentRate = rate;
@@ -396,6 +402,8 @@
 			const v = embeddedVideo(iframe);
 			if (v) {
 				v.addEventListener('ratechange', () => onReportedRate(v.playbackRate));
+				v.addEventListener('playing', () => syncRate(v));
+				syncRate(v);
 			}
 
 			try {
