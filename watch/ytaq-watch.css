@@ -2,6 +2,50 @@ html.ytaq-watch-wide {
   scrollbar-gutter: stable;
 }
 
+html.ytaq-watch-boot {
+  --watch-boot-width: min(100vw - var(--ytaq-space-3) * 2, (100vh - 56px - var(--ytaq-space-2) * 2 - var(--watch-info-height, 0px)) * 16 / 9);
+  --watch-boot-left: calc((100vw - var(--watch-boot-width)) / 2);
+  --watch-boot-player: calc(var(--watch-boot-width) * 9 / 16);
+}
+
+html.ytaq-watch-boot body > #player,
+html.ytaq-watch-boot #watch-page-skeleton,
+html.ytaq-watch-boot ytd-watch-flexy #player-full-bleed-container,
+html.ytaq-watch-boot ytd-watch-flexy #columns {
+  visibility: hidden !important;
+}
+
+html.ytaq-watch-boot::before,
+html.ytaq-watch-boot::after,
+html.ytaq-watch-boot body::before {
+  content: "";
+  position: fixed;
+  z-index: 1;
+  left: var(--watch-boot-left);
+  box-sizing: border-box;
+  width: var(--watch-boot-width);
+  background: var(--ytaq-color-panel, #1c1f26);
+  border: 1px solid var(--ytaq-color-line-weak, transparent);
+  border-radius: var(--ytaq-radius, 8px);
+  pointer-events: none;
+}
+
+html.ytaq-watch-boot body::before {
+  top: calc(56px + var(--ytaq-space-2));
+  height: var(--watch-boot-player);
+  background: #000;
+}
+
+html.ytaq-watch-boot::before {
+  top: calc(56px + var(--ytaq-space-2) * 2 + var(--watch-boot-player));
+  height: calc(var(--watch-info-height, 109px) - var(--ytaq-space-2));
+}
+
+html.ytaq-watch-boot::after {
+  top: calc(56px + var(--ytaq-space-2) + var(--watch-boot-player) + var(--watch-info-height, 109px) + var(--ytaq-space-2));
+  bottom: var(--ytaq-space-2);
+}
+
 html.ytaq-watch-wide.ytaq-watch-fit {
   --watch-info-height: 109px;
 }

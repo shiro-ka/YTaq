@@ -10,6 +10,42 @@
 	let wide = YTaqSettings.defaults('watchWide');
 	let loaded = false;
 
+	const BOOT_CLASS = 'ytaq-watch-boot';
+	const BOOT_POLL_MS = 100;
+	const BOOT_MAX_MS = 6000;
+	let booted = false;
+	let bootPoll = 0;
+	let bootLimit = 0;
+
+	function bootStart() {
+		if (booted || !wide || !location.pathname.startsWith('/watch')) return;
+		document.documentElement.classList.add(BOOT_CLASS);
+		clearInterval(bootPoll);
+		clearTimeout(bootLimit);
+		bootPoll = setInterval(bootCheck, BOOT_POLL_MS);
+		bootLimit = setTimeout(bootEnd, BOOT_MAX_MS);
+	}
+
+	function bootEnd() {
+		booted = true;
+		clearInterval(bootPoll);
+		clearTimeout(bootLimit);
+		document.documentElement.classList.remove(BOOT_CLASS);
+	}
+
+	function bootCheck() {
+		const page = flexy();
+		if (!page || !page.hasAttribute('theater')) return;
+		if (!document.querySelector('ytd-masthead ytd-topbar-logo-renderer')) return;
+		if (!document.querySelector('ytd-watch-metadata #title-row') || !document.querySelector('ytd-watch-metadata #top-row')) return;
+		if (document.documentElement.scrollHeight <= window.innerHeight) return;
+		clearInterval(bootPoll);
+		measure();
+		requestAnimationFrame(() => requestAnimationFrame(bootEnd));
+	}
+
+	bootStart();
+
 	function flexy() {
 		return document.querySelector('ytd-watch-flexy');
 	}
@@ -235,6 +271,8 @@
 		loaded = true;
 		wide = !!v;
 		document.documentElement.classList.toggle(CLASS, wide);
+		if (wide) bootStart();
+		else bootEnd();
 		if (wide) document.cookie = 'wide=1; domain=.youtube.com; path=/; max-age=31536000; secure';
 		if (turnedOff) setTheater(false);
 		apply();
@@ -401,6 +439,7 @@
 	YTaq.ready(apply);
 	YTaq.onNavigate(() => {
 		document.documentElement.classList.remove(DESC_CLASS);
+		bootStart();
 		apply();
 		closeReplayChat();
 	});
