@@ -251,6 +251,7 @@
 		let currentRate = 1;
 		let appliedStoredRate = false;
 		let suppressSaveUntil = 0;
+		let musicVideo = false;
 
 		const rateDisplay = document.createElement('button');
 		rateDisplay.className = 'ytaq-popup-rate-display';
@@ -286,6 +287,7 @@
 		}
 
 		function YTaqRateSave(ch, rate) {
+			if (musicVideo) return;
 			window.YTaqChannels.setRate(ch.id, ch.name, rate);
 		}
 
@@ -306,7 +308,8 @@
 		async function applyStoredRateOnce() {
 			if (appliedStoredRate || !channel) return;
 			appliedStoredRate = true;
-			const stored = await window.YTaqChannels.getRate(channel.id, channel.name);
+			musicVideo = !!window.YTaqMusic && window.YTaqMusic.isMusic(videoId, channel.category);
+			const stored = musicVideo ? 1 : await window.YTaqChannels.getRate(channel.id, channel.name);
 			if (!stored || Math.abs(stored - currentRate) < 0.01) return;
 			suppressSaveUntil = performance.now() + 1500;
 			applyRate(iframe, stored);

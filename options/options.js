@@ -316,8 +316,9 @@
 		},
 
 		playbackrate: {
-			names: ['playbackrate'],
+			names: ['playbackrate', 'musicNormalRate'],
 			render(v) {
+				$('playbackrate', 'musicNormalRate').checked = !!v.musicNormalRate;
 				$('playbackrate', 'speedStep').value = v.playbackrate.speedStep;
 				$('playbackrate', 'speedPresets').value = v.playbackrate.speedPresets.join(', ');
 			},
@@ -331,7 +332,7 @@
 					return '増減量は0.05〜1.0の範囲で入力してください。';
 				}
 				if (speedPresets.length === 0) return 'プリセット速度を最低1つ入力してください。';
-				return { playbackrate: { speedStep, speedPresets } };
+				return { playbackrate: { speedStep, speedPresets }, musicNormalRate: $('playbackrate', 'musicNormalRate').checked };
 			}
 		}
 	};

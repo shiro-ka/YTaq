@@ -15,7 +15,7 @@
 		if (watched.has(video)) return;
 		watched.add(video);
 		video.addEventListener('ratechange', () => {
-			if (!current || current.videoId !== videoIdOfPage()) return;
+			if (!current || current.music || current.videoId !== videoIdOfPage()) return;
 			window.YTaqChannels.setRate(current.id, current.name, video.playbackRate);
 			YTaq.log('rate saved:', current.name, video.playbackRate);
 		});
@@ -38,7 +38,9 @@
 		const details = json.videoDetails || {};
 		if (!details.channelId) return;
 
-		const rate = await window.YTaqChannels.getRate(details.channelId, details.author);
+		const category = json.microformat && json.microformat.playerMicroformatRenderer && json.microformat.playerMicroformatRenderer.category;
+		const music = !!window.YTaqMusic && window.YTaqMusic.isMusic(videoId, category);
+		const rate = music ? 1 : await window.YTaqChannels.getRate(details.channelId, details.author);
 		if (token !== seq) return;
 		YTaq.waitFor('video', () => {
 			if (token !== seq) return;
@@ -48,7 +50,7 @@
 				video.playbackRate = rate;
 				YTaq.log('rate applied:', details.author, rate);
 			}
-			current = { id: details.channelId, name: details.author, videoId };
+			current = { id: details.channelId, name: details.author, videoId, music };
 			observeRateChanges(video);
 		});
 	}

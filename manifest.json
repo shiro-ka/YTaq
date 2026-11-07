@@ -49,6 +49,7 @@
         "core/ytaq-innertube.js",
         "core/ytaq-icons.js",
         "core/ytaq-channels.js",
+        "rate/ytaq-music.js",
         "perf/ytaq-perf.js",
         "content.js",
         "folder/ytaq-folder-store.js",

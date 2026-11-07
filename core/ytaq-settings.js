@@ -4,6 +4,7 @@
 	const TABLE = {
 		theme: { key: 'ytaq_theme', value: { theme: 'trench', accent: 'blue', primaryHue: 270, accentHue: 255 } },
 		customCss: { key: 'ytaq_custom_css', value: '' },
+		musicNormalRate: { key: 'ytaq_music_normal_rate', value: true },
 		perf: {
 			key: 'ytaq_perf',
 			value: { hoverPreview: true, lazyOffscreen: false, ambient: true, animations: false }

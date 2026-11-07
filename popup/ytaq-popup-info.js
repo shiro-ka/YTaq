@@ -235,7 +235,7 @@
 			const vd = json.videoDetails || {};
 			const mf = (json.microformat && json.microformat.playerMicroformatRenderer) || {};
 			channelId = vd.channelId || null;
-			if (channelId && parts.onChannel) parts.onChannel({ id: channelId, name: vd.author || '' });
+			if (channelId && parts.onChannel) parts.onChannel({ id: channelId, name: vd.author || '', category: mf.category || null });
 			if (folderBtn && channelId) folderBtn.setChannel({ id: channelId, name: vd.author || '' });
 			const bits = [];
 			if (want('date') && mf.publishDate) bits.push(dateFormat.format(new Date(mf.publishDate)));
