@@ -89,6 +89,7 @@
 	chatButton.append(YTaqIcons.create('chat'));
 	chatButton.addEventListener('click', () => {
 		replayRun++;
+		showReplayChat();
 		const page = flexy();
 		const selector = page && page.hasAttribute('fixed-panels') ? '#chat #show-hide-button button' : 'ytd-watch-metadata #teaser-carousel button';
 		document.querySelector(selector)?.click();
@@ -196,7 +197,10 @@
 	YTaqSettings.watch('watchCloseReplay', v => {
 		closeReplay = !!v;
 		if (closeReplay) closeReplayChat();
-		else replayRun++;
+		else {
+			replayRun++;
+			showReplayChat();
+		}
 	});
 
 	YTaqSettings.watch('watchDescBelow', v => {
@@ -239,15 +243,30 @@
 	let closeReplay = false;
 	let replayRun = 0;
 
-	const REPLAY_POLL_MS = 100;
-	const REPLAY_MAX_POLLS = 200;
+	const REPLAY_POLL_MS = 50;
+	const REPLAY_MAX_POLLS = 400;
+	const REPLAY_RECLICK_POLLS = 20;
+	const REPLAY_HIDE_CLASS = 'ytaq-replay-hide';
+
+	function showReplayChat() {
+		document.documentElement.classList.remove(REPLAY_HIDE_CLASS);
+	}
+
+	function replayFromPlayer() {
+		try {
+			const player = document.querySelector('#movie_player');
+			const response = player && player.wrappedJSObject && player.wrappedJSObject.getPlayerResponse();
+			const details = response && response.videoDetails;
+			if (!details || details.videoId !== new URLSearchParams(location.search).get('v')) return null;
+			return !!details.isLiveContent && !details.isLive;
+		} catch {
+			return null;
+		}
+	}
 
 	function chatIsReplay() {
-		const frame = document.querySelector('#chat iframe#chatframe');
-		if (!frame) return false;
-		if ((frame.getAttribute('src') || '').includes('/live_chat_replay')) return true;
 		try {
-			return frame.contentWindow.location.pathname === '/live_chat_replay';
+			return document.querySelector('#chat iframe#chatframe').contentWindow.location.pathname === '/live_chat_replay';
 		} catch {
 			return false;
 		}
@@ -255,18 +274,27 @@
 
 	function closeReplayChat() {
 		const current = ++replayRun;
+		showReplayChat();
 		let polls = 0;
+		let replay = null;
+		let clickedAt = -1;
 		const step = () => {
 			if (current !== replayRun || !closeReplay || !location.pathname.startsWith('/watch')) return;
+			if (replay === null) replay = replayFromPlayer();
+			if (replay === false) return showReplayChat();
+			if (replay) document.documentElement.classList.add(REPLAY_HIDE_CLASS);
 			const page = flexy();
-			if (page && page.hasAttribute('fixed-panels') && chatIsReplay()) {
+			const open = page && page.hasAttribute('fixed-panels');
+			if (clickedAt >= 0 && !open) return showReplayChat();
+			if (open && (replay || chatIsReplay()) && (clickedAt < 0 || polls - clickedAt >= REPLAY_RECLICK_POLLS)) {
 				const button = document.querySelector('#chat #show-hide-button button');
 				if (button) {
 					button.click();
-					return;
+					clickedAt = polls;
 				}
 			}
 			if (++polls < REPLAY_MAX_POLLS) setTimeout(step, REPLAY_POLL_MS);
+			else showReplayChat();
 		};
 		step();
 	}
