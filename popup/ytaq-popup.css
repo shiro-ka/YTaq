@@ -625,7 +625,9 @@ html[data-ytaq-theme] .ytaq-popup-channel-row .ytaq-folder-btn {
 	overflow-wrap: anywhere;
 }
 
-.ytaq-popup-comment-time {
+.ytaq-popup-comment-time,
+.ytaq-popup-desc-time,
+.ytaq-popup-desc-link {
 	padding: 0;
 	border: 0;
 	background: none;
@@ -634,8 +636,14 @@ html[data-ytaq-theme] .ytaq-popup-channel-row .ytaq-folder-btn {
 	cursor: pointer;
 }
 
-.ytaq-popup-comment-time:hover {
+.ytaq-popup-comment-time:hover,
+.ytaq-popup-desc-time:hover,
+.ytaq-popup-desc-link:hover {
 	text-decoration: underline;
+}
+
+.ytaq-popup-desc-link {
+	text-decoration: none;
 }
 
 .ytaq-popup-comment-likes {

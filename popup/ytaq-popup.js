@@ -185,7 +185,7 @@
 		actions.append(rateBox, tools);
 		bar.append(channelRow, actions);
 		meta.append(head, bar);
-		if (window.YTaqPopupInfo) window.YTaqPopupInfo.build(videoId, { head, channelRow, shorts: isShorts, onClose: f => closers.push(f), onChannel: c => onChannel(c) });
+		if (window.YTaqPopupInfo) window.YTaqPopupInfo.build(videoId, { head, channelRow, shorts: isShorts, onClose: f => closers.push(f), onChannel: c => onChannel(c), seek: seconds => { command(iframe, 'seekTo', [seconds, true]); command(iframe, 'playVideo'); } });
 
 		const iframeContainer = document.createElement('div');
 		iframeContainer.className = 'ytaq-popup-iframe-container';

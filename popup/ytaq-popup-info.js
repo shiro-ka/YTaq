@@ -20,6 +20,32 @@
 		return e;
 	}
 
+	const LINK_OR_TIME = /(https?:\/\/[^\s]+)|(?<![\w:])(?:(\d{1,2}):)?(\d{1,2}):(\d{2})(?![\w:])/g;
+
+	function richText(box, text, seek, length) {
+		box.replaceChildren();
+		let at = 0;
+		for (const m of text.matchAll(LINK_OR_TIME)) {
+			const seconds = m[1] ? 0 : (Number(m[2] || 0) * 60 + Number(m[3])) * 60 + Number(m[4]);
+			if (!m[1] && !(seconds <= length)) continue;
+			box.append(document.createTextNode(text.slice(at, m.index)));
+			if (m[1]) {
+				const a = el('a', 'ytaq-popup-desc-link', m[1]);
+				a.href = m[1];
+				a.target = '_blank';
+				a.rel = 'noopener noreferrer';
+				box.append(a);
+			} else {
+				const b = el('button', 'ytaq-popup-desc-time', m[0]);
+				b.type = 'button';
+				b.addEventListener('click', () => seek && seek(seconds));
+				box.append(b);
+			}
+			at = m.index + m[0].length;
+		}
+		box.append(document.createTextNode(text.slice(at)));
+	}
+
 	function button(cls, text, fn) {
 		const b = el('button', 'ytaq-popup-act ' + cls, text);
 		b.type = 'button';
@@ -116,12 +142,20 @@
 				const opening = menu.hidden;
 				for (const d of drops) d.menu.hidden = true;
 				menu.hidden = !opening;
+				if (opening) keepInside(menu);
 				if (opening && onOpen) onOpen(menu);
 			});
 			wrap.append(btn, menu);
 			const d = { wrap, btn, menu };
 			drops.push(d);
 			return d;
+		}
+		function keepInside(menu) {
+			menu.style.left = '';
+			const box = menu.closest('.ytaq-popup-content');
+			if (!box) return;
+			const over = menu.getBoundingClientRect().right - (box.getBoundingClientRect().right - 8);
+			if (over > 0) menu.style.left = -over + 'px';
 		}
 		function closeDrops(e) {
 			if (!drops.some(d => d.wrap.contains(e.target))) for (const d of drops) d.menu.hidden = true;
@@ -241,10 +275,10 @@
 			if (want('date') && mf.publishDate) bits.push(dateFormat.format(new Date(mf.publishDate)));
 			if (want('views') && vd.viewCount) bits.push(numberFormat.format(Number(vd.viewCount)) + ' 回視聴');
 			info.textContent = bits.join(' · ');
-			if (descInline && vd.shortDescription) descInline.textContent = vd.shortDescription;
+			if (descInline && vd.shortDescription) richText(descInline, vd.shortDescription, parts.seek, Number(vd.lengthSeconds));
 			if (descDrop) {
 				if (vd.shortDescription) {
-					descDrop.menu.textContent = vd.shortDescription;
+					richText(descDrop.menu, vd.shortDescription, parts.seek, Number(vd.lengthSeconds));
 					descDrop.btn.disabled = false;
 				} else {
 					descDrop.wrap.remove();
