@@ -33,7 +33,6 @@ html.ytaq-watch-boot body::before {
 html.ytaq-watch-boot body::before {
   top: calc(56px + var(--ytaq-space-2));
   height: var(--watch-boot-player);
-  background: #000;
 }
 
 html.ytaq-watch-boot::before {
