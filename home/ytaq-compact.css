@@ -1,0 +1,45 @@
+:is(html.ytaq-compact-home ytd-browse[page-subtype="home"], html.ytaq-compact-subs ytd-browse[page-subtype="subscriptions"], html.ytaq-compact-channel ytd-browse[page-subtype="channels"]) ytd-rich-grid-renderer {
+  container: ytaq-compact-grid / inline-size;
+}
+
+@container ytaq-compact-grid (width < 700px) {
+  ytd-rich-item-renderer[rendered-from-rich-grid] { --ytd-rich-grid-items-per-row: 2 !important; }
+}
+
+@container ytaq-compact-grid (700px <= width < 1100px) {
+  ytd-rich-item-renderer[rendered-from-rich-grid] { --ytd-rich-grid-items-per-row: 3 !important; }
+}
+
+@container ytaq-compact-grid (1100px <= width < 1500px) {
+  ytd-rich-item-renderer[rendered-from-rich-grid] { --ytd-rich-grid-items-per-row: 4 !important; }
+}
+
+@container ytaq-compact-grid (1500px <= width) {
+  ytd-rich-item-renderer[rendered-from-rich-grid] { --ytd-rich-grid-items-per-row: 5 !important; }
+}
+
+@container ytaq-compact-grid (width >= 0) {
+  ytd-rich-item-renderer[rendered-from-rich-grid] :is(.ytLockupMetadataViewModelTitle, .ytLockupMetadataViewModelTitle *) {
+    font-size: var(--ytaq-fs-14) !important;
+    line-height: var(--ytaq-lh-14) !important;
+  }
+
+  ytd-rich-item-renderer[rendered-from-rich-grid] :is(yt-content-metadata-view-model, yt-content-metadata-view-model *) {
+    font-size: var(--ytaq-fs-12) !important;
+    line-height: var(--ytaq-lh-12) !important;
+  }
+}
+
+html.ytaq-search-grid.ytaq-compact-search ytd-search ytd-item-section-renderer > #contents {
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+}
+
+html.ytaq-search-grid.ytaq-compact-search ytd-search ytd-video-renderer :is(#video-title, #video-title *) {
+  font-size: var(--ytaq-fs-14) !important;
+  line-height: var(--ytaq-lh-14) !important;
+}
+
+html.ytaq-search-grid.ytaq-compact-search ytd-search ytd-video-renderer :is(#metadata-line, #metadata-line *, ytd-channel-name, ytd-channel-name *) {
+  font-size: var(--ytaq-fs-12) !important;
+  line-height: var(--ytaq-lh-12) !important;
+}

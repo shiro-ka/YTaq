@@ -54,4 +54,11 @@
 
 	grid(YTaqSettings.defaults('searchGrid'));
 	YTaqSettings.watch('searchGrid', grid);
+
+	function compact(places) {
+		for (const k in places) document.documentElement.classList.toggle('ytaq-compact-' + k, !!places[k]);
+	}
+
+	compact(YTaqSettings.defaults('compactCards'));
+	YTaqSettings.watch('compactCards', compact);
 })();

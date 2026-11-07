@@ -19,6 +19,7 @@
 			value: { avatar: true, description: true, shortsDescInline: false, date: true, like: true, save: true, subscribe: true, folder: true, views: false, likeCount: false, dislike: false, commentReplies: false, commentWrite: false }
 		},
 		searchGrid: { key: 'ytaq_search_grid', value: true },
+		compactCards: { key: 'ytaq_compact_cards', value: { home: false, subs: false, channel: false, search: false } },
 		watchWide: { key: 'ytaq_watch_wide', value: true },
 		watchFitInfo: { key: 'ytaq_watch_fit_info', value: true },
 		watchSide: { key: 'ytaq_watch_side', value: true },

@@ -85,7 +85,7 @@
 
 	const SECTIONS = {
 		theme: {
-			names: ['theme', 'customCss', 'searchGrid', 'watchWide', 'watchFitInfo', 'watchSide', 'watchRelated', 'watchDescBelow', 'watchCloseReplay'],
+			names: ['theme', 'customCss', 'searchGrid', 'compactCards', 'watchWide', 'watchFitInfo', 'watchSide', 'watchRelated', 'watchDescBelow', 'watchCloseReplay'],
 			async init() {
 				palette = await loadPalette();
 				const name = $('theme', 'theme-name');
@@ -100,8 +100,12 @@
 					update();
 				});
 				accent.addEventListener('change', update);
+				$('theme', 'searchGrid').addEventListener('change', () => this.syncCompact());
 				$('theme', 'primary-hue').addEventListener('input', update);
 				$('theme', 'accent-hue').addEventListener('input', update);
+			},
+			syncCompact() {
+				document.querySelector('.ytaq-compactPlaces input[value="search"]').disabled = !$('theme', 'searchGrid').checked;
 			},
 			accents(theme) {
 				return palette.get(theme === 'custom' ? YTaqColor.CUSTOM_BASE : theme) || [];
@@ -126,6 +130,8 @@
 				$('theme', 'accent-hue').value = v.theme.accentHue;
 				$('theme', 'customCss').value = v.customCss || '';
 				$('theme', 'searchGrid').checked = !!v.searchGrid;
+				for (const cb of document.querySelectorAll('.ytaq-compactPlaces input')) cb.checked = !!v.compactCards[cb.value];
+				this.syncCompact();
 				$('theme', 'watchWide').checked = !!v.watchWide;
 				$('theme', 'watchFitInfo').checked = !!v.watchFitInfo;
 				$('theme', 'watchSide').checked = !!v.watchSide;
@@ -146,6 +152,7 @@
 					},
 					customCss: $('theme', 'customCss').value,
 					searchGrid: $('theme', 'searchGrid').checked,
+					compactCards: Object.fromEntries([...document.querySelectorAll('.ytaq-compactPlaces input')].map(cb => [cb.value, cb.checked])),
 					watchWide: $('theme', 'watchWide').checked,
 					watchFitInfo: $('theme', 'watchFitInfo').checked,
 					watchSide: $('theme', 'watchSide').checked,
