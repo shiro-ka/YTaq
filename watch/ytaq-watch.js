@@ -276,12 +276,12 @@
 
 	function closeReplayChat() {
 		const current = ++replayRun;
-		showReplayChat();
 		let polls = 0;
 		let replay = null;
 		let clickedAt = -1;
 		const step = () => {
-			if (current !== replayRun || !closeReplay || !location.pathname.startsWith('/watch')) return;
+			if (current !== replayRun) return;
+			if (!closeReplay || !location.pathname.startsWith('/watch')) return showReplayChat();
 			if (replay === null) replay = replayFromPlayer();
 			if (replay === false) return showReplayChat();
 			if (replay) document.documentElement.classList.add(REPLAY_HIDE_CLASS);
