@@ -122,6 +122,10 @@ html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metada
   border-radius: 0 var(--ytaq-radius) var(--ytaq-radius) 0;
 }
 
+html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata #top-row like-button-view-model .ytSpecButtonShapeNextSegmentedStart > :not(yt-touch-feedback-shape) {
+  translate: -2px 0;
+}
+
 html.ytaq-watch-wide ytd-watch-flexy[theater]:not([fullscreen]) ytd-watch-metadata #top-row .ytaq-folder-btn {
   width: var(--ytaq-size-button);
   height: var(--ytaq-size-button);
