@@ -3,50 +3,50 @@
 <head>
   <meta charset="UTF-8">
   <title>YTaq Setting</title>
-  <link rel="stylesheet" href="ytaq-ui.css">
+  <link rel="stylesheet" href="../ytaq-palette.css">
   <link rel="stylesheet" href="options.css">
 </head>
-<body data-ytaq-body="shell doc">
-  <header data-ytaq="p-3">
-    <h1 data-ytaq-text="fs-20 fw-700">YTaq setting</h1>
+<body class="page shell doc">
+  <header class="p-3">
+    <h1 class="fs-20 fw-700">YTaq setting</h1>
   </header>
 
-  <nav data-ytaq-layout="stack" data-ytaq="p-3">
-    <button class="ytaq-nav" value="channels" data-ytaq-button="block">チャンネル</button>
-    <button class="ytaq-nav" value="theme" data-ytaq-button="block">テーマ</button>
-    <button class="ytaq-nav" value="perf" data-ytaq-button="block">軽量化</button>
-    <button class="ytaq-nav" value="antibite" data-ytaq-button="block">Antibite</button>
-    <button class="ytaq-nav" value="playbackrate" data-ytaq-button="block">Playbackrate</button>
-    <button class="ytaq-nav" value="folders" data-ytaq-button="block">フォルダ</button>
-    <button class="ytaq-nav" value="mute" data-ytaq-button="block">ミュート</button>
-    <button class="ytaq-nav" value="backup" data-ytaq-button="block">書き出し・読み込み</button>
+  <nav class="stack p-3">
+    <button class="ytaq-nav button button-block" value="channels">チャンネル</button>
+    <button class="ytaq-nav button button-block" value="theme">テーマ</button>
+    <button class="ytaq-nav button button-block" value="perf">軽量化</button>
+    <button class="ytaq-nav button button-block" value="antibite">Antibite</button>
+    <button class="ytaq-nav button button-block" value="playbackrate">Playbackrate</button>
+    <button class="ytaq-nav button button-block" value="folders">フォルダ</button>
+    <button class="ytaq-nav button button-block" value="mute">ミュート</button>
+    <button class="ytaq-nav button button-block" value="backup">書き出し・読み込み</button>
   </nav>
 
-  <main data-ytaq="container-m">
-    <section class="ytaq-section ytaq-section-theme" data-ytaq-layout="stack" hidden>
-      <h2 data-ytaq-text="fs-24 fw-700">テーマ設定</h2>
-      <label data-ytaq-layout="stack">
+  <main class="container-m">
+    <section class="ytaq-section ytaq-section-theme stack" hidden>
+      <h2 class="fs-24 fw-700">テーマ設定</h2>
+      <label class="stack">
         テーマ
         <select class="ytaq-theme-name"></select>
       </label>
-      <label data-ytaq-layout="stack" hidden>
+      <label class="stack" hidden>
         テーマの色相
         <input type="range" class="ytaq-primary-hue ytaq-hue" min="0" max="359" step="1">
       </label>
-      <label data-ytaq-layout="stack">
+      <label class="stack">
         アクセント
         <select class="ytaq-theme-accent"></select>
       </label>
-      <label data-ytaq-layout="stack" hidden>
+      <label class="stack" hidden>
         アクセントの色相
         <input type="range" class="ytaq-accent-hue ytaq-hue" min="0" max="359" step="1">
       </label>
-      <p class="ytaq-accent-note" data-ytaq="note" hidden></p>
+      <p class="ytaq-accent-note note" hidden></p>
       <label><input type="checkbox" class="ytaq-searchGrid"> 検索結果を縦のカードで並べる</label>
       <label><input type="checkbox" class="ytaq-cardHeader"> カードのタイトルの上にチャンネルのアイコンと名前を出す</label>
       <label><input type="checkbox" class="ytaq-hideCardBadges"> カードの再生数・日付の下に出る印（オートダビング版・ハイプランキングなど）の行を隠す</label>
       <p>小さいカードにして、1行に多く並べる場所</p>
-      <div class="ytaq-compactPlaces" data-ytaq-layout="row wrap">
+      <div class="ytaq-compactPlaces row wrap">
         <label><input type="checkbox" value="home"> ホーム</label>
         <label><input type="checkbox" value="subs"> 登録チャンネル（YouTube の一覧）</label>
         <label><input type="checkbox" value="channel"> チャンネルのページ</label>
@@ -58,27 +58,27 @@
       <label><input type="checkbox" class="ytaq-watchRelated"> 関連動画を出す</label>
       <label><input type="checkbox" class="ytaq-watchDescBelow"> 関連動画を出さないときは、固定した動画の下に概要を出す</label>
       <label><input type="checkbox" class="ytaq-watchCloseReplay"> 配信アーカイブのチャットを自動で閉じる</label>
-      <label data-ytaq-layout="stack">
+      <label class="stack">
         カスタム CSS
-        <textarea class="ytaq-customCss" rows="6" data-ytaq="w-full" spellcheck="false" placeholder="html { --ytaq-color-bg: oklch(18% 0.05 150); }"></textarea>
+        <textarea class="ytaq-customCss w-full" rows="6" spellcheck="false" placeholder="html { --ytaq-color-bg: oklch(18% 0.05 150); }"></textarea>
       </label>
-      <div data-ytaq-layout="row" data-ytaq="mt-3">
-        <button class="ytaq-save" data-ytaq="accent" data-ytaq-button="outline">保存</button>
-        <button class="ytaq-reset" data-ytaq-button="outline">デフォルトに戻す</button>
+      <div class="row mt-3">
+        <button class="ytaq-save accent button button-outline">保存</button>
+        <button class="ytaq-reset button button-outline">デフォルトに戻す</button>
       </div>
       <div class="ytaq-message"></div>
     </section>
 
-    <section class="ytaq-section ytaq-section-perf" data-ytaq-layout="stack" hidden>
-      <h2 data-ytaq-text="fs-24 fw-700">軽量化</h2>
-      <p data-ytaq="note">
+    <section class="ytaq-section ytaq-section-perf stack" hidden>
+      <h2 class="fs-24 fw-700">軽量化</h2>
+      <p class="note">
         YouTube 本体の JS は消せない（消すとページが死ぬ）ので、
         そこに乗っている重い仕事を止める引き算の設定です。<br>
         この環境で一番軽くなるのは「動画クリック時の挙動」で、それ以外は
         ホーム 327 件での実測では有意差が出ませんでした。各項目に実測の有無を書いてあります。
       </p>
 
-      <h3 data-ytaq="mt-3" data-ytaq-text="fs-16 fw-700">動画クリック時の挙動</h3>
+      <h3 class="mt-3 fs-16 fw-700">動画クリック時の挙動</h3>
       <p>
         YouTube は SPA 遷移のたびにフィードを作り直すので、遷移させないこと自体が
         軽量化になります。<strong>この環境で一番軽くなる設定です。</strong><br>
@@ -92,11 +92,11 @@
         <option value="normal">何もしない（YouTube 標準）</option>
       </select>
 
-      <label data-ytaq-layout="stack">
+      <label class="stack">
         ポップアップの Referer
-        <input type="text" class="ytaq-embedReferer" data-ytaq="w-full" placeholder="https://example.com/">
+        <input type="text" class="ytaq-embedReferer w-full" placeholder="https://example.com/">
       </label>
-      <p data-ytaq="note" data-ytaq-text="fs-12">
+      <p class="note fs-12">
         YouTube は「親が youtube.com」の埋め込みを拒否します（エラー 152）。
         ポップアップの iframe が送る Referer だけをこの値に差し替えて回避します。
         既定の example.com で弾かれる場合は、自分が持っているサイトの URL を入れてください。
@@ -104,7 +104,7 @@
       </p>
 
       <label><input type="checkbox" class="ytaq-embedLogin"> ポップアップをログイン状態で再生する</label>
-      <p data-ytaq="note" data-ytaq-text="fs-12">
+      <p class="note fs-12">
         ON（既定）は www.youtube.com を使い、ログイン状態が保たれます。
         年齢制限・メンバー限定の動画が再生でき、再生速度も 2.0 倍を超えて指定できます。<br>
         OFF にすると youtube-nocookie.com を使います。Cookie を送らないぶんわずかに
@@ -115,7 +115,7 @@
 
       <label><input type="checkbox" class="ytaq-popupResume"> ポップアップ再生を、途中まで見た位置から始める</label>
       <label><input type="checkbox" class="ytaq-watchHistory"> ポップアップ再生を視聴履歴に残す</label>
-      <p data-ytaq="note" data-ytaq-text="fs-12">
+      <p class="note fs-12">
         埋め込みプレイヤーからの再生は、ログインしていても YouTube の視聴履歴に
         載りません。再生ログの送信先が /watch のプレイヤーと別扱いになっているためで、
         iframe 側の設定では変えられません。そのため「見たのにいつまでもおすすめに出る」が起きます。<br>
@@ -126,9 +126,9 @@
         失敗しても再生そのものには影響しません。
       </p>
 
-      <h3 data-ytaq="mt-3" data-ytaq-text="fs-16 fw-700">ポップアップに出すもの</h3>
+      <h3 class="mt-3 fs-16 fw-700">ポップアップに出すもの</h3>
       <p>概要・公開日・再生数・フォルダは軽い情報（1本約5KB）から、チャンネルのアイコン・高評価・低評価・チャンネル登録・高評価の数は動画のページの情報（1本約72KB）から取ります。軽い情報は再生速度の読み書きにも使うので、いつも取ります。動画のページの情報は、使う項目をすべてオフにすると取りません。</p>
-      <div class="ytaq-popup-info-options" data-ytaq-layout="row wrap">
+      <div class="ytaq-popup-info-options row wrap">
         <label><input type="checkbox" value="avatar"> チャンネルのアイコン</label>
         <label><input type="checkbox" value="description"> 概要</label>
         <label><input type="checkbox" value="shortsDescInline"> Shorts では概要を右の列にはじめから出す</label>
@@ -144,7 +144,7 @@
         <label><input type="checkbox" value="commentWrite"> コメントを書く</label>
       </div>
 
-      <h3 data-ytaq="mt-3" data-ytaq-text="fs-16 fw-700">ホバープレビュー</h3>
+      <h3 class="mt-3 fs-16 fw-700">ホバープレビュー</h3>
       <p>
         サムネイルにマウスを乗せたときのプレビュー再生を止めます。
         乗せるだけで別の video 要素がデコードを始めます。
@@ -152,7 +152,7 @@
       </p>
       <label><input type="checkbox" class="ytaq-perf-hoverPreview"> ホバープレビュー再生を止める</label>
 
-      <h3 data-ytaq="mt-3" data-ytaq-text="fs-16 fw-700">画面外のレンダリング省略</h3>
+      <h3 class="mt-3 fs-16 fw-700">画面外のレンダリング省略</h3>
       <p>
         無限スクロールで DOM は増え続けます。画面外に出た動画カードや
         コメントのレイアウト/描画を content-visibility でスキップします。<br>
@@ -161,7 +161,7 @@
       </p>
       <label><input type="checkbox" class="ytaq-perf-lazyOffscreen"> 画面外の要素を描画しない</label>
 
-      <h3 data-ytaq="mt-3" data-ytaq-text="fs-16 fw-700">シネマティック照明（アンビエントモード）</h3>
+      <h3 class="mt-3 fs-16 fw-700">シネマティック照明（アンビエントモード）</h3>
       <p>
         動画の縮小フレームを canvas に描いて常時ぼかす演出です。
         再生中ずっと CPU を使い続けます。<br>
@@ -169,35 +169,39 @@
       </p>
       <label><input type="checkbox" class="ytaq-perf-ambient"> シネマティック照明を止める</label>
 
-      <h3 data-ytaq="mt-3" data-ytaq-text="fs-16 fw-700">アニメーション</h3>
+      <h3 class="mt-3 fs-16 fw-700">アニメーション</h3>
       <p>
         ホバー演出・リップル・トランジションを無効化します（ローディングスピナーは除外）。<br>
         <strong>実測で効果なし</strong>のため既定 OFF。見た目の好みで選んでください。
       </p>
       <label><input type="checkbox" class="ytaq-perf-animations"> アニメーション/トランジションを止める</label>
 
-      <h3 data-ytaq="mt-3" data-ytaq-text="fs-16 fw-700">Shorts</h3>
-      <p>Shorts の列は複数の video を同時に抱えます。ホームの列は既定で隠します。検索やサイドバーも含めて隠すかは好みが分かれるので既定は OFF。</p>
-      <div data-ytaq-layout="row wrap">
-        <label><input type="checkbox" class="ytaq-perf-hideHomeShorts"> ホームの Shorts の列を隠す</label>
-        <label><input type="checkbox" class="ytaq-perf-hideShorts"> すべての Shorts の列を隠す</label>
+      <h3 class="mt-3 fs-16 fw-700">Shorts</h3>
+      <p>Shorts の列は複数の video を同時に抱えます。隠す場所を選べます。ホームだけ既定で隠します。</p>
+      <div class="ytaq-shortsPlaces row wrap">
+        <label><input type="checkbox" value="home"> ホーム</label>
+        <label><input type="checkbox" value="search"> 検索</label>
+        <label><input type="checkbox" value="subs"> 登録チャンネル（YouTube の一覧）</label>
+        <label><input type="checkbox" value="channel"> チャンネルのページ</label>
+        <label><input type="checkbox" value="related"> 関連動画</label>
+        <label><input type="checkbox" value="guide"> サイドバーの「ショート」</label>
       </div>
 
-      <div data-ytaq-layout="row" data-ytaq="mt-3">
-        <button class="ytaq-save" data-ytaq="accent" data-ytaq-button="outline">保存</button>
-        <button class="ytaq-reset" data-ytaq-button="outline">デフォルトに戻す</button>
+      <div class="row mt-3">
+        <button class="ytaq-save accent button button-outline">保存</button>
+        <button class="ytaq-reset button button-outline">デフォルトに戻す</button>
       </div>
       <div class="ytaq-message"></div>
     </section>
 
-    <section class="ytaq-section ytaq-section-antibite" data-ytaq-layout="stack" hidden>
-      <h2 data-ytaq-text="fs-24 fw-700">Antibite設定</h2>
-      <p data-ytaq="note">YouTubeの不要な要素を除去する機能の設定</p>
+    <section class="ytaq-section ytaq-section-antibite stack" hidden>
+      <h2 class="fs-24 fw-700">Antibite設定</h2>
+      <p class="note">YouTubeの不要な要素を除去する機能の設定</p>
 
-      <h3 data-ytaq="mt-3" data-ytaq-text="fs-16 fw-700">代替サムネイル</h3>
+      <h3 class="mt-3 fs-16 fw-700">代替サムネイル</h3>
       <p>YouTubeのデフォルトサムネイルを動画の実際のフレームに置き換えます。</p>
       <label><input type="checkbox" class="ytaq-thumbnailEnabled"> 代替サムネイルを使用する</label>
-      <label data-ytaq-layout="stack">
+      <label class="stack">
         サムネイルフレーム位置
         <select class="ytaq-thumbnailFrame">
           <option value="hq1">開始時（hq1.jpg）</option>
@@ -205,85 +209,85 @@
           <option value="hq3">終了時（hq3.jpg）</option>
         </select>
       </label>
-      <p data-ytaq="note" data-ytaq-text="fs-12">動画のどのフレームをサムネイルとして使用するか選択します。</p>
+      <p class="note fs-12">動画のどのフレームをサムネイルとして使用するか選択します。</p>
       <label><input type="checkbox" class="ytaq-shortsVertical"> Shorts は縦長のフレームを使う</label>
-      <p data-ytaq="note" data-ytaq-text="fs-12">Shorts のサムネイルの両脇の帯が消えます。1枚あたりの読み込みは約10KBから約130KBに増えます。</p>
+      <p class="note fs-12">Shorts のサムネイルの両脇の帯が消えます。1枚あたりの読み込みは約10KBから約130KBに増えます。</p>
 
-      <h3 data-ytaq="mt-3" data-ytaq-text="fs-16 fw-700">タイトルの整形</h3>
+      <h3 class="mt-3 fs-16 fw-700">タイトルの整形</h3>
       <p>正規表現に当たった部分を、置き換え先の文字に置き換えます。置き換え先が空なら消します。整形するとタイトルが空になる場合は、そのままにします。</p>
-      <div data-ytaq-layout="row wrap">
+      <div class="row wrap">
         <label><input type="checkbox" class="ytaq-title-place" value="list"> 一覧（ホーム・検索・チャンネル・関連動画）</label>
         <label><input type="checkbox" class="ytaq-title-place" value="feed"> フォルダの新着</label>
         <label><input type="checkbox" class="ytaq-title-place" value="popup"> ポップアップの見出し</label>
         <label><input type="checkbox" class="ytaq-title-place" value="watch"> 動画のページのタイトル</label>
       </div>
-      <div class="ytaq-title-rules" data-ytaq-layout="stack"></div>
-      <div data-ytaq-layout="row">
-        <button class="ytaq-title-add" data-ytaq-button="outline">ルールを足す</button>
+      <div class="ytaq-title-rules stack"></div>
+      <div class="row">
+        <button class="ytaq-title-add button button-outline">ルールを足す</button>
       </div>
-      <label data-ytaq-layout="stack">
+      <label class="stack">
         試す
-        <input type="text" class="ytaq-title-test" data-ytaq="w-full" placeholder="【MV】曲名 / アーティスト [Official Video]">
+        <input type="text" class="ytaq-title-test w-full" placeholder="【MV】曲名 / アーティスト [Official Video]">
       </label>
-      <p class="ytaq-title-result" data-ytaq="note"></p>
+      <p class="ytaq-title-result note"></p>
 
-      <div data-ytaq-layout="row" data-ytaq="mt-3">
-        <button class="ytaq-save" data-ytaq="accent" data-ytaq-button="outline">保存</button>
-        <button class="ytaq-reset" data-ytaq-button="outline">デフォルトに戻す</button>
+      <div class="row mt-3">
+        <button class="ytaq-save accent button button-outline">保存</button>
+        <button class="ytaq-reset button button-outline">デフォルトに戻す</button>
       </div>
       <div class="ytaq-message"></div>
     </section>
 
-    <section class="ytaq-section ytaq-section-playbackrate" data-ytaq-layout="stack" hidden>
-      <h2 data-ytaq-text="fs-24 fw-700">Playbackrate設定</h2>
-      <p data-ytaq="note">動画プレイヤーの再生速度コントロールの設定</p>
+    <section class="ytaq-section ytaq-section-playbackrate stack" hidden>
+      <h2 class="fs-24 fw-700">Playbackrate設定</h2>
+      <p class="note">動画プレイヤーの再生速度コントロールの設定</p>
 
-      <h3 data-ytaq="mt-3" data-ytaq-text="fs-16 fw-700">速度変更の増減量</h3>
+      <h3 class="mt-3 fs-16 fw-700">速度変更の増減量</h3>
       <p>+/-ボタンを押したときの速度変更量を設定します。</p>
-      <label data-ytaq-layout="stack">
+      <label class="stack">
         増減量（倍速）
         <input type="number" class="ytaq-speedStep" min="0.05" max="1.0" step="0.05">
       </label>
-      <p data-ytaq="note" data-ytaq-text="fs-12">デフォルト: 0.25（YouTube標準準拠）</p>
+      <p class="note fs-12">デフォルト: 0.25（YouTube標準準拠）</p>
 
-      <h3 data-ytaq="mt-3" data-ytaq-text="fs-16 fw-700">プリセット速度</h3>
+      <h3 class="mt-3 fs-16 fw-700">プリセット速度</h3>
       <p>速度表示ボタンをクリックしたときに循環する速度のリストです。カンマ区切りで入力してください。</p>
-      <label data-ytaq-layout="stack">
+      <label class="stack">
         プリセット速度（カンマ区切り）
-        <input type="text" class="ytaq-speedPresets" data-ytaq="w-full" placeholder="1.0, 1.25, 1.5, 1.75, 2.0, 4.0">
+        <input type="text" class="ytaq-speedPresets w-full" placeholder="1.0, 1.25, 1.5, 1.75, 2.0, 4.0">
       </label>
-      <p data-ytaq="note" data-ytaq-text="fs-12">デフォルト: 1.0, 1.25, 1.5, 1.75, 2.0, 4.0（YouTube標準準拠）</p>
+      <p class="note fs-12">デフォルト: 1.0, 1.25, 1.5, 1.75, 2.0, 4.0（YouTube標準準拠）</p>
 
-      <div data-ytaq-layout="row" data-ytaq="mt-3">
-        <button class="ytaq-save" data-ytaq="accent" data-ytaq-button="outline">保存</button>
-        <button class="ytaq-reset" data-ytaq-button="outline">デフォルトに戻す</button>
+      <div class="row mt-3">
+        <button class="ytaq-save accent button button-outline">保存</button>
+        <button class="ytaq-reset button button-outline">デフォルトに戻す</button>
       </div>
       <div class="ytaq-message"></div>
     </section>
-    <section class="ytaq-section ytaq-section-folders" data-ytaq-layout="stack" hidden>
-      <h2 data-ytaq-text="fs-24 fw-700">フォルダ</h2>
+    <section class="ytaq-section ytaq-section-folders stack" hidden>
+      <h2 class="fs-24 fw-700">フォルダ</h2>
       <label><input type="checkbox" class="ytaq-feed-shorts"> フォルダの新着に Shorts も出す</label>
-      <p data-ytaq="note" data-ytaq-text="fs-12">オフのときは、チャンネルのショートのタブを読まないので、新着の取得が軽くなります。</p>
-      <div class="ytaq-folders" data-ytaq-layout="stack"></div>
+      <p class="note fs-12">オフのときは、チャンネルのショートのタブを読まないので、新着の取得が軽くなります。</p>
+      <div class="ytaq-folders stack"></div>
     </section>
 
-    <section class="ytaq-section ytaq-section-mute" data-ytaq-layout="stack" hidden>
-      <h2 data-ytaq-text="fs-24 fw-700">ミュート</h2>
-      <label data-ytaq-layout="stack">
+    <section class="ytaq-section ytaq-section-mute stack" hidden>
+      <h2 class="fs-24 fw-700">ミュート</h2>
+      <label class="stack">
         単語（1行に1つ。/…/ で囲むと正規表現）
-        <textarea class="ytaq-words" rows="8" data-ytaq="w-full"></textarea>
+        <textarea class="ytaq-words w-full" rows="8"></textarea>
       </label>
-      <p data-ytaq="note" data-ytaq-text="fs-12">動画のタイトルに含まれていたら隠します。全角と半角、大文字と小文字は区別しません。</p>
+      <p class="note fs-12">動画のタイトルに含まれていたら隠します。全角と半角、大文字と小文字は区別しません。</p>
       <label><input type="checkbox" class="ytaq-commentWords"> 単語ミュートをコメントにもかける</label>
-      <h3 data-ytaq="mt-3" data-ytaq-text="fs-16 fw-700">チャンネル</h3>
-      <p data-ytaq="note" data-ytaq-text="fs-12">動画とコメントを隠します。チャンネルのページでは隠しません。</p>
-      <div class="ytaq-muteChannels" data-ytaq-layout="stack"></div>
-      <h3 data-ytaq="mt-3" data-ytaq-text="fs-16 fw-700">見た動画を隠す</h3>
-      <label data-ytaq-layout="row">
+      <h3 class="mt-3 fs-16 fw-700">チャンネル</h3>
+      <p class="note fs-12">動画とコメントを隠します。チャンネルのページでは隠しません。</p>
+      <div class="ytaq-muteChannels stack"></div>
+      <h3 class="mt-3 fs-16 fw-700">見た動画を隠す</h3>
+      <label class="row">
         <input type="number" class="ytaq-watchedPercent" min="1" max="100" step="1" style="width: 6em">
         % 以上見た動画を隠す
       </label>
-      <div class="ytaq-watchedPlaces" data-ytaq-layout="row wrap">
+      <div class="ytaq-watchedPlaces row wrap">
         <label><input type="checkbox" value="home"> ホーム</label>
         <label><input type="checkbox" value="search"> 検索</label>
         <label><input type="checkbox" value="related"> 関連動画</label>
@@ -292,31 +296,31 @@
         <label><input type="checkbox" value="channel"> チャンネルのページ</label>
         <label><input type="checkbox" value="explore"> ハッシュタグ・探索</label>
       </div>
-      <p data-ytaq="note" data-ytaq-text="fs-12">サムネイルの赤い線で見た割合を判断します。Shorts は割合が分からないので隠しません。</p>
-      <div data-ytaq-layout="row" data-ytaq="mt-3">
-        <button class="ytaq-save" data-ytaq="accent" data-ytaq-button="outline">保存</button>
-        <button class="ytaq-reset" data-ytaq-button="outline">デフォルトに戻す</button>
+      <p class="note fs-12">サムネイルの赤い線で見た割合を判断します。Shorts は割合が分からないので隠しません。</p>
+      <div class="row mt-3">
+        <button class="ytaq-save accent button button-outline">保存</button>
+        <button class="ytaq-reset button button-outline">デフォルトに戻す</button>
       </div>
       <div class="ytaq-message"></div>
     </section>
 
-    <section class="ytaq-section ytaq-section-backup" data-ytaq-layout="stack" hidden>
-      <h2 data-ytaq-text="fs-24 fw-700">書き出し・読み込み</h2>
+    <section class="ytaq-section ytaq-section-backup stack" hidden>
+      <h2 class="fs-24 fw-700">書き出し・読み込み</h2>
       <p>設定・フォルダ・ミュート・チャンネルごとの速度を1つのファイルにします。新着など、YouTube から取り直せるものは入れません。</p>
-      <div data-ytaq-layout="row">
-        <button class="ytaq-backup-export" data-ytaq-button="outline">書き出す</button>
-        <button class="ytaq-backup-import" data-ytaq-button="outline">読み込む</button>
+      <div class="row">
+        <button class="ytaq-backup-export button button-outline">書き出す</button>
+        <button class="ytaq-backup-import button button-outline">読み込む</button>
         <input type="file" class="ytaq-backup-file" accept="application/json,.json" hidden>
       </div>
-      <p data-ytaq="note" data-ytaq-text="fs-12">読み込むと、今の設定はファイルの中身に入れ替わります。</p>
+      <p class="note fs-12">読み込むと、今の設定はファイルの中身に入れ替わります。</p>
       <div class="ytaq-message"></div>
     </section>
 
-    <section class="ytaq-section ytaq-section-channels" data-ytaq-layout="stack">
-      <h2 data-ytaq-text="fs-24 fw-700">チャンネル</h2>
-      <p data-ytaq="note" data-ytaq-text="fs-12">登録チャンネルと、YTaq に設定があるチャンネルが並びます。登録チャンネルは YouTube を開いたときに1日1回読み込みます。</p>
+    <section class="ytaq-section ytaq-section-channels stack">
+      <h2 class="fs-24 fw-700">チャンネル</h2>
+      <p class="note fs-12">登録チャンネルと、YTaq に設定があるチャンネルが並びます。登録チャンネルは YouTube を開いたときに1日1回読み込みます。</p>
       <input type="search" class="ytaq-channel-search" placeholder="名前で絞り込む" aria-label="名前で絞り込む">
-      <div class="ytaq-channel-list" data-ytaq-layout="stack"></div>
+      <div class="ytaq-channel-list stack"></div>
     </section>
   </main>
 

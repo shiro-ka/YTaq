@@ -5,9 +5,7 @@
 		hoverPreview: 'ytaq-no-hover-preview',
 		lazyOffscreen: 'ytaq-lazy-offscreen',
 		ambient: 'ytaq-no-ambient',
-		animations: 'ytaq-no-anim',
-		hideHomeShorts: 'ytaq-no-home-shorts',
-		hideShorts: 'ytaq-no-shorts'
+		animations: 'ytaq-no-anim'
 	};
 
 	let settings = YTaqSettings.defaults('perf');
@@ -83,6 +81,15 @@
 		settings = v;
 		start();
 	});
+
+	function shorts(places) {
+		const root = document.documentElement;
+		if (!root) return;
+		for (const k in places) root.classList.toggle('ytaq-no-shorts-' + k, !!places[k]);
+	}
+
+	shorts(YTaqSettings.defaults('shortsHide'));
+	YTaqSettings.watch('shortsHide', shorts);
 
 	YTaqSettings.onChange('perf', v => {
 		settings = v;

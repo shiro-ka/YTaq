@@ -20,7 +20,7 @@
 		'ytaq-lazy-offscreen',
 		'ytaq-no-ambient',
 		'ytaq-no-anim',
-		'ytaq-no-shorts'
+		'ytaq-no-shorts-home'
 	];
 
 	const nodeCount = () => document.getElementsByTagName('*').length;

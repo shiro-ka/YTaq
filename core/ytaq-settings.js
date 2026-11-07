@@ -6,8 +6,9 @@
 		customCss: { key: 'ytaq_custom_css', value: '' },
 		perf: {
 			key: 'ytaq_perf',
-			value: { hoverPreview: true, lazyOffscreen: false, ambient: true, animations: false, hideHomeShorts: true, hideShorts: false }
+			value: { hoverPreview: true, lazyOffscreen: false, ambient: true, animations: false }
 		},
+		shortsHide: { key: 'ytaq_shorts_hide', value: { home: true, search: false, subs: false, channel: false, related: false, guide: false } },
 		click: { key: 'ytaq_click', value: 'popup' },
 		embedReferer: { key: 'ytaq_embed_referer', value: 'https://example.com/' },
 		embedLogin: { key: 'ytaq_embed_login', value: true },
@@ -99,6 +100,16 @@
 		get(name).then(cb);
 		onChange(name, cb);
 	}
+
+	chrome.storage.local.get(['ytaq_shorts_hide', 'ytaq_perf'], r => {
+		const perf = r.ytaq_perf;
+		if (r.ytaq_shorts_hide || !perf || !('hideShorts' in perf || 'hideHomeShorts' in perf)) return;
+		const all = !!perf.hideShorts;
+		const places = defaults('shortsHide');
+		for (const k in places) places[k] = all;
+		places.home = all || perf.hideHomeShorts !== false;
+		chrome.storage.local.set({ ytaq_shorts_hide: places });
+	});
 
 	globalThis.YTaqSettings = Object.freeze({ defaults, resolve, get, set, reset, onChange, watch });
 })();

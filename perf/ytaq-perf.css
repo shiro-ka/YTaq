@@ -41,10 +41,11 @@ html.ytaq-no-ambient #cinematics-container {
 	display: none !important;
 }
 
-html.ytaq-no-home-shorts ytd-two-column-browse-results-renderer[page-subtype="home"] ytd-rich-section-renderer:has(ytd-rich-shelf-renderer[is-shorts]),
-html.ytaq-no-shorts ytd-rich-shelf-renderer[is-shorts],
-html.ytaq-no-shorts ytd-reel-shelf-renderer,
-html.ytaq-no-shorts ytm-shorts-lockup-view-model,
-html.ytaq-no-shorts ytd-guide-entry-renderer.ytaq-guide-shorts {
+html.ytaq-no-shorts-home ytd-browse[page-subtype="home"] ytd-rich-section-renderer:has(ytd-rich-shelf-renderer[is-shorts]),
+html.ytaq-no-shorts-subs ytd-browse[page-subtype="subscriptions"] ytd-rich-section-renderer:has(ytd-rich-shelf-renderer[is-shorts]),
+html.ytaq-no-shorts-search ytd-search :is(grid-shelf-view-model:has(ytm-shorts-lockup-view-model), ytd-reel-shelf-renderer, ytd-video-renderer:has(a#thumbnail[href^="/shorts/"])),
+html.ytaq-no-shorts-channel ytd-browse[page-subtype="channels"] ytd-item-section-renderer:has(ytd-reel-shelf-renderer),
+html.ytaq-no-shorts-related :is(#related, ytd-watch-next-secondary-results-renderer) :is(ytd-reel-shelf-renderer, grid-shelf-view-model:has(ytm-shorts-lockup-view-model), ytd-compact-video-renderer:has(a[href^="/shorts/"]), yt-lockup-view-model:has(a[href^="/shorts/"])),
+html.ytaq-no-shorts-guide :is(ytd-guide-entry-renderer.ytaq-guide-shorts, ytd-mini-guide-entry-renderer:has(a[href="/shorts/"])) {
 	display: none !important;
 }

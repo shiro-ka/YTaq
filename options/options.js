@@ -47,7 +47,7 @@
 	function ruleRow(rule) {
 		const row = document.createElement('div');
 		row.className = 'ytaq-title-rule';
-		row.setAttribute('data-ytaq-layout', 'row middle wrap');
+		row.classList.add('row', 'middle', 'wrap');
 		const on = document.createElement('input');
 		on.type = 'checkbox';
 		on.className = 'ytaq-title-on';
@@ -66,7 +66,7 @@
 		const remove = document.createElement('button');
 		remove.type = 'button';
 		remove.textContent = '削除';
-		remove.setAttribute('data-ytaq-button', '');
+		remove.classList.add('button');
 		remove.addEventListener('click', () => {
 			row.remove();
 			SECTIONS.antibite.test();
@@ -168,9 +168,10 @@
 		},
 
 		perf: {
-			names: ['perf', 'click', 'embedReferer', 'embedLogin', 'watchHistory', 'popupResume', 'popupInfo'],
+			names: ['perf', 'shortsHide', 'click', 'embedReferer', 'embedLogin', 'watchHistory', 'popupResume', 'popupInfo'],
 			render(v) {
 				for (const k of PERF_KEYS) $('perf', 'perf-' + k).checked = !!v.perf[k];
+				for (const cb of document.querySelectorAll('.ytaq-shortsPlaces input')) cb.checked = !!v.shortsHide[cb.value];
 				$('perf', 'click').value = v.click;
 				$('perf', 'embedReferer').value = v.embedReferer;
 				$('perf', 'embedLogin').checked = !!v.embedLogin;
@@ -183,6 +184,7 @@
 				for (const k of PERF_KEYS) perf[k] = $('perf', 'perf-' + k).checked;
 				return {
 					perf,
+					shortsHide: Object.fromEntries([...document.querySelectorAll('.ytaq-shortsPlaces input')].map(cb => [cb.value, cb.checked])),
 					click: $('perf', 'click').value,
 					embedReferer: $('perf', 'embedReferer').value.trim() || S.defaults('embedReferer'),
 					embedLogin: $('perf', 'embedLogin').checked,
@@ -264,20 +266,20 @@
 				const box = $('mute', 'muteChannels');
 				if (!this.channels.length) {
 					const p = document.createElement('p');
-					p.setAttribute('data-ytaq', 'note');
+					p.classList.add('note');
 					p.textContent = 'ミュートしたチャンネルはありません。';
 					box.replaceChildren(p);
 					return;
 				}
 				box.replaceChildren(...this.channels.map((c, i) => {
 					const row = document.createElement('div');
-					row.setAttribute('data-ytaq-layout', 'row');
+					row.classList.add('row');
 					const name = document.createElement('span');
 					name.textContent = c.name || c.handle || c.id;
 					const sub = document.createElement('span');
-					sub.setAttribute('data-ytaq', 'note');
+					sub.classList.add('note');
 					sub.textContent = c.handle || c.id || '';
-					row.append(name, sub, button('解除', { 'data-ytaq-button': 'outline' }, () => {
+					row.append(name, sub, button('解除', 'button button-outline', () => {
 						this.channels.splice(i, 1);
 						this.renderChannels();
 					}));
@@ -337,8 +339,7 @@
 	function showMessage(section, text, tone) {
 		const slot = document.querySelector(`.ytaq-section-${section} .ytaq-message`);
 		const p = document.createElement('p');
-		p.setAttribute('data-ytaq-item', 'notice');
-		p.setAttribute('data-ytaq', tone);
+		p.classList.add('notice', tone);
 		p.textContent = text;
 		slot.replaceChildren(p);
 		setTimeout(() => { if (p.parentNode) p.remove(); }, 3000);
@@ -441,22 +442,21 @@
 		});
 	}
 
-	function button(label, attrs, fn) {
+	function button(label, cls, fn) {
 		const b = document.createElement('button');
 		b.type = 'button';
 		b.textContent = label;
-		for (const k in attrs) b.setAttribute(k, attrs[k]);
+		b.className = cls;
 		b.addEventListener('click', fn);
 		return b;
 	}
 
 	function folderCard(data, folder, index) {
 		const card = document.createElement('div');
-		card.setAttribute('data-ytaq-tray', '');
-		card.setAttribute('data-ytaq-layout', 'stack');
+		card.classList.add('tray', 'stack');
 
 		const row = document.createElement('div');
-		row.setAttribute('data-ytaq-layout', 'row middle wrap');
+		row.classList.add('row', 'middle', 'wrap');
 		const name = document.createElement('input');
 		name.type = 'text';
 		name.value = folder.name;
@@ -469,11 +469,11 @@
 		name.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) name.blur(); });
 		name.addEventListener('blur', commit);
 
-		const up = button('上へ', { 'data-ytaq-button': 'outline' }, () => YTaqFolders.moveFolder(folder.id, -1));
+		const up = button('上へ', 'button button-outline', () => YTaqFolders.moveFolder(folder.id, -1));
 		up.disabled = index === 0;
-		const down = button('下へ', { 'data-ytaq-button': 'outline' }, () => YTaqFolders.moveFolder(folder.id, 1));
+		const down = button('下へ', 'button button-outline', () => YTaqFolders.moveFolder(folder.id, 1));
 		down.disabled = index === data.folders.length - 1;
-		const del = button('削除', { 'data-ytaq-button': 'outline', 'data-ytaq': 'error' }, () => {
+		const del = button('削除', 'button button-outline error', () => {
 			if (del.dataset.confirm) return YTaqFolders.deleteFolder(folder.id);
 			del.dataset.confirm = '1';
 			del.textContent = '本当に削除';
@@ -483,19 +483,19 @@
 
 		if (!folder.channels.length) {
 			const p = document.createElement('p');
-			p.setAttribute('data-ytaq', 'note');
+			p.classList.add('note');
 			p.textContent = 'チャンネルが入っていません';
 			card.append(p);
 		}
 		for (const id of folder.channels) {
 			const line = document.createElement('div');
-			line.setAttribute('data-ytaq-layout', 'row middle between');
+			line.classList.add('row', 'middle', 'between');
 			const label = document.createElement('a');
 			label.href = 'https://www.youtube.com/channel/' + id;
 			label.target = '_blank';
 			label.rel = 'noopener';
 			label.textContent = (data.channels[id] || {}).name || id;
-			line.append(label, button('外す', { 'data-ytaq-button': '' }, () => YTaqFolders.removeChannel(folder.id, id)));
+			line.append(label, button('外す', 'button', () => YTaqFolders.removeChannel(folder.id, id)));
 			card.append(line);
 		}
 		return card;
@@ -528,18 +528,18 @@
 		const row = document.createElement('div');
 		row.className = 'ytaq-channel-row';
 		row.dataset.name = c.name.toLowerCase();
-		row.setAttribute('data-ytaq-tray', '');
-		row.setAttribute('data-ytaq-layout', 'row middle wrap between');
+		row.classList.add('tray');
+		row.classList.add('row', 'middle', 'wrap', 'between');
 
 		const head = document.createElement('div');
-		head.setAttribute('data-ytaq-layout', 'row middle wrap');
+		head.classList.add('row', 'middle', 'wrap');
 		if (c.avatar) {
 			const img = document.createElement('img');
 			img.src = c.avatar;
 			img.alt = '';
 			img.loading = 'lazy';
 			img.referrerPolicy = 'no-referrer';
-			img.setAttribute('data-ytaq-item', 'circle');
+			img.classList.add('circle');
 			head.append(img);
 		}
 		const name = document.createElement('a');
@@ -551,14 +551,14 @@
 		if (subs.fetchedAt && !subs.channels.some(x => x.id === c.id)) {
 			const tag = document.createElement('span');
 			tag.textContent = '未登録';
-			tag.setAttribute('data-ytaq-item', 'tag');
+			tag.classList.add('tag');
 			head.append(tag);
 		}
 
 		const speed = document.createElement('div');
-		speed.setAttribute('data-ytaq-layout', 'row middle wrap');
+		speed.classList.add('row', 'middle', 'wrap');
 		const label = document.createElement('label');
-		label.setAttribute('data-ytaq-layout', 'row middle');
+		label.classList.add('row', 'middle');
 		const input = document.createElement('input');
 		input.type = 'number';
 		input.step = '0.05';
@@ -576,12 +576,12 @@
 			YTaqChannels.setRate(c.id, c.name, rate);
 		});
 		label.append('再生速度', input);
-		const clear = button('消す', { 'data-ytaq-button': '' }, () => YTaqChannels.clearRate(c.id));
+		const clear = button('消す', 'button', () => YTaqChannels.clearRate(c.id));
 		clear.disabled = !rates[c.id];
 		speed.append(label, clear);
 
 		const boxes = document.createElement('div');
-		boxes.setAttribute('data-ytaq-layout', 'row middle wrap');
+		boxes.classList.add('row', 'middle', 'wrap');
 		for (const f of folders.folders) {
 			const l = document.createElement('label');
 			const cb = document.createElement('input');
@@ -593,7 +593,7 @@
 		}
 
 		const controls = document.createElement('div');
-		controls.setAttribute('data-ytaq-layout', 'row middle wrap');
+		controls.classList.add('row', 'middle', 'wrap');
 		controls.append(speed);
 		if (folders.folders.length) controls.append(boxes);
 		row.append(head, controls);
@@ -616,7 +616,7 @@
 		const list = allChannels();
 		if (!list.length) {
 			const p = document.createElement('p');
-			p.setAttribute('data-ytaq', 'note');
+			p.classList.add('note');
 			p.textContent = 'まだチャンネルがありません。ログインした状態で YouTube を開くと、登録チャンネルを読み込みます。';
 			box.replaceChildren(p);
 			return;
@@ -626,10 +626,10 @@
 			if (!rows.length) return [];
 			const group = document.createElement('div');
 			group.className = 'ytaq-channel-group';
-			group.setAttribute('data-ytaq-layout', 'stack');
+			group.classList.add('stack');
 			const h = document.createElement('h3');
 			h.textContent = `${title}（${rows.length}）`;
-			h.setAttribute('data-ytaq-text', 'fs-16 fw-700');
+			h.classList.add('fs-16', 'fw-700');
 			group.append(h, ...rows.map(channelRow));
 			return [group];
 		}));
@@ -658,7 +658,7 @@
 		if (box.contains(document.activeElement) && document.activeElement.tagName === 'INPUT') return;
 		if (!data.folders.length) {
 			const p = document.createElement('p');
-			p.setAttribute('data-ytaq', 'note');
+			p.classList.add('note');
 			p.textContent = 'フォルダがありません。YouTube のチャンネルのページや動画の下のフォルダのボタンから作れます。';
 			box.replaceChildren(p);
 			return;
