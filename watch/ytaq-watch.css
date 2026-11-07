@@ -401,10 +401,18 @@ html.ytaq-watch-wide.ytaq-watch-side.ytaq-watch-desc-below:not(.ytaq-watch-pip):
 
 html.ytaq-watch-wide.ytaq-watch-side.ytaq-watch-desc-below:not(.ytaq-watch-pip):not(.ytaq-watch-related) ytd-watch-flexy[theater][is-two-columns_]:not([fixed-panels]):not([fullscreen]):not([show-playlist]) ytd-watch-metadata #bottom-row {
   position: absolute;
-  top: calc(100% + var(--ytaq-space-2) * 3);
+  top: calc(100% + var(--ytaq-space-2));
   left: 0;
-  width: var(--watch-pip-width);
-  max-height: calc(100vh - 56px - var(--ytaq-space-2) * 2);
+  width: var(--watch-card-width);
+  height: var(--watch-desc-fill);
+}
+
+html.ytaq-watch-wide.ytaq-watch-side.ytaq-watch-desc-below:not(.ytaq-watch-related) ytd-watch-flexy[theater][is-two-columns_]:not([fixed-panels]):not([fullscreen]):not([show-playlist]) {
+  --watch-desc-fill: max(160px, 100vh - 56px - var(--ytaq-space-2) * 3 - var(--watch-above-desc, 0px));
+}
+
+html.ytaq-watch-wide.ytaq-watch-side.ytaq-watch-desc-below:not(.ytaq-watch-related) ytd-watch-flexy[theater][is-two-columns_]:not([fixed-panels]):not([fullscreen]):not([show-playlist]) ytd-comments {
+  margin-top: calc(var(--watch-desc-fill) + var(--ytaq-space-2) * 2) !important;
 }
 
 html.ytaq-watch-wide.ytaq-watch-side.ytaq-watch-desc-below:not(.ytaq-watch-related) ytd-watch-flexy[theater][is-two-columns_]:not([fixed-panels]):not([fullscreen]):not([show-playlist]) .ytaq-watch-desc-btn {

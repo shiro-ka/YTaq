@@ -137,6 +137,8 @@
 		placeDescButton();
 		if (!document.documentElement.classList.contains(PIP_CLASS)) {
 			root.setProperty('--watch-card-height', title.getBoundingClientRect().height + row.getBoundingClientRect().height + 'px');
+			const meta = document.querySelector('ytd-watch-metadata');
+			if (meta) root.setProperty('--watch-above-desc', meta.getBoundingClientRect().bottom - player.getBoundingClientRect().top + 'px');
 		}
 		const primaryStyle = getComputedStyle(primary);
 		root.setProperty('--watch-primary-width', primary.clientWidth - parseFloat(primaryStyle.paddingLeft) - parseFloat(primaryStyle.paddingRight) + 'px');
