@@ -31,6 +31,7 @@
 
 	const PIP_CLASS = 'ytaq-watch-pip';
 	const DESC_CLASS = 'ytaq-watch-desc-open';
+	const MORPH_CLASS = 'ytaq-watch-morph';
 	const DESC_GAP = 4;
 	const PIP_VISIBLE_RATIO = 0.5;
 	const HOLD_CLASS = 'ytaq-watch-hold';
@@ -40,9 +41,15 @@
 	const pipObserver = new IntersectionObserver(entries => {
 		if (hold) return;
 		const on = entries[entries.length - 1].intersectionRatio < PIP_VISIBLE_RATIO;
-		document.documentElement.classList.toggle(PIP_CLASS, on);
-		document.documentElement.classList.remove(DESC_CLASS);
-		refit();
+		const classes = document.documentElement.classList;
+		const change = () => {
+			classes.toggle(PIP_CLASS, on);
+			classes.remove(DESC_CLASS);
+			refit();
+		};
+		if (classes.contains(PIP_CLASS) === on || !classes.contains('ytaq-watch-side') || !document.startViewTransition || matchMedia('(prefers-reduced-motion: reduce)').matches) return change();
+		classes.add(MORPH_CLASS);
+		document.startViewTransition(change).finished.finally(() => classes.remove(MORPH_CLASS));
 	}, { rootMargin: '-56px 0px 0px 0px', threshold: [PIP_VISIBLE_RATIO] });
 
 	const observer = new ResizeObserver(measure);
