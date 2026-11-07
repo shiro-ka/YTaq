@@ -150,7 +150,7 @@
 				observer.observe(secondary);
 			}
 		}
-		const chat = flexyEl && flexyEl.hasAttribute('fixed-panels') && document.querySelector('ytd-watch-flexy #chat');
+		const chat = flexyEl && flexyEl.hasAttribute('fixed-panels') && !document.documentElement.classList.contains('ytaq-replay-hide') && document.querySelector('ytd-watch-flexy #chat');
 		root.setProperty('--watch-panel-width', chat ? chat.getBoundingClientRect().width + 'px' : '0px');
 	}
 
@@ -249,7 +249,9 @@
 	const REPLAY_HIDE_CLASS = 'ytaq-replay-hide';
 
 	function showReplayChat() {
+		if (!document.documentElement.classList.contains(REPLAY_HIDE_CLASS)) return;
 		document.documentElement.classList.remove(REPLAY_HIDE_CLASS);
+		measure();
 	}
 
 	function replayFromPlayer() {
