@@ -6,6 +6,20 @@ html[data-ytaq-theme] ytd-masthead {
   background: var(--ytaq-color-bg) !important;
 }
 
+html[data-ytaq-theme] #frosted-glass.ytd-app,
+html[data-ytaq-theme] ytd-feed-filter-chip-bar-renderer :is(#left-arrow-button, #right-arrow-button),
+html[data-ytaq-theme] ytd-feed-filter-chip-bar-renderer :is(#left-arrow-button, #right-arrow-button) ytd-button-renderer {
+  background: var(--ytaq-color-bg) !important;
+}
+
+html[data-ytaq-theme] ytd-feed-filter-chip-bar-renderer #right-arrow::before {
+  background: linear-gradient(to left, var(--ytaq-color-bg) 20%, transparent 80%) !important;
+}
+
+html[data-ytaq-theme] ytd-feed-filter-chip-bar-renderer #left-arrow::after {
+  background: linear-gradient(to right, var(--ytaq-color-bg) 20%, transparent 80%) !important;
+}
+
 html[data-ytaq-theme] .ytSearchboxComponentInputBoxDark,
 html[data-ytaq-theme] .ytSearchboxComponentSearchButtonDark {
   background: var(--ytaq-color-field) !important;
