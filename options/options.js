@@ -85,7 +85,7 @@
 
 	const SECTIONS = {
 		theme: {
-			names: ['theme', 'customCss', 'searchGrid', 'cardHeader', 'compactCards', 'watchWide', 'watchFitInfo', 'watchSide', 'watchRelated', 'watchDescBelow', 'watchCloseReplay'],
+			names: ['theme', 'customCss', 'searchGrid', 'cardHeader', 'hideCardBadges', 'compactCards', 'watchWide', 'watchFitInfo', 'watchSide', 'watchRelated', 'watchDescBelow', 'watchCloseReplay'],
 			async init() {
 				palette = await loadPalette();
 				const name = $('theme', 'theme-name');
@@ -131,6 +131,7 @@
 				$('theme', 'customCss').value = v.customCss || '';
 				$('theme', 'searchGrid').checked = !!v.searchGrid;
 				$('theme', 'cardHeader').checked = !!v.cardHeader;
+				$('theme', 'hideCardBadges').checked = !!v.hideCardBadges;
 				for (const cb of document.querySelectorAll('.ytaq-compactPlaces input')) cb.checked = !!v.compactCards[cb.value];
 				this.syncCompact();
 				$('theme', 'watchWide').checked = !!v.watchWide;
@@ -154,6 +155,7 @@
 					customCss: $('theme', 'customCss').value,
 					searchGrid: $('theme', 'searchGrid').checked,
 					cardHeader: $('theme', 'cardHeader').checked,
+					hideCardBadges: $('theme', 'hideCardBadges').checked,
 					compactCards: Object.fromEntries([...document.querySelectorAll('.ytaq-compactPlaces input')].map(cb => [cb.value, cb.checked])),
 					watchWide: $('theme', 'watchWide').checked,
 					watchFitInfo: $('theme', 'watchFitInfo').checked,

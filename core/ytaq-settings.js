@@ -20,6 +20,7 @@
 		},
 		searchGrid: { key: 'ytaq_search_grid', value: true },
 		cardHeader: { key: 'ytaq_card_header', value: true },
+		hideCardBadges: { key: 'ytaq_hide_card_badges', value: true },
 		compactCards: { key: 'ytaq_compact_cards', value: { home: false, subs: false, channel: false, search: false } },
 		watchWide: { key: 'ytaq_watch_wide', value: true },
 		watchFitInfo: { key: 'ytaq_watch_fit_info', value: true },

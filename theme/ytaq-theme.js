@@ -66,6 +66,13 @@
 	header(YTaqSettings.defaults('cardHeader'));
 	YTaqSettings.watch('cardHeader', header);
 
+	function badges(on) {
+		document.documentElement.classList.toggle('ytaq-hide-card-badges', !!on);
+	}
+
+	badges(YTaqSettings.defaults('hideCardBadges'));
+	YTaqSettings.watch('hideCardBadges', badges);
+
 	compact(YTaqSettings.defaults('compactCards'));
 	YTaqSettings.watch('compactCards', compact);
 })();
