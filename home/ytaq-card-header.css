@@ -1,13 +1,13 @@
-html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] yt-lockup-metadata-view-model:has(.ytLockupMetadataViewModelAvatar):has(.ytContentMetadataViewModelMetadataRow:first-child > span:first-child a:is([href^="/@"], [href^="/channel/"])) {
+html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] yt-lockup-metadata-view-model:is(:has(.ytLockupMetadataViewModelAvatar):has(.ytContentMetadataViewModelMetadataRow:first-child > span:first-child a:is([href^="/@"], [href^="/channel/"])), [data-ytaq-collab]) {
   position: relative !important;
   padding-top: calc(var(--ytaq-size-circle) + var(--ytaq-space-2) * 2) !important;
 }
 
-html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] yt-lockup-metadata-view-model:has(.ytLockupMetadataViewModelAvatar):has(.ytContentMetadataViewModelMetadataRow:first-child > span:first-child a:is([href^="/@"], [href^="/channel/"])) :is(.ytLockupMetadataViewModelTextContainer, .ytLockupMetadataViewModelMetadata, yt-content-metadata-view-model, .ytContentMetadataViewModelMetadataRow) {
+html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] yt-lockup-metadata-view-model:is(:has(.ytLockupMetadataViewModelAvatar):has(.ytContentMetadataViewModelMetadataRow:first-child > span:first-child a:is([href^="/@"], [href^="/channel/"])), [data-ytaq-collab]) :is(.ytLockupMetadataViewModelTextContainer, .ytLockupMetadataViewModelMetadata, yt-content-metadata-view-model, .ytContentMetadataViewModelMetadataRow) {
   position: static !important;
 }
 
-html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] yt-lockup-metadata-view-model:has(.ytLockupMetadataViewModelAvatar):has(.ytContentMetadataViewModelMetadataRow:first-child > span:first-child a:is([href^="/@"], [href^="/channel/"])) .ytLockupMetadataViewModelAvatar {
+html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] yt-lockup-metadata-view-model:is(:has(.ytLockupMetadataViewModelAvatar):has(.ytContentMetadataViewModelMetadataRow:first-child > span:first-child a:is([href^="/@"], [href^="/channel/"])), [data-ytaq-collab]) .ytLockupMetadataViewModelAvatar {
   position: absolute;
   top: var(--ytaq-space-2);
   left: var(--ytaq-space-2);
@@ -19,7 +19,8 @@ html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] yt-lockup-
   height: var(--ytaq-size-circle) !important;
 }
 
-html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] yt-lockup-metadata-view-model:has(.ytLockupMetadataViewModelAvatar):has(.ytContentMetadataViewModelMetadataRow:first-child > span:first-child a:is([href^="/@"], [href^="/channel/"])) .ytContentMetadataViewModelMetadataRow:first-child > span:first-child {
+html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] yt-lockup-metadata-view-model:has(.ytLockupMetadataViewModelAvatar):has(.ytContentMetadataViewModelMetadataRow:first-child > span:first-child a:is([href^="/@"], [href^="/channel/"])) .ytContentMetadataViewModelMetadataRow:first-child > span:first-child,
+html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] yt-lockup-metadata-view-model[data-ytaq-collab] > .ytaq-collab-names {
   position: absolute;
   top: var(--ytaq-space-2);
   left: calc(var(--ytaq-size-circle) + var(--ytaq-space-2) * 2);
@@ -38,10 +39,18 @@ html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] yt-lockup-
   display: none;
 }
 
-html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] yt-lockup-metadata-view-model:has(.ytLockupMetadataViewModelAvatar):has(.ytContentMetadataViewModelMetadataRow:first-child > span:first-child a:is([href^="/@"], [href^="/channel/"])) .ytLockupMetadataViewModelMenuButton {
+html.ytaq-card-header ytd-rich-item-renderer[rendered-from-rich-grid] yt-lockup-metadata-view-model:is(:has(.ytLockupMetadataViewModelAvatar):has(.ytContentMetadataViewModelMetadataRow:first-child > span:first-child a:is([href^="/@"], [href^="/channel/"])), [data-ytaq-collab]) .ytLockupMetadataViewModelMenuButton {
   position: absolute !important;
   top: var(--ytaq-space-2) !important;
   right: var(--ytaq-space-1) !important;
+}
+
+html.ytaq-card-header [data-ytaq-collab-hide] {
+  display: none !important;
+}
+
+html.ytaq-card-header yt-lockup-metadata-view-model[data-ytaq-collab] > .ytaq-collab-names {
+  color: var(--yt-sys-color-baseline--text-secondary);
 }
 
 html.ytaq-card-header.ytaq-search-grid ytd-search ytd-item-section-renderer > #contents > ytd-video-renderer:has(#channel-info #channel-thumbnail) .text-wrapper {

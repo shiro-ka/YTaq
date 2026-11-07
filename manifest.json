@@ -61,6 +61,7 @@
         "popup/ytaq-popup-comments.js",
         "popup/ytaq-popup.js",
         "home/ytaq-home.js",
+        "home/ytaq-card-collab.js",
         "watch/ytaq-watch.js",
         "rate/ytaq-rate-manager.js",
         "rate/ytaq-rate-ui.js",
