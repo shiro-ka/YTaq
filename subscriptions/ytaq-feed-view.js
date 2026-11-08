@@ -133,6 +133,7 @@
 		a.dataset.video = id;
 		if (d.seconds) a.dataset.seconds = d.seconds;
 		if (v.channel) a.dataset.channel = v.channel;
+		if (d.members) a.dataset.members = '1';
 
 		const thumb = el('div', 'ytaq-feed-thumb');
 		const img = el('img');
@@ -285,6 +286,7 @@
 					seconds: parseSeconds(b.text),
 					liveNow: /LIVE/.test(b.badgeStyle || ''),
 					upcoming,
+					members: !!find(meta, n => n.badgeViewModel && n.badgeViewModel.badgeStyle === 'BADGE_MEMBERS_ONLY'),
 					published: when ? new Date(+when[1], when[2] - 1, +when[3], +when[4], +when[5]).getTime() : undefined,
 					short: false
 				}

@@ -217,6 +217,82 @@
 		}
 	}
 
+	const MEMBERS_ATTR = 'data-ytaq-members';
+	const MEMBERS_KEY = 'ytaq_memberships';
+	const MEMBERS_TTL = 6 * 60 * 60 * 1000;
+	const MEMBERS_STAR = 'path[d^="M6 .5a5.5 5.5 0 100 11"]';
+	let membersOpt = YTaqSettings.defaults('membersOnly');
+	let joined = { ids: [], handles: [], at: 0 };
+	let members = { hide: false, ids: new Set(), handles: new Set() };
+	let membersFetching = false;
+
+	function membersOnly(el) {
+		if (el.dataset && el.dataset.members) return true;
+		if (el.querySelector('.badge-style-type-members-only')) return true;
+		const badge = el.querySelector('badge-shape.ytBadgeShapeCommerce');
+		return !!(badge && badge.querySelector(MEMBERS_STAR));
+	}
+
+	function isMember(el) {
+		if (!members.ids.size && !members.handles.size) return false;
+		const id = el.dataset && el.dataset.channel;
+		if (id && members.ids.has(id)) return true;
+		for (const a of el.querySelectorAll(CHANNEL_LINKS)) {
+			const href = a.getAttribute('href');
+			const h = handleOf(href);
+			if (h && (members.handles.has(h) || members.ids.has(handleIds['/' + h]))) return true;
+			const i = idOf(href);
+			if (i && members.ids.has(i)) return true;
+		}
+		const owner = linklessOwner(el);
+		return !!owner && (members.handles.has(owner) || members.ids.has(handleIds['/' + owner]));
+	}
+
+	function membersPass(items, onChannelPage) {
+		for (const el of items) el.toggleAttribute(MEMBERS_ATTR, members.hide && !onChannelPage && membersOnly(el) && !isMember(el));
+	}
+
+	function rebuildMembers() {
+		const ids = new Set(joined.ids || []);
+		const handles = new Set(joined.handles || []);
+		for (const line of membersOpt.extra || []) {
+			const s = String(line).trim();
+			const id = /UC[\w-]{22}/.exec(s);
+			const h = /@[^/?#\s]+/.exec(s);
+			if (id) ids.add(id[0]);
+			else if (h) handles.add(h[0].toLowerCase());
+		}
+		members = { hide: !!membersOpt.hide, ids, handles };
+		hideDirty = true;
+		schedule();
+	}
+
+	async function fetchMemberships() {
+		if (membersFetching || !membersOpt.hide || !window.YTaqInnertube) return;
+		if (joined.at && Date.now() - joined.at < MEMBERS_TTL) return;
+		membersFetching = true;
+		try {
+			const json = await window.YTaqInnertube.call('browse', { browseId: 'FEmemberships_and_purchases' });
+			const ids = new Set();
+			const handles = new Set();
+			(function walk(n) {
+				if (!n || typeof n !== 'object') return;
+				if (typeof n.browseId === 'string' && /^UC[\w-]{22}$/.test(n.browseId)) {
+					ids.add(n.browseId);
+					const h = handleOf(n.canonicalBaseUrl);
+					if (h) handles.add(h);
+				}
+				for (const k in n) walk(n[k]);
+			})(json.contents);
+			joined = { ids: [...ids], handles: [...handles], at: Date.now() };
+			chrome.storage.local.set({ [MEMBERS_KEY]: joined });
+			rebuildMembers();
+		} catch {
+		} finally {
+			membersFetching = false;
+		}
+	}
+
 	function scanAll() {
 		const onChannelPage = CHANNEL_PAGE.test(location.pathname);
 		const items = [];
@@ -225,6 +301,7 @@
 			items.push(el);
 		}
 		watchedPass(items);
+		membersPass(items, onChannelPage);
 		const muting = rules.any || dirty;
 		if (muting) for (const el of items) {
 			if (onChannelPage && !el.classList.contains('ytaq-feed-item')) {
@@ -416,7 +493,7 @@
 		scheduled = true;
 		requestAnimationFrame(() => {
 			scheduled = false;
-			if (rules.any || dirty || hideOn || hideDirty) scanAll();
+			if (rules.any || dirty || hideOn || hideDirty || members.hide) scanAll();
 			else for (const el of document.querySelectorAll(COMMENTS)) commentButton(el);
 			hideDirty = false;
 			dirty = rules.any;
@@ -430,6 +507,16 @@
 		hideOn = Object.values(hide.places).some(Boolean);
 		hideDirty = true;
 		schedule();
+	});
+	YTaqSettings.watch('membersOnly', v => {
+		membersOpt = v;
+		rebuildMembers();
+		fetchMemberships();
+	});
+	YTaq.getStorage(MEMBERS_KEY, null).then(v => {
+		if (v && Array.isArray(v.ids)) joined = v;
+		rebuildMembers();
+		fetchMemberships();
 	});
 	YTaq.getStorage(OWNERS_KEY, {}).then(v => {
 		for (const [k, h] of Object.entries(v || {})) if (!owners.has(k)) owners.set(k, h);

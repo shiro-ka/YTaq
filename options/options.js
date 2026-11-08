@@ -260,7 +260,7 @@
 		},
 
 		mute: {
-			names: ['mute', 'hideWatched', 'homeHide'],
+			names: ['mute', 'hideWatched', 'homeHide', 'membersOnly'],
 			channels: [],
 			renderChannels() {
 				const box = $('mute', 'muteChannels');
@@ -294,6 +294,13 @@
 				$('mute', 'watchedPercent').value = v.hideWatched.percent;
 				for (const cb of document.querySelectorAll('.ytaq-watchedPlaces input')) cb.checked = !!v.hideWatched.places[cb.value];
 				$('mute', 'homeHideShelves').checked = !!v.homeHide.shelves;
+				$('mute', 'membersHide').checked = !!v.membersOnly.hide;
+				$('mute', 'membersExtra').value = (v.membersOnly.extra || []).join('\n');
+				chrome.storage.local.get(['ytaq_memberships'], r => {
+					const m = r.ytaq_memberships;
+					const list = m ? [...(m.handles || []), ...(m.ids || [])] : [];
+					$('mute', 'membersJoined').textContent = !m ? 'まだ読み取っていません。YouTube を開くと読み取ります。' : list.length ? '読み取ったチャンネル: ' + list.join('、') : '読み取ったチャンネルはありません。';
+				});
 				$('mute', 'homeHidePlaylists').checked = !!v.homeHide.playlists;
 			},
 			collect() {
@@ -313,6 +320,7 @@
 				return {
 					mute: { words, channels: this.channels, commentWords: $('mute', 'commentWords').checked },
 					hideWatched: { percent, places },
+					membersOnly: { hide: $('mute', 'membersHide').checked, extra: $('mute', 'membersExtra').value.split('\n').map(s => s.trim()).filter(Boolean) },
 					homeHide: { shelves: $('mute', 'homeHideShelves').checked, playlists: $('mute', 'homeHidePlaylists').checked }
 				};
 			}
