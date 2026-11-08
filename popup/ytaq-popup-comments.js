@@ -111,6 +111,13 @@
 			if (a.channelId) r.dataset.channel = a.channelId;
 			const handle = handleOf(a.displayName);
 			if (handle) r.dataset.handle = handle;
+			const avatarUrl = a.avatarThumbnailUrl || (((p.avatar || {}).image || {}).sources || [])[0]?.url;
+			const avatar = el('img', 'ytaq-popup-comment-avatar');
+			avatar.alt = '';
+			avatar.loading = 'lazy';
+			avatar.referrerPolicy = 'no-referrer';
+			if (avatarUrl) avatar.src = avatarUrl;
+			r.append(avatar);
 			const meta = el('div', 'ytaq-popup-comment-meta');
 			meta.append(el('span', 'ytaq-popup-comment-author', a.displayName || ''), el('span', 'ytaq-popup-comment-when', props.publishedTime || ''));
 			const mute = el('button', 'ytaq-popup-comment-mute');

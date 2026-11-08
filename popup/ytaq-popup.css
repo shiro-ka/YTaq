@@ -562,9 +562,28 @@ html[data-ytaq-theme] .ytaq-popup-channel-row .ytaq-folder-btn {
 }
 
 .ytaq-popup-comment {
+	--ytaq-comment-avatar: var(--ytaq-size-circle);
+	display: grid;
+	grid-template-columns: var(--ytaq-comment-avatar) minmax(0, 1fr);
+	column-gap: var(--ytaq-space-2);
+	align-items: start;
 	padding: var(--ytaq-space-2) var(--ytaq-space-3);
 	font: 400 var(--ytaq-fs-14)/var(--ytaq-lh-14) Roboto, Arial, sans-serif;
 	color: var(--ytaq-color-text);
+}
+
+.ytaq-popup-comment > * {
+	grid-column: 2;
+}
+
+.ytaq-popup-comment > .ytaq-popup-comment-avatar {
+	grid-column: 1;
+	grid-row: 1 / span 4;
+	width: var(--ytaq-comment-avatar);
+	height: var(--ytaq-comment-avatar);
+	border-radius: 50%;
+	background: var(--ytaq-color-hover);
+	object-fit: cover;
 }
 
 .ytaq-popup-comment[hidden] {
@@ -704,6 +723,7 @@ html[data-ytaq-theme] .ytaq-popup-channel-row .ytaq-folder-btn {
 }
 
 .ytaq-popup-comment-replies .ytaq-popup-comment {
+	--ytaq-comment-avatar: 24px;
 	padding-left: 0;
 	padding-right: 0;
 	align-self: stretch;
