@@ -269,6 +269,7 @@
 			const vd = json.videoDetails || {};
 			const mf = (json.microformat && json.microformat.playerMicroformatRenderer) || {};
 			channelId = vd.channelId || null;
+			if (vd.title && parts.onTitle) parts.onTitle(vd.title);
 			if (channelId && parts.onChannel) parts.onChannel({ id: channelId, name: vd.author || '', category: mf.category || null });
 			if (folderBtn && channelId) folderBtn.setChannel({ id: channelId, name: vd.author || '' });
 			const bits = [];

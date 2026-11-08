@@ -31,6 +31,7 @@
 		'#video-title',
 		'.ytLockupMetadataViewModelTitle',
 		'h3 a',
+		'.ytaq-feed-title',
 		'yt-formatted-string'
 	].join(',');
 
