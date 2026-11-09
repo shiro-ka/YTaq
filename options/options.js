@@ -665,7 +665,7 @@
 			box.checked = !!r.ytaq_sync_on;
 			const st = r.ytaq_sync_status;
 			if (!box.checked) out.textContent = '';
-			else if (st && st.error) out.textContent = '同期できませんでした: ' + st.error;
+			else if (st && st.error) out.textContent = /quota/i.test(st.error) ? '同期できる量（約100KB）を超えたので、同期できませんでした。フォルダやチャンネルごとの速度を減らすと、また同期されます。' : '同期できませんでした: ' + st.error;
 			else out.textContent = st ? '最後に同期した時刻: ' + SYNC_TIME.format(new Date(st.at)) : '同期を始めています';
 		};
 		const read = () => chrome.storage.local.get(['ytaq_sync_on', 'ytaq_sync_status'], render);

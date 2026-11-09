@@ -4,7 +4,7 @@
 	const ON = 'ytaq_sync_on';
 	const META = 'ytaq_sync_meta';
 	const STATUS = 'ytaq_sync_status';
-	const SKIP = new Set([ON, META, STATUS, 'ytaq_feed', 'ytaq_short_owners', 'ytaq_subs', 'ytaq_channel_handles', 'ytaq_innertube', 'ytaq_channel_lists', 'ytaq_playbackrate', 'ytaq_memberships']);
+	const SKIP = new Set([ON, META, STATUS, 'ytaq_feed', 'ytaq_short_owners', 'ytaq_subs', 'ytaq_channel_handles', 'ytaq_innertube', 'ytaq_channel_lists', 'ytaq_playbackrate', 'ytaq_memberships', 'ytaq_custom_css']);
 	const PIECE = 2000;
 	const PUSH_DELAY = 2000;
 
@@ -98,6 +98,8 @@
 	async function merge() {
 		const all = await browser.storage.local.get(null);
 		const remote = await browser.storage.sync.get(null);
+		const stale = Object.keys(remote).filter(k => k.startsWith('ytaq_') && !syncable(k.split('#')[0]));
+		if (stale.length) await browser.storage.sync.remove(stale);
 		const keys = new Set([...Object.keys(all), ...Object.keys(remote)].filter(syncable));
 		const up = [];
 		const down = [];
