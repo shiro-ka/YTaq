@@ -46,7 +46,7 @@
 	function ruleRow(rule) {
 		const row = document.createElement('div');
 		row.className = 'ytaq-title-rule';
-		row.classList.add('row', 'middle', 'wrap');
+		row.classList.add('row', 'wrap');
 		const on = document.createElement('input');
 		on.type = 'checkbox';
 		on.className = 'ytaq-title-on';
@@ -693,7 +693,7 @@
 		card.classList.add('tray', 'stack');
 
 		const row = document.createElement('div');
-		row.classList.add('row', 'middle', 'wrap');
+		row.classList.add('row', 'wrap');
 		const name = document.createElement('input');
 		name.type = 'text';
 		name.value = folder.name;
@@ -726,7 +726,7 @@
 		}
 		for (const id of folder.channels) {
 			const line = document.createElement('div');
-			line.classList.add('row', 'middle', 'between');
+			line.classList.add('row', 'between');
 			const label = document.createElement('a');
 			label.href = 'https://www.youtube.com/channel/' + id;
 			label.target = '_blank';
@@ -766,10 +766,10 @@
 		row.className = 'ytaq-channel-row';
 		row.dataset.name = c.name.toLowerCase();
 		row.classList.add('tray');
-		row.classList.add('row', 'middle', 'wrap', 'between');
+		row.classList.add('row', 'wrap', 'between');
 
 		const head = document.createElement('div');
-		head.classList.add('row', 'middle', 'wrap');
+		head.classList.add('row', 'wrap');
 		if (c.avatar) {
 			const img = document.createElement('img');
 			img.src = c.avatar;
@@ -793,9 +793,9 @@
 		}
 
 		const speed = document.createElement('div');
-		speed.classList.add('row', 'middle', 'wrap');
+		speed.classList.add('row', 'wrap');
 		const label = document.createElement('label');
-		label.classList.add('row', 'middle');
+		label.classList.add('row');
 		const input = document.createElement('input');
 		input.type = 'number';
 		input.step = '0.05';
@@ -818,7 +818,7 @@
 		speed.append(label, clear);
 
 		const boxes = document.createElement('div');
-		boxes.classList.add('row', 'middle', 'wrap');
+		boxes.classList.add('row', 'wrap');
 		for (const f of folders.folders) {
 			const l = document.createElement('label');
 			const cb = document.createElement('input');
@@ -830,7 +830,7 @@
 		}
 
 		const controls = document.createElement('div');
-		controls.classList.add('row', 'middle', 'wrap');
+		controls.classList.add('row', 'wrap');
 		controls.append(speed);
 		if (folders.folders.length) controls.append(boxes);
 		row.append(head, controls);

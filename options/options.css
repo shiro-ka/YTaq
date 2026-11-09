@@ -33,6 +33,7 @@
 .ytaq-mini-speed span.ytaq-on { border-color: var(--ytaq-color-accent); color: var(--ytaq-color-accent); }
 
 .ytaq-opt label { flex: 1 1 auto; min-width: 0; }
+.ytaq-channel-row > *, .ytaq-channel-row > * > *, .ytaq-folders .row > a { flex: 0 1 auto; min-width: 0; }
 .ytaq-opt.ytaq-off, .ytaq-dep-thumb.ytaq-off { opacity: .45; }
 .ytaq-info { flex: none; font-size: var(--ytaq-fs-16); color: var(--ytaq-color-text-note); }
 .ytaq-tip { max-width: min(22rem, calc(100vw - 32px)); padding: var(--ytaq-space-2) var(--ytaq-space-3); font-size: var(--ytaq-fs-12); line-height: var(--ytaq-lh-12); }
