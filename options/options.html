@@ -2,343 +2,500 @@
 <html lang="ja" data-ytaq-theme="trench blue">
 <head>
   <meta charset="UTF-8">
-  <title>YTaq Setting</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>YTaq 設定</title>
   <link rel="stylesheet" href="../ytaq-palette.css">
+  <link rel="stylesheet" href="ytaq-ui.css">
   <link rel="stylesheet" href="options.css">
 </head>
 <body class="page shell doc">
-  <header class="p-3">
-    <h1 class="fs-20 fw-700">YTaq setting</h1>
+  <header class="row between p-3">
+    <div class="row middle">
+      <span class="fs-16 fw-700">YTaq</span>
+      <span class="note fs-12">設定</span>
+    </div>
+    <div class="row middle">
+      <span class="ytaq-status note fs-12" role="status"></span>
+      <button class="button button-icon m-invisible" popovertarget="menu" aria-label="目次">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </div>
   </header>
 
-  <nav class="stack p-3">
-    <button class="ytaq-nav button button-block" value="channels">チャンネル</button>
-    <button class="ytaq-nav button button-block" value="theme">テーマ</button>
-    <button class="ytaq-nav button button-block" value="perf">軽量化</button>
-    <button class="ytaq-nav button button-block" value="antibite">Antibite</button>
-    <button class="ytaq-nav button button-block" value="playbackrate">Playbackrate</button>
-    <button class="ytaq-nav button button-block" value="folders">フォルダ</button>
-    <button class="ytaq-nav button button-block" value="mute">ミュート</button>
-    <button class="ytaq-nav button button-block" value="backup">書き出し・読み込み</button>
-  </nav>
+  <main class="stack container-m">
 
-  <main class="container-m">
-    <section class="ytaq-section ytaq-section-theme stack" hidden>
-      <h2 class="fs-24 fw-700">テーマ設定</h2>
-      <label class="stack">
-        テーマ
-        <select class="ytaq-theme-name"></select>
-      </label>
-      <label class="stack" hidden>
-        テーマの色相
-        <input type="range" class="ytaq-primary-hue ytaq-hue" min="0" max="359" step="1">
-      </label>
-      <label class="stack">
-        アクセント
-        <select class="ytaq-theme-accent"></select>
-      </label>
-      <label class="stack" hidden>
-        アクセントの色相
-        <input type="range" class="ytaq-accent-hue ytaq-hue" min="0" max="359" step="1">
-      </label>
-      <p class="ytaq-accent-note note" hidden></p>
-      <label><input type="checkbox" class="ytaq-searchGrid"> 検索結果を縦のカードで並べる</label>
-      <label><input type="checkbox" class="ytaq-cardHeader"> カードのタイトルの上にチャンネルのアイコンと名前を出す</label>
-      <label><input type="checkbox" class="ytaq-hideCardBadges"> カードの再生数・日付の下に出る印（オートダビング版・ハイプランキングなど）の行を隠す</label>
-      <p>小さいカードにして、1行に多く並べる場所</p>
-      <div class="ytaq-compactPlaces row wrap">
-        <label><input type="checkbox" value="home"> ホーム</label>
-        <label><input type="checkbox" value="subs"> 登録チャンネル（YouTube の一覧）</label>
-        <label><input type="checkbox" value="channel"> チャンネルのページ</label>
-        <label><input type="checkbox" value="search"> 検索（縦のカードのとき）</label>
+    <section class="ytaq-page stack gap-4" data-page="top">
+      <h1 class="fs-24 fw-700">YTaq でできること</h1>
+      <div class="grid ytaq-features">
+        <a href="#popup" class="ytaq-feature tray stack">
+          <div class="ytaq-mini ytaq-mini-popup"><div class="ytaq-mp-page"><i></i><i></i><i></i><i></i></div><div class="ytaq-mp-box"><b></b><span></span></div></div>
+          <strong>ページを移らずに見る</strong>
+          <span class="note fs-12">動画を押すと、一覧の上に小さな窓で再生します。ページの読み込みし直しがありません。</span>
+        </a>
+        <a href="#folder" class="ytaq-feature tray stack">
+          <div class="ytaq-mini ytaq-mini-folder"><span>ゲーム</span><span>音楽</span><span>学び</span></div>
+          <strong>登録チャンネルを分けて見る</strong>
+          <span class="note fs-12">チャンネルをフォルダに入れて、フォルダごとの新着だけを並べます。</span>
+        </a>
+        <a href="#mute" class="ytaq-feature tray stack">
+          <div class="ytaq-mini ytaq-mini-mute"><i></i><i class="ytaq-gone"></i><i></i><i class="ytaq-gone"></i></div>
+          <strong>見たくないものを隠す</strong>
+          <span class="note fs-12">単語・チャンネル・見終わった動画・Shorts・入っていないメンバー限定などを一覧から外します。</span>
+        </a>
+        <a href="#home" class="ytaq-feature tray stack">
+          <div class="ytaq-mini ytaq-mini-card"><div class="ytaq-mc-head"><i></i><span></span></div><div class="ytaq-mc-thumb"></div><span class="ytaq-mc-title"></span></div>
+          <strong>一覧を見やすくする</strong>
+          <span class="note fs-12">チャンネル名をカードの上に出す、カードを小さくする、などを場所ごとに選べます。</span>
+        </a>
+        <a href="#watch" class="ytaq-feature tray stack">
+          <div class="ytaq-mini ytaq-mini-watch"><div class="ytaq-mw-player"></div><div class="ytaq-mw-info"></div><div class="ytaq-mw-desc"></div></div>
+          <strong>再生ページを広く使う</strong>
+          <span class="note fs-12">動画を画面いっぱいに出し、スクロールすると小さくしてコメントの横に並べます。</span>
+        </a>
+        <a href="#speed" class="ytaq-feature tray stack">
+          <div class="ytaq-mini ytaq-mini-speed"><span>1.0x</span><span class="ytaq-on">1.5x</span><span>2.0x</span></div>
+          <strong>チャンネルごとの再生速度</strong>
+          <span class="note fs-12">チャンネルごとに速度を覚えます。音楽の動画は 1.0 倍のままにします。</span>
+        </a>
       </div>
-      <label><input type="checkbox" class="ytaq-watchWide"> 動画のページで動画を全幅にする</label>
-      <label><input type="checkbox" class="ytaq-watchFitInfo"> タイトルとボタンまで画面に収まる大きさにする</label>
-      <label><input type="checkbox" class="ytaq-watchSide"> スクロールしたら、動画とボタンをコメントの横に固定する</label>
-      <label><input type="checkbox" class="ytaq-watchRelated"> 関連動画を出す</label>
-      <label><input type="checkbox" class="ytaq-watchDescBelow"> 関連動画を出さないときは、固定した動画の下に概要を出す</label>
-      <label><input type="checkbox" class="ytaq-watchCloseReplay"> 配信アーカイブのチャットを自動で閉じる</label>
-      <label class="stack">
-        カスタム CSS
-        <textarea class="ytaq-customCss w-full" rows="6" spellcheck="false" placeholder="html { --ytaq-color-bg: oklch(18% 0.05 150); }"></textarea>
-      </label>
-      <div class="row mt-3">
-        <button class="ytaq-save accent button button-outline">保存</button>
-        <button class="ytaq-reset button button-outline">デフォルトに戻す</button>
-      </div>
-      <div class="ytaq-message"></div>
     </section>
 
-    <section class="ytaq-section ytaq-section-perf stack" hidden>
-      <h2 class="fs-24 fw-700">軽量化</h2>
-      <p class="note">
-        YouTube 本体の JS は消せない（消すとページが死ぬ）ので、
-        そこに乗っている重い仕事を止める引き算の設定です。<br>
-        この環境で一番軽くなるのは「動画クリック時の挙動」で、それ以外は
-        ホーム 327 件での実測では有意差が出ませんでした。各項目に実測の有無を書いてあります。
-      </p>
-
-      <h3 class="mt-3 fs-16 fw-700">動画クリック時の挙動</h3>
-      <p>
-        YouTube は SPA 遷移のたびにフィードを作り直すので、遷移させないこと自体が
-        軽量化になります。<strong>この環境で一番軽くなる設定です。</strong><br>
-        ポップアップは /embed/（プレイヤーだけの軽量ページ）を読むので、フィードを
-        生かしたまま観られます。新しいタブはフィードのタブに一切触らないので再描画ゼロ。
-        ポップアップが YouTube 側の仕様変更で使えなくなったら、新しいタブに切り替えてください。
-      </p>
-      <select class="ytaq-click">
-        <option value="popup">ポップアップ（推奨・遷移しない）</option>
-        <option value="newtab">新しいタブで開く</option>
-        <option value="normal">何もしない（YouTube 標準）</option>
-      </select>
-
-      <label class="stack">
-        ポップアップの Referer
-        <input type="text" class="ytaq-embedReferer w-full" placeholder="https://example.com/">
-      </label>
-      <p class="note fs-12">
-        YouTube は「親が youtube.com」の埋め込みを拒否します（エラー 152）。
-        ポップアップの iframe が送る Referer だけをこの値に差し替えて回避します。
-        既定の example.com で弾かれる場合は、自分が持っているサイトの URL を入れてください。
-        差し替え対象は /embed/ のサブフレームのみで、他の通信には影響しません。
-      </p>
-
-      <label><input type="checkbox" class="ytaq-embedLogin"> ポップアップをログイン状態で再生する</label>
-      <p class="note fs-12">
-        ON（既定）は www.youtube.com を使い、ログイン状態が保たれます。
-        年齢制限・メンバー限定の動画が再生でき、再生速度も 2.0 倍を超えて指定できます。<br>
-        OFF にすると youtube-nocookie.com を使います。Cookie を送らないぶんわずかに
-        軽い代わりに、年齢制限・メンバー限定は再生できず、速度は 2.0 倍までになります。
-        ON で 152 が出るようになったら OFF を試してください。<br>
-        なお視聴履歴に残らないのは ON / OFF どちらも同じです（下の項目を参照）。
-      </p>
-
-      <label><input type="checkbox" class="ytaq-popupResume"> ポップアップ再生を、途中まで見た位置から始める</label>
-      <label><input type="checkbox" class="ytaq-watchHistory"> ポップアップ再生を視聴履歴に残す</label>
-      <p class="note fs-12">
-        埋め込みプレイヤーからの再生は、ログインしていても YouTube の視聴履歴に
-        載りません。再生ログの送信先が /watch のプレイヤーと別扱いになっているためで、
-        iframe 側の設定では変えられません。そのため「見たのにいつまでもおすすめに出る」が起きます。<br>
-        ON（既定）にすると、5 秒以上再生した時点で /watch 用の再生ログを YTaq が代わりに送ります。
-        送る秒数はプレイヤーから読んだ実際の再生位置です。<br>
-        代償として、再生ごとに /watch のページを1回取得します（表示はしません）。
-        <strong>YouTube の内部仕様に依存する回避策</strong>なので、何も知らせないまま、履歴に残らなくなることがあります。
-        失敗しても再生そのものには影響しません。
-      </p>
-
-      <h3 class="mt-3 fs-16 fw-700">ポップアップに出すもの</h3>
-      <p>概要・公開日・再生数・フォルダは軽い情報（1本約5KB）から、チャンネルのアイコン・高評価・低評価・チャンネル登録・高評価の数は動画のページの情報（1本約72KB）から取ります。軽い情報は再生速度の読み書きにも使うので、いつも取ります。動画のページの情報は、使う項目をすべてオフにすると取りません。</p>
-      <div class="ytaq-popup-info-options row wrap">
-        <label><input type="checkbox" value="avatar"> チャンネルのアイコン</label>
-        <label><input type="checkbox" value="description"> 概要</label>
-        <label><input type="checkbox" value="shortsDescInline"> Shorts では概要を右の列にはじめから出す</label>
-        <label><input type="checkbox" value="date"> 公開日</label>
-        <label><input type="checkbox" value="views"> 再生数</label>
-        <label><input type="checkbox" value="like"> 高評価</label>
-        <label><input type="checkbox" value="likeCount"> 高評価の数</label>
-        <label><input type="checkbox" value="dislike"> 低評価</label>
-        <label><input type="checkbox" value="save"> 保存（後で見る・再生リスト）</label>
-        <label><input type="checkbox" value="subscribe"> チャンネル登録</label>
-        <label><input type="checkbox" value="folder"> フォルダ</label>
-        <label><input type="checkbox" value="commentReplies"> コメントの返信</label>
-        <label><input type="checkbox" value="commentWrite"> コメントを書く</label>
+    <section class="ytaq-page stack gap-4" data-page="home" data-reset="cardHeader hideCardBadges compactCards.home" hidden>
+      <div class="row between middle"><h1 class="fs-24 fw-700">ホーム</h1><button class="ytaq-reset button button-outline">既定に戻す</button></div>
+      <div class="ytaq-preview tray">
+        <div class="ytaq-yt ytaq-yt-home">
+          <div class="ytaq-yt-chips"><span class="ytaq-on">すべて</span><span>音楽</span><span>ゲーム</span><span>ニュース</span></div>
+          <div class="ytaq-yt-grid"></div>
+        </div>
       </div>
-
-      <h3 class="mt-3 fs-16 fw-700">ホバープレビュー</h3>
-      <p>
-        サムネイルにマウスを乗せたときのプレビュー再生を止めます。
-        乗せるだけで別の video 要素がデコードを始めます。
-        <strong>未計測</strong>（自動計測ではホバーが発生しないため）。理屈上は CPU を節約します。
-      </p>
-      <label><input type="checkbox" class="ytaq-perf-hoverPreview"> ホバープレビュー再生を止める</label>
-
-      <h3 class="mt-3 fs-16 fw-700">画面外のレンダリング省略</h3>
-      <p>
-        無限スクロールで DOM は増え続けます。画面外に出た動画カードや
-        コメントのレイアウト/描画を content-visibility でスキップします。<br>
-        <strong>実測で効果なし</strong>（ON/OFF とも median 8ms / jank 0.1%）のため既定 OFF。
-        ページの高さが変わる副作用があります。
-      </p>
-      <label><input type="checkbox" class="ytaq-perf-lazyOffscreen"> 画面外の要素を描画しない</label>
-
-      <h3 class="mt-3 fs-16 fw-700">シネマティック照明（アンビエントモード）</h3>
-      <p>
-        動画の縮小フレームを canvas に描いて常時ぼかす演出です。
-        再生中ずっと CPU を使い続けます。<br>
-        <strong>未計測</strong>（watch ページ限定の機能で、ポップアップの /embed/ には存在しません）。
-      </p>
-      <label><input type="checkbox" class="ytaq-perf-ambient"> シネマティック照明を止める</label>
-
-      <h3 class="mt-3 fs-16 fw-700">アニメーション</h3>
-      <p>
-        ホバー演出・リップル・トランジションを無効化します（ローディングスピナーは除外）。<br>
-        <strong>実測で効果なし</strong>のため既定 OFF。見た目の好みで選んでください。
-      </p>
-      <label><input type="checkbox" class="ytaq-perf-animations"> アニメーション/トランジションを止める</label>
-
-      <h3 class="mt-3 fs-16 fw-700">Shorts</h3>
-      <p>Shorts の列は複数の video を同時に抱えます。隠す場所を選べます。ホームだけ既定で隠します。</p>
-      <div class="ytaq-shortsPlaces row wrap">
-        <label><input type="checkbox" value="home"> ホーム</label>
-        <label><input type="checkbox" value="search"> 検索</label>
-        <label><input type="checkbox" value="subs"> 登録チャンネル（YouTube の一覧）</label>
-        <label><input type="checkbox" value="channel"> チャンネルのページ</label>
-        <label><input type="checkbox" value="related"> 関連動画</label>
-        <label><input type="checkbox" value="guide"> サイドバーの「ショート」</label>
+      <div class="tray stack gap-3">
+        <h2 class="fs-16 fw-700">カード</h2>
+        <div class="ytaq-opt row between middle">
+          <label><input type="checkbox" class="ytaq-cardHeader"> チャンネルのアイコンと名前をタイトルの上に出す</label>
+          <button class="ytaq-info button button-icon" popovertarget="i-header" aria-label="説明">ⓘ</button>
+          <div popover id="i-header" class="tray tray-popup ytaq-tip">カードの上の段にチャンネルを出します。共演者が複数いる動画は、全員の名前を並べます。登録チャンネル・チャンネルのページ・縦のカードにした検索でも同じになります。</div>
+        </div>
+        <div class="ytaq-opt row between middle">
+          <label><input type="checkbox" class="ytaq-hideCardBadges"> 「新着」「オートダビング版」などの表示を隠す</label>
+          <button class="ytaq-info button button-icon" popovertarget="i-badges" aria-label="説明">ⓘ</button>
+          <div popover id="i-badges" class="tray tray-popup ytaq-tip">再生数と日付の下に出る「新着」「オートダビング版」「ハイプランキング」などを出さないようにします。ほかのカードの一覧でも同じになります。</div>
+        </div>
+        <div class="ytaq-opt row between middle">
+          <label><input type="checkbox" class="ytaq-compact" value="home"> カードを小さくして、1行に多く並べる</label>
+        </div>
       </div>
-
-      <div class="row mt-3">
-        <button class="ytaq-save accent button button-outline">保存</button>
-        <button class="ytaq-reset button button-outline">デフォルトに戻す</button>
-      </div>
-      <div class="ytaq-message"></div>
     </section>
 
-    <section class="ytaq-section ytaq-section-antibite stack" hidden>
-      <h2 class="fs-24 fw-700">Antibite設定</h2>
-      <p class="note">YouTubeの不要な要素を除去する機能の設定</p>
-
-      <h3 class="mt-3 fs-16 fw-700">代替サムネイル</h3>
-      <p>YouTubeのデフォルトサムネイルを動画の実際のフレームに置き換えます。</p>
-      <label><input type="checkbox" class="ytaq-thumbnailEnabled"> 代替サムネイルを使用する</label>
-      <label class="stack">
-        サムネイルフレーム位置
-        <select class="ytaq-thumbnailFrame">
-          <option value="hq1">開始時（hq1.jpg）</option>
-          <option value="mq2">中間（mq2.jpg）</option>
-          <option value="hq3">終了時（hq3.jpg）</option>
-        </select>
-      </label>
-      <p class="note fs-12">動画のどのフレームをサムネイルとして使用するか選択します。</p>
-      <label><input type="checkbox" class="ytaq-shortsVertical"> Shorts は縦長のフレームを使う</label>
-      <p class="note fs-12">Shorts のサムネイルの両脇の帯が消えます。1枚あたりの読み込みは約10KBから約130KBに増えます。</p>
-
-      <h3 class="mt-3 fs-16 fw-700">タイトルの整形</h3>
-      <p>正規表現に当たった部分を、置き換え先の文字に置き換えます。置き換え先が空なら消します。整形するとタイトルが空になる場合は、そのままにします。</p>
-      <div class="row wrap">
-        <label><input type="checkbox" class="ytaq-title-place" value="list"> 一覧（ホーム・検索・チャンネル・関連動画）</label>
-        <label><input type="checkbox" class="ytaq-title-place" value="feed"> フォルダの新着</label>
-        <label><input type="checkbox" class="ytaq-title-place" value="popup"> ポップアップの見出し</label>
-        <label><input type="checkbox" class="ytaq-title-place" value="watch"> 動画のページのタイトル</label>
+    <section class="ytaq-page stack gap-4" data-page="search" data-reset="searchGrid compactCards.search" hidden>
+      <div class="row between middle"><h1 class="fs-24 fw-700">検索</h1><button class="ytaq-reset button button-outline">既定に戻す</button></div>
+      <div class="ytaq-preview tray">
+        <div class="ytaq-yt ytaq-yt-search"></div>
       </div>
-      <div class="ytaq-title-rules stack"></div>
+      <div class="tray stack gap-3">
+        <div class="ytaq-opt row between middle">
+          <label><input type="checkbox" class="ytaq-searchGrid"> 検索結果を縦のカードで並べる</label>
+        </div>
+        <div class="ytaq-opt row between middle">
+          <label><input type="checkbox" class="ytaq-compact" value="search"> カードを小さくして、1行に多く並べる</label>
+        </div>
+      </div>
+    </section>
+
+    <section class="ytaq-page stack gap-4" data-page="watch" data-reset="watchWide watchFitInfo watchSide watchRelated watchDescBelow watchCloseReplay" hidden>
+      <div class="row between middle"><h1 class="fs-24 fw-700">再生ページ</h1><button class="ytaq-reset button button-outline">既定に戻す</button></div>
       <div class="row">
-        <button class="ytaq-title-add button button-outline">ルールを足す</button>
+        <button class="ytaq-wstate button button-outline" aria-pressed="true" data-state="top">開いたとき</button>
+        <button class="ytaq-wstate button button-outline" aria-pressed="false" data-state="scrolled">スクロールしたあと</button>
       </div>
-      <label class="stack">
-        試す
-        <input type="text" class="ytaq-title-test w-full" placeholder="【MV】曲名 / アーティスト [Official Video]">
-      </label>
-      <p class="ytaq-title-result note"></p>
-
-      <div class="row mt-3">
-        <button class="ytaq-save accent button button-outline">保存</button>
-        <button class="ytaq-reset button button-outline">デフォルトに戻す</button>
+      <div class="ytaq-preview tray">
+        <div class="ytaq-yt ytaq-yt-watch" data-state="top">
+          <div class="ytaq-w-player"><span class="ytaq-yt-time">0:00 / 12:04</span></div>
+          <div class="ytaq-w-info">
+            <span class="ytaq-w-title">動画のタイトル</span>
+            <div class="ytaq-w-row">
+              <span class="ytaq-yt-avatar"></span>
+              <div class="ytaq-yt-text"><span class="ytaq-yt-title">チャンネル名</span><span class="ytaq-yt-ch">チャンネル登録者数 1万人</span></div>
+              <span class="ytaq-w-btn ytaq-w-sub">チャンネル登録</span>
+              <span class="ytaq-w-grow"></span>
+              <span class="ytaq-w-btn">高評価 1,234</span><span class="ytaq-w-btn">共有</span><span class="ytaq-w-btn">保存</span>
+            </div>
+          </div>
+          <div class="ytaq-w-desc"><span class="ytaq-yt-title">概要</span><span>1万回視聴 · 2日前</span><span>概要の文が入ります。</span></div>
+          <div class="ytaq-w-comments"><span class="ytaq-yt-title">コメント</span></div>
+          <div class="ytaq-w-related"><span class="ytaq-yt-title">関連動画</span></div>
+        </div>
       </div>
-      <div class="ytaq-message"></div>
+      <div class="tray stack gap-3">
+        <h2 class="fs-16 fw-700">配置</h2>
+        <div class="ytaq-opt row between middle">
+          <label><input type="checkbox" class="ytaq-watchWide"> 動画を画面の幅いっぱいに出す</label>
+          <button class="ytaq-info button button-icon" popovertarget="i-wide" aria-label="説明">ⓘ</button>
+          <div popover id="i-wide" class="tray tray-popup ytaq-tip">YouTube のシアターモードを入れ、動画を角の丸い箱にします。自分でシアターモードを切ると、そのページの間だけ元に戻ります。</div>
+        </div>
+        <div class="ytaq-opt ytaq-dep-wide row between middle">
+          <label><input type="checkbox" class="ytaq-watchFitInfo"> タイトルとボタンまで1画面に収まる大きさにする</label>
+        </div>
+        <div class="ytaq-opt ytaq-dep-wide row between middle">
+          <label><input type="checkbox" class="ytaq-watchSide"> スクロールしたら、動画を小さくしてコメントの横に並べる</label>
+        </div>
+        <div class="ytaq-opt ytaq-dep-wide row between middle">
+          <label><input type="checkbox" class="ytaq-watchRelated"> 関連動画を出す</label>
+        </div>
+        <div class="ytaq-opt ytaq-dep-wide row between middle">
+          <label><input type="checkbox" class="ytaq-watchDescBelow"> 関連動画を出さないときは、空いた場所に概要を出す</label>
+        </div>
+      </div>
+      <div class="tray stack gap-3">
+        <h2 class="fs-16 fw-700">チャット</h2>
+        <div class="ytaq-opt row between middle">
+          <label><input type="checkbox" class="ytaq-watchCloseReplay"> 配信のアーカイブでは、チャットのリプレイを閉じておく</label>
+        </div>
+      </div>
     </section>
 
-    <section class="ytaq-section ytaq-section-playbackrate stack" hidden>
-      <h2 class="fs-24 fw-700">Playbackrate設定</h2>
-      <p class="note">動画プレイヤーの再生速度コントロールの設定</p>
-
-      <h3 class="mt-3 fs-16 fw-700">速度変更の増減量</h3>
-      <p>+/-ボタンを押したときの速度変更量を設定します。</p>
-      <label class="stack">
-        増減量（倍速）
-        <input type="number" class="ytaq-speedStep" min="0.05" max="1.0" step="0.05">
-      </label>
-      <p class="note fs-12">デフォルト: 0.25（YouTube標準準拠）</p>
-
-      <h3 class="mt-3 fs-16 fw-700">プリセット速度</h3>
-      <p>速度表示ボタンをクリックしたときに循環する速度のリストです。カンマ区切りで入力してください。</p>
-      <label class="stack">
-        プリセット速度（カンマ区切り）
-        <input type="text" class="ytaq-speedPresets w-full" placeholder="1.0, 1.25, 1.5, 1.75, 2.0, 4.0">
-      </label>
-      <p class="note fs-12">デフォルト: 1.0, 1.25, 1.5, 1.75, 2.0, 4.0（YouTube標準準拠）</p>
-
-      <h3 class="mt-3 fs-16 fw-700">音楽</h3>
-      <label><input type="checkbox" class="ytaq-musicNormalRate"> 音楽の動画はチャンネルの速度を使わず、1.0 倍で再生する</label>
-      <p class="note fs-12">サムネイルに ♪ の印がある動画を音楽とみなします。印の分からない開き方（URL を直接開いたときなど）では、動画のカテゴリが「音楽」かで決めます。音楽の動画で変えた速度は、チャンネルの速度として保存しません。</p>
-
-      <div class="row mt-3">
-        <button class="ytaq-save accent button button-outline">保存</button>
-        <button class="ytaq-reset button button-outline">デフォルトに戻す</button>
+    <section class="ytaq-page stack gap-4" data-page="popup" data-reset="click popupInfo popupResume watchHistory embedLogin embedReferer" hidden>
+      <div class="row between middle"><h1 class="fs-24 fw-700">ポップアップ</h1><button class="ytaq-reset button button-outline">既定に戻す</button></div>
+      <div class="tray stack gap-3">
+        <div class="ytaq-opt row between middle">
+          <label>動画を押したとき
+            <select class="ytaq-click">
+              <option value="popup">ポップアップで見る</option>
+              <option value="newtab">新しいタブで開く</option>
+              <option value="normal">YouTube のまま</option>
+            </select>
+          </label>
+          <button class="ytaq-info button button-icon" popovertarget="i-click" aria-label="説明">ⓘ</button>
+          <div popover id="i-click" class="tray tray-popup ytaq-tip">ポップアップは一覧の上に再生用の小さなページを重ねるので、一覧を作り直さずに見られます。YouTube の変更でポップアップが使えなくなったときは、新しいタブに切り替えてください。</div>
+        </div>
       </div>
-      <div class="ytaq-message"></div>
+      <div class="ytaq-preview tray">
+        <div class="ytaq-yt ytaq-yt-popup">
+          <div class="ytaq-p-player"><span class="ytaq-yt-time">0:00 / 12:04</span></div>
+          <div class="ytaq-p-bar">
+            <span class="ytaq-p-title">動画のタイトル</span>
+            <span class="ytaq-p-date" data-show="date">2026/11/09</span>
+            <span class="ytaq-p-views" data-show="views">1万回視聴</span>
+          </div>
+          <div class="ytaq-p-bar">
+            <span class="ytaq-yt-avatar" data-show="avatar"></span><span>チャンネル名</span>
+            <span class="ytaq-w-btn ytaq-w-sub" data-show="subscribe">チャンネル登録</span>
+            <span class="ytaq-w-btn" data-show="folder">フォルダ</span>
+            <span class="ytaq-w-btn" data-show="like">高評価<em data-show="likeCount"> 1,234</em></span>
+            <span class="ytaq-w-btn" data-show="dislike">低評価</span>
+            <span class="ytaq-w-btn" data-show="save">保存</span>
+            <span class="ytaq-w-btn" data-show="description">概要</span>
+            <span class="ytaq-w-grow"></span>
+            <span class="ytaq-w-btn">1.00x</span><span class="ytaq-w-btn">コメント</span>
+          </div>
+        </div>
+      </div>
+      <div class="tray stack gap-3">
+        <div class="row between middle">
+          <h2 class="fs-16 fw-700">ポップアップに出すもの</h2>
+          <button class="ytaq-info button button-icon" popovertarget="i-info" aria-label="説明">ⓘ</button>
+          <div popover id="i-info" class="tray tray-popup ytaq-tip">概要・公開日・再生数・フォルダは小さい情報（1本約5KB）から、チャンネルのアイコン・高評価・低評価・チャンネル登録・高評価の数は動画のページの情報（1本約72KB）から取ります。動画のページの情報は、使う項目を全部オフにすると取りに行きません。</div>
+        </div>
+        <div class="ytaq-popupInfo ytaq-checks grid">
+          <label><input type="checkbox" value="avatar"> チャンネルのアイコン</label>
+          <label><input type="checkbox" value="date"> 公開日</label>
+          <label><input type="checkbox" value="views"> 再生数</label>
+          <label><input type="checkbox" value="subscribe"> チャンネル登録</label>
+          <label><input type="checkbox" value="folder"> フォルダ</label>
+          <label><input type="checkbox" value="like"> 高評価</label>
+          <label><input type="checkbox" value="likeCount"> 高評価の数</label>
+          <label><input type="checkbox" value="dislike"> 低評価</label>
+          <label><input type="checkbox" value="save"> 保存（後で見る・再生リスト）</label>
+          <label><input type="checkbox" value="description"> 概要</label>
+          <label><input type="checkbox" value="shortsDescInline"> Shorts では概要を右の列に最初から出す</label>
+          <label><input type="checkbox" value="commentReplies"> コメントの返信</label>
+          <label><input type="checkbox" value="commentWrite"> コメントを書く</label>
+        </div>
+      </div>
+      <div class="tray stack gap-3">
+        <h2 class="fs-16 fw-700">再生</h2>
+        <div class="ytaq-opt row between middle">
+          <label><input type="checkbox" class="ytaq-popupResume"> 途中まで見た動画は、その位置から始める</label>
+        </div>
+        <div class="ytaq-opt row between middle">
+          <label><input type="checkbox" class="ytaq-watchHistory"> 視聴履歴に残す</label>
+          <button class="ytaq-info button button-icon" popovertarget="i-history" aria-label="説明">ⓘ</button>
+          <div popover id="i-history" class="tray tray-popup ytaq-tip">ポップアップの再生は、そのままだと YouTube の視聴履歴に載らず、見た動画がおすすめに出続けます。オンにすると、5秒以上再生した時点で、再生ページと同じ履歴の記録を YTaq が代わりに送ります。YouTube の内部の仕組みに頼っているので、知らせなく残らなくなることがあります。</div>
+        </div>
+        <div class="ytaq-opt row between middle">
+          <label><input type="checkbox" class="ytaq-embedLogin"> ログインした状態で再生する</label>
+          <button class="ytaq-info button button-icon" popovertarget="i-login" aria-label="説明">ⓘ</button>
+          <div popover id="i-login" class="tray tray-popup ytaq-tip">オンだと年齢制限やメンバー限定の動画も再生でき、速度も 2 倍より上にできます。オフにすると Cookie を送らない埋め込みを使い、少し軽くなる代わりに、それらは再生できず速度は 2 倍までになります。オンでエラー 152 が出るときはオフを試してください。</div>
+        </div>
+        <div class="typeset"><details>
+          <summary>詳しい設定</summary>
+          <div class="stack py-3">
+            <label class="stack">埋め込みに送る Referer
+              <input type="text" class="ytaq-embedReferer w-full" placeholder="https://example.com/">
+            </label>
+            <span class="note fs-12">YouTube は youtube.com の中からの埋め込みを断る（エラー 152）ので、ポップアップのときだけこの値を送ります。example.com で断られるときは、自分のサイトの URL を入れてください。</span>
+          </div>
+        </details></div>
+      </div>
     </section>
-    <section class="ytaq-section ytaq-section-folders stack" hidden>
-      <h2 class="fs-24 fw-700">フォルダ</h2>
-      <label><input type="checkbox" class="ytaq-feed-shorts"> フォルダの新着に Shorts も出す</label>
-      <p class="note fs-12">オフのときは、チャンネルのショートのタブを読まないので、新着の取得が軽くなります。</p>
+
+    <section class="ytaq-page stack gap-4" data-page="subs" data-reset="compactCards.subs compactCards.channel" hidden>
+      <div class="row between middle"><h1 class="fs-24 fw-700">登録チャンネル</h1><button class="ytaq-reset button button-outline">既定に戻す</button></div>
+      <div class="tray stack gap-3">
+        <div class="ytaq-opt row between middle">
+          <label><input type="checkbox" class="ytaq-compact" value="subs"> 登録チャンネルのカードを小さくする</label>
+        </div>
+        <div class="ytaq-opt row between middle">
+          <label><input type="checkbox" class="ytaq-compact" value="channel"> チャンネルのページのカードを小さくする</label>
+        </div>
+      </div>
+    </section>
+
+    <section class="ytaq-page stack gap-4" data-page="mute" data-reset="mute hideWatched shortsHide homeHide membersOnly" hidden>
+      <div class="row between middle"><h1 class="fs-24 fw-700">隠すコンテンツ</h1><button class="ytaq-reset button button-outline">既定に戻す</button></div>
+
+      <div class="tray stack gap-3">
+        <div class="row between middle">
+          <h2 class="fs-16 fw-700">Shorts</h2>
+        </div>
+        <div class="ytaq-shortsPlaces ytaq-places row wrap">
+          <button value="home">ホーム</button><button value="search">検索</button><button value="subs">登録チャンネル</button><button value="channel">チャンネルのページ</button><button value="related">関連動画</button><button value="guide">サイドバーの「ショート」</button>
+        </div>
+      </div>
+
+      <div class="tray stack gap-3">
+        <h2 class="fs-16 fw-700">ホームに挟まるもの</h2>
+        <div class="ytaq-opt row between middle">
+          <label><input type="checkbox" class="ytaq-homeHideShelves"> ニュース速報やメンバーシップのおすすめ</label>
+        </div>
+        <div class="ytaq-opt row between middle">
+          <label><input type="checkbox" class="ytaq-homeHidePlaylists"> 再生リストとミックスリスト</label>
+        </div>
+      </div>
+
+      <div class="tray stack gap-3">
+        <div class="row between middle">
+          <h2 class="fs-16 fw-700">見終わった動画</h2>
+          <button class="ytaq-info button button-icon" popovertarget="i-watched" aria-label="説明">ⓘ</button>
+          <div popover id="i-watched" class="tray tray-popup ytaq-tip">サムネイルの赤い線で、どこまで見たかを読みます。Shorts は分からないので隠しません。</div>
+        </div>
+        <div class="row wrap">
+          <div class="field"><input type="number" class="ytaq-watchedPercent" min="1" max="100" step="1" aria-label="割合"><span>% 以上見た動画</span></div>
+        </div>
+        <div class="ytaq-watchedPlaces ytaq-places row wrap">
+          <button value="home">ホーム</button><button value="search">検索</button><button value="related">関連動画</button><button value="feed">フォルダ</button><button value="subs">登録チャンネル</button><button value="channel">チャンネルのページ</button><button value="explore">ハッシュタグ・探索</button>
+        </div>
+      </div>
+
+      <div class="tray stack gap-3">
+        <div class="row between middle">
+          <h2 class="fs-16 fw-700">単語</h2>
+          <button class="ytaq-info button button-icon" popovertarget="i-words" aria-label="説明">ⓘ</button>
+          <div popover id="i-words" class="tray tray-popup ytaq-tip">タイトルに含まれていたら隠します。全角と半角、大文字と小文字は区別しません。/…/ で囲むと正規表現になります。チャンネルのページでは隠しません。</div>
+        </div>
+        <textarea class="ytaq-words w-full" rows="4" placeholder="1行に1つ"></textarea>
+        <label><input type="checkbox" class="ytaq-commentWords"> コメントも同じ単語で隠す</label>
+      </div>
+
+      <div class="tray stack gap-3">
+        <div class="row between middle">
+          <h2 class="fs-16 fw-700">チャンネル</h2>
+          <button class="ytaq-info button button-icon" popovertarget="i-ch" aria-label="説明">ⓘ</button>
+          <div popover id="i-ch" class="tray tray-popup ytaq-tip">動画とコメントを隠します。動画のカードの「⋮」や、コメントの横のボタンから足せます。チャンネルのページでは隠しません。</div>
+        </div>
+        <div class="ytaq-muteChannels row wrap"></div>
+      </div>
+
+      <div class="tray stack gap-3">
+        <div class="row between middle">
+          <h2 class="fs-16 fw-700">メンバー限定</h2>
+          <button class="ytaq-info button button-icon" popovertarget="i-mem" aria-label="説明">ⓘ</button>
+          <div popover id="i-mem" class="tray tray-popup ytaq-tip">入っているメンバーシップは、YouTube の「メンバーシップと購入」から読み取ります。チャンネルのページでは隠しません。</div>
+        </div>
+        <label><input type="checkbox" class="ytaq-membersHide"> 入っていないメンバーシップのメンバー限定動画</label>
+        <div class="typeset"><details>
+          <summary>詳しい設定</summary>
+          <div class="stack py-3">
+            <span class="ytaq-membersJoined note fs-12"></span>
+            <label class="stack">読み取れなかったチャンネル
+              <textarea class="ytaq-membersExtra w-full" rows="2" placeholder="@ハンドルかチャンネル ID を1行に1つ"></textarea>
+            </label>
+          </div>
+        </details></div>
+      </div>
+    </section>
+
+    <section class="ytaq-page stack gap-4" data-page="thumb" data-reset="antibite titleClean" hidden>
+      <div class="row between middle"><h1 class="fs-24 fw-700">サムネイルとタイトル</h1><button class="ytaq-reset button button-outline">既定に戻す</button></div>
+      <div class="tray stack gap-3">
+        <h2 class="fs-16 fw-700">サムネイル</h2>
+        <div class="ytaq-opt row between middle">
+          <label><input type="checkbox" class="ytaq-thumbnailEnabled"> 動画の中の場面をサムネイルにする</label>
+        </div>
+        <label class="row ytaq-dep-thumb">場面
+          <select class="ytaq-thumbnailFrame">
+            <option value="hq1">はじめのほう</option>
+            <option value="mq2">まんなか</option>
+            <option value="hq3">おわりのほう</option>
+          </select>
+        </label>
+        <div class="ytaq-opt ytaq-dep-thumb row between middle">
+          <label><input type="checkbox" class="ytaq-shortsVertical"> Shorts は縦長の場面を使う</label>
+          <button class="ytaq-info button button-icon" popovertarget="i-vert" aria-label="説明">ⓘ</button>
+          <div popover id="i-vert" class="tray tray-popup ytaq-tip">Shorts のサムネイルの両脇の帯が消えます。1枚の読み込みは約10KBから約130KBに増えます。</div>
+        </div>
+      </div>
+      <div class="tray stack gap-3">
+        <div class="row between middle">
+          <h2 class="fs-16 fw-700">タイトルの整形</h2>
+          <button class="ytaq-info button button-icon" popovertarget="i-title" aria-label="説明">ⓘ</button>
+          <div popover id="i-title" class="tray tray-popup ytaq-tip">正規表現に当たった部分を、置き換え先の文字に置き換えます。置き換え先が空なら消します。整形するとタイトルが空になるときは、そのままにします。</div>
+        </div>
+        <div class="row wrap">
+          <label><input type="checkbox" class="ytaq-title-place" value="list"> 一覧（ホーム・検索・チャンネル・関連動画）</label>
+          <label><input type="checkbox" class="ytaq-title-place" value="feed"> フォルダの新着</label>
+          <label><input type="checkbox" class="ytaq-title-place" value="popup"> ポップアップの見出し</label>
+          <label><input type="checkbox" class="ytaq-title-place" value="watch"> 再生ページのタイトル</label>
+        </div>
+        <div class="ytaq-title-rules stack"></div>
+        <div class="row"><button class="ytaq-title-add button button-outline">ルールを足す</button></div>
+        <label class="stack">試す
+          <input type="text" class="ytaq-title-test w-full" placeholder="【MV】曲名 / アーティスト [Official Video]">
+        </label>
+        <span class="ytaq-title-result note"></span>
+      </div>
+    </section>
+
+    <section class="ytaq-page stack gap-4" data-page="speed" data-reset="playbackrate musicNormalRate" hidden>
+      <div class="row between middle"><h1 class="fs-24 fw-700">再生速度</h1><button class="ytaq-reset button button-outline">既定に戻す</button></div>
+      <div class="tray stack gap-3">
+        <div class="row wrap">
+          <label class="row">− と ＋ で変える量
+            <span class="field"><input type="number" class="ytaq-speedStep" min="0.05" max="1.0" step="0.05" aria-label="変える量"><span>倍</span></span>
+          </label>
+        </div>
+        <label class="stack">速度の表示を押したときに切り替わる速度
+          <input type="text" class="ytaq-speedPresets w-full" placeholder="1.0, 1.25, 1.5, 1.75, 2.0, 4.0">
+        </label>
+        <div class="ytaq-opt row between middle">
+          <label><input type="checkbox" class="ytaq-musicNormalRate"> 音楽の動画はチャンネルの速度を使わず、1.0 倍で再生する</label>
+          <button class="ytaq-info button button-icon" popovertarget="i-music" aria-label="説明">ⓘ</button>
+          <div popover id="i-music" class="tray tray-popup ytaq-tip">サムネイルに ♪ の印がある動画を音楽として扱います。印が分からない開き方（URL を直接開いたときなど）では、動画のカテゴリが「音楽」かで決めます。音楽の動画で変えた速度は、チャンネルの速度として覚えません。</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ytaq-page stack gap-4" data-page="folder" hidden>
+      <h1 class="fs-24 fw-700">フォルダ</h1>
+      <div class="tray stack gap-3">
+        <div class="ytaq-opt row between middle">
+          <label><input type="checkbox" class="ytaq-feed-shorts"> フォルダの新着に Shorts も出す</label>
+          <button class="ytaq-info button button-icon" popovertarget="i-fshorts" aria-label="説明">ⓘ</button>
+          <div popover id="i-fshorts" class="tray tray-popup ytaq-tip">オフのときは、チャンネルのショートのタブを読まないので、新着の読み込みが軽くなります。</div>
+        </div>
+      </div>
       <div class="ytaq-folders stack"></div>
     </section>
 
-    <section class="ytaq-section ytaq-section-mute stack" hidden>
-      <h2 class="fs-24 fw-700">ミュート</h2>
-      <label class="stack">
-        単語（1行に1つ。/…/ で囲むと正規表現）
-        <textarea class="ytaq-words w-full" rows="8"></textarea>
-      </label>
-      <p class="note fs-12">動画のタイトルに含まれていたら隠します。全角と半角、大文字と小文字は区別しません。</p>
-      <label><input type="checkbox" class="ytaq-commentWords"> 単語ミュートをコメントにもかける</label>
-      <h3 class="mt-3 fs-16 fw-700">チャンネル</h3>
-      <p class="note fs-12">動画とコメントを隠します。チャンネルのページでは隠しません。</p>
-      <div class="ytaq-muteChannels stack"></div>
-      <h3 class="mt-3 fs-16 fw-700">見た動画を隠す</h3>
-      <label class="row">
-        <input type="number" class="ytaq-watchedPercent" min="1" max="100" step="1" style="width: 6em">
-        % 以上見た動画を隠す
-      </label>
-      <div class="ytaq-watchedPlaces row wrap">
-        <label><input type="checkbox" value="home"> ホーム</label>
-        <label><input type="checkbox" value="search"> 検索</label>
-        <label><input type="checkbox" value="related"> 関連動画</label>
-        <label><input type="checkbox" value="feed"> フォルダの一覧</label>
-        <label><input type="checkbox" value="subs"> 登録チャンネル（YouTube の一覧）</label>
-        <label><input type="checkbox" value="channel"> チャンネルのページ</label>
-        <label><input type="checkbox" value="explore"> ハッシュタグ・探索</label>
-      </div>
-      <p class="note fs-12">サムネイルの赤い線で見た割合を判断します。Shorts は割合が分からないので隠しません。</p>
-      <h3 class="mt-3 fs-16 fw-700">メンバー限定の動画</h3>
-      <label><input type="checkbox" class="ytaq-membersHide"> 入っていないメンバーシップのメンバー限定動画を隠す</label>
-      <p class="note fs-12">入っているメンバーシップは、YouTube の「メンバーシップと購入」から読み取ります。チャンネルのページでは隠しません。</p>
-      <p class="ytaq-membersJoined note fs-12"></p>
-      <label class="stack">
-        読み取れなかったチャンネル（1行に1つ。@ハンドルかチャンネル ID）
-        <textarea class="ytaq-membersExtra w-full" rows="3"></textarea>
-      </label>
-      <h3 class="mt-3 fs-16 fw-700">ホームに挟まるもの</h3>
-      <label><input type="checkbox" class="ytaq-homeHideShelves"> ニュース速報やメンバーシップのおすすめを隠す</label>
-      <label><input type="checkbox" class="ytaq-homeHidePlaylists"> 再生リストとミックスリストを隠す</label>
-      <p class="note fs-12">Shorts は「軽量化」の Shorts で選びます。</p>
-      <div class="row mt-3">
-        <button class="ytaq-save accent button button-outline">保存</button>
-        <button class="ytaq-reset button button-outline">デフォルトに戻す</button>
-      </div>
-      <div class="ytaq-message"></div>
-    </section>
-
-    <section class="ytaq-section ytaq-section-backup stack" hidden>
-      <h2 class="fs-24 fw-700">書き出し・読み込み</h2>
-      <p>設定・フォルダ・ミュート・チャンネルごとの速度を1つのファイルにします。新着など、YouTube から取り直せるものは入れません。</p>
-      <div class="row">
-        <button class="ytaq-backup-export button button-outline">書き出す</button>
-        <button class="ytaq-backup-import button button-outline">読み込む</button>
-        <input type="file" class="ytaq-backup-file" accept="application/json,.json" hidden>
-      </div>
-      <p class="note fs-12">読み込むと、今の設定はファイルの中身に入れ替わります。</p>
-      <div class="ytaq-message"></div>
-    </section>
-
-    <section class="ytaq-section ytaq-section-channels stack">
-      <h2 class="fs-24 fw-700">チャンネル</h2>
-      <p class="note fs-12">登録チャンネルと、YTaq に設定があるチャンネルが並びます。登録チャンネルは YouTube を開いたときに1日1回読み込みます。</p>
+    <section class="ytaq-page stack gap-4" data-page="channels" hidden>
+      <h1 class="fs-24 fw-700">チャンネル</h1>
       <input type="search" class="ytaq-channel-search" placeholder="名前で絞り込む" aria-label="名前で絞り込む">
       <div class="ytaq-channel-list stack"></div>
     </section>
+
+    <section class="ytaq-page stack gap-4" data-page="theme" data-reset="theme" hidden>
+      <div class="row between middle"><h1 class="fs-24 fw-700">テーマ</h1><button class="ytaq-reset button button-outline">既定に戻す</button></div>
+      <div class="tray stack gap-3">
+        <label class="row">テーマ <select class="ytaq-theme-name"></select></label>
+        <label class="stack" hidden>テーマの色相
+          <input type="range" class="ytaq-primary-hue ytaq-hue" min="0" max="359" step="1">
+        </label>
+        <label class="row">アクセント <select class="ytaq-theme-accent"></select></label>
+        <label class="stack" hidden>アクセントの色相
+          <input type="range" class="ytaq-accent-hue ytaq-hue" min="0" max="359" step="1">
+        </label>
+        <span class="ytaq-accent-note note" hidden></span>
+      </div>
+    </section>
+
+    <section class="ytaq-page stack gap-4" data-page="perf" data-reset="perf" hidden>
+      <div class="row between middle"><h1 class="fs-24 fw-700">軽量化</h1><button class="ytaq-reset button button-outline">既定に戻す</button></div>
+      <div class="tray stack gap-3">
+        <div class="ytaq-opt row between middle">
+          <label><input type="checkbox" class="ytaq-perf-hoverPreview"> サムネイルにマウスを乗せたときの再生を止める</label>
+          <button class="ytaq-info button button-icon" popovertarget="i-hover" aria-label="説明">ⓘ</button>
+          <div popover id="i-hover" class="tray tray-popup ytaq-tip">乗せるだけで別の動画の読み込みが始まるのを止めます。</div>
+        </div>
+        <div class="ytaq-opt row between middle">
+          <label><input type="checkbox" class="ytaq-perf-ambient"> 再生ページの動画のまわりの光を止める</label>
+          <button class="ytaq-info button button-icon" popovertarget="i-ambient" aria-label="説明">ⓘ</button>
+          <div popover id="i-ambient" class="tray tray-popup ytaq-tip">動画の縮小した絵をぼかして後ろに描き続ける演出（アンビエントモード）です。再生中ずっと CPU を使います。</div>
+        </div>
+        <div class="ytaq-opt row between middle">
+          <label><input type="checkbox" class="ytaq-perf-lazyOffscreen"> 画面の外のカードとコメントを描かない</label>
+          <button class="ytaq-info button button-icon" popovertarget="i-lazy" aria-label="説明">ⓘ</button>
+          <div popover id="i-lazy" class="tray tray-popup ytaq-tip">ホーム 327 件で測ったときは差が出ませんでした。ページの高さが変わることがあります。</div>
+        </div>
+        <div class="ytaq-opt row between middle">
+          <label><input type="checkbox" class="ytaq-perf-animations"> アニメーションを止める</label>
+          <button class="ytaq-info button button-icon" popovertarget="i-anim" aria-label="説明">ⓘ</button>
+          <div popover id="i-anim" class="tray tray-popup ytaq-tip">ボタンを押したときの波紋や、切り替えの動きを止めます。読み込み中の丸は止めません。測ったときは差が出なかったので、好みで選んでください。</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ytaq-page stack gap-4" data-page="css" data-reset="customCss" hidden>
+      <div class="row between middle"><h1 class="fs-24 fw-700">カスタム CSS</h1><button class="ytaq-reset button button-outline">既定に戻す</button></div>
+      <div class="tray stack gap-3">
+        <textarea class="ytaq-customCss w-full" rows="10" spellcheck="false" placeholder="html { --ytaq-color-bg: oklch(18% 0.05 150); }"></textarea>
+        <span class="note fs-12">YouTube のすべてのページに入ります。設定画面には入りません。</span>
+      </div>
+    </section>
+
+    <section class="ytaq-page stack gap-4" data-page="data" hidden>
+      <h1 class="fs-24 fw-700">書き出し・読み込み</h1>
+      <div class="tray stack gap-3">
+        <div class="row">
+          <button class="ytaq-backup-export button button-outline">書き出す</button>
+          <button class="ytaq-backup-import button button-outline">読み込む</button>
+          <input type="file" class="ytaq-backup-file" accept="application/json,.json" hidden>
+        </div>
+        <span class="note fs-12">設定・フォルダ・隠すコンテンツ・チャンネルごとの速度を1つのファイルにします。読み込むと、今の設定はファイルの中身に入れ替わります。</span>
+      </div>
+    </section>
+
   </main>
+
+  <nav id="menu" popover class="tray tray-drawer tray-m-dock stack p-3">
+    <ul class="toc">
+      <li><a href="#top">できること</a></li>
+      <li><span>見た目</span>
+        <ul>
+          <li><a href="#home">ホーム</a></li>
+          <li><a href="#search">検索</a></li>
+          <li><a href="#watch">再生ページ</a></li>
+          <li><a href="#popup">ポップアップ</a></li>
+          <li><a href="#subs">登録チャンネル</a></li>
+        </ul>
+      </li>
+      <li><span>機能</span>
+        <ul>
+          <li><a href="#mute">隠すコンテンツ</a></li>
+          <li><a href="#thumb">サムネイルとタイトル</a></li>
+          <li><a href="#speed">再生速度</a></li>
+          <li><a href="#folder">フォルダ</a></li>
+          <li><a href="#channels">チャンネル</a></li>
+        </ul>
+      </li>
+      <li><span>全体</span>
+        <ul>
+          <li><a href="#theme">テーマ</a></li>
+          <li><a href="#perf">軽量化</a></li>
+          <li><a href="#css">カスタム CSS</a></li>
+        </ul>
+      </li>
+      <li><a href="#data">書き出し・読み込み</a></li>
+    </ul>
+  </nav>
 
   <script src="../core/ytaq-settings.js"></script>
   <script src="../core/ytaq-color.js"></script>
