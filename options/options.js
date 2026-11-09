@@ -605,6 +605,7 @@
 		YTaqFolders.watch(renderFolders);
 		initChannels();
 		initBackup();
+		initSync();
 		const shortsBox = document.querySelector('.ytaq-feed-shorts');
 		S.watch('feedShorts', v => { shortsBox.checked = !!v; });
 		shortsBox.addEventListener('change', async () => {
@@ -613,7 +614,7 @@
 		});
 	});
 
-	const BACKUP_SKIP = new Set(['ytaq_feed', 'ytaq_short_owners', 'ytaq_subs', 'ytaq_channel_handles', 'ytaq_innertube', 'ytaq_channel_lists', 'ytaq_playbackrate']);
+	const BACKUP_SKIP = new Set(['ytaq_feed', 'ytaq_short_owners', 'ytaq_subs', 'ytaq_channel_handles', 'ytaq_innertube', 'ytaq_channel_lists', 'ytaq_playbackrate', 'ytaq_memberships', 'ytaq_sync_on', 'ytaq_sync_meta', 'ytaq_sync_status']);
 
 	function backupKeys(all) {
 		return Object.keys(all).filter(k => k.startsWith('ytaq_') && !BACKUP_SKIP.has(k));
@@ -652,6 +653,29 @@
 			await new Promise(ok => chrome.storage.local.remove(backupKeys(all), ok));
 			await new Promise(ok => chrome.storage.local.set(incoming, ok));
 			location.reload();
+		});
+	}
+
+	const SYNC_TIME = new Intl.DateTimeFormat('ja-JP', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+	function initSync() {
+		const box = $('syncOn');
+		const out = $('syncStatus');
+		const render = r => {
+			box.checked = !!r.ytaq_sync_on;
+			const st = r.ytaq_sync_status;
+			if (!box.checked) out.textContent = '';
+			else if (st && st.error) out.textContent = '同期できませんでした: ' + st.error;
+			else out.textContent = st ? '最後に同期した時刻: ' + SYNC_TIME.format(new Date(st.at)) : '同期を始めています';
+		};
+		const read = () => chrome.storage.local.get(['ytaq_sync_on', 'ytaq_sync_status'], render);
+		read();
+		chrome.storage.onChanged.addListener((changes, area) => {
+			if (area === 'local' && ('ytaq_sync_on' in changes || 'ytaq_sync_status' in changes)) read();
+		});
+		box.addEventListener('change', () => {
+			chrome.storage.local.set({ ytaq_sync_on: box.checked });
+			toast(box.checked ? '同期を始めます' : '同期を止めました', 'success');
 		});
 	}
 

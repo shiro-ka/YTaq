@@ -454,6 +454,14 @@
     <section class="ytaq-page stack gap-4" data-page="data" hidden>
       <h1 class="fs-24 fw-700">書き出し・読み込み</h1>
       <div class="tray stack gap-3">
+        <div class="ytaq-opt row between middle">
+          <label><input type="checkbox" class="ytaq-syncOn"> ほかの Firefox と設定を同期する</label>
+          <button class="ytaq-info button button-icon" popovertarget="i-sync" aria-label="説明">ⓘ</button>
+          <div popover id="i-sync" class="tray tray-popup ytaq-tip">Firefox のアカウントの同期を使います。同期するものは書き出しと同じです。2つの Firefox で同じ設定を変えたときは、あとから変えたほうが残ります。</div>
+        </div>
+        <span class="ytaq-syncStatus note fs-12"></span>
+      </div>
+      <div class="tray stack gap-3">
         <div class="row">
           <button class="ytaq-backup-export button button-outline">書き出す</button>
           <button class="ytaq-backup-import button button-outline">読み込む</button>

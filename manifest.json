@@ -33,7 +33,8 @@
       "background/ytaq-main.js",
       "background/ytaq-embed-referer.js",
       "background/ytaq-thumbnail-replace.js",
-      "background/ytaq-feed.js"
+      "background/ytaq-feed.js",
+      "background/ytaq-sync.js"
     ]
   },
   "content_scripts": [
