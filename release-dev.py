@@ -3,6 +3,7 @@ import json
 import os
 import subprocess
 import sys
+import tempfile
 import urllib.error
 import urllib.request
 import zipfile
@@ -46,6 +47,21 @@ def build(version):
     return out
 
 
+def sign(xpi):
+    work = tempfile.mkdtemp()
+    src = os.path.join(work, 'src')
+    out = os.path.join(work, 'out')
+    with zipfile.ZipFile(xpi) as z:
+        z.extractall(src)
+    env = dict(os.environ, NODE_USE_ENV_PROXY='1', PATH=os.path.expanduser('~/.local/node/bin') + ':' + os.environ.get('PATH', ''))
+    subprocess.run(['npx', '-y', 'web-ext@8', 'sign', '--channel=unlisted', '--source-dir', src, '--artifacts-dir', out,
+                    '--approval-timeout', '900000'], check=True, env=env, stdout=sys.stderr)
+    signed = [f for f in os.listdir(out) if f.endswith('.xpi')]
+    if not signed:
+        raise SystemExit('署名した xpi が見つからない')
+    return os.path.join(out, signed[0])
+
+
 def release():
     try:
         return api('GET', API + '/releases/tags/' + TAG)
@@ -65,7 +81,7 @@ def upload(rel, name, data, content_type):
 def main():
     with open(os.path.join(ROOT, 'manifest.json')) as f:
         version = stamp(json.load(f)['version'])
-    xpi = build(version)
+    xpi = sign(build(version))
     name = os.path.basename(xpi)
     updates = {'addons': {ADDON_ID: {'updates': [{'version': version, 'update_link': DOWNLOAD + name}]}}}
 
