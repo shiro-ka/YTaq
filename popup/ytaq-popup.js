@@ -175,10 +175,17 @@
 					});
 					content.append(comments.el);
 				}
+				placeComments();
 				const open = content.classList.toggle('ytaq-popup-with-comments');
 				commentBtn.classList.toggle('ytaq-popup-comment-btn-on', open);
 				if (open) comments.start();
 			});
+			const placeComments = () => {
+				const video = content.querySelector('.ytaq-popup-iframe-container');
+				if (video) content.classList.toggle('ytaq-popup-comments-over', innerWidth - 64 - video.offsetWidth < 280);
+			};
+			addEventListener('resize', placeComments);
+			closers.push(() => removeEventListener('resize', placeComments));
 			tools.prepend(commentBtn);
 		}
 

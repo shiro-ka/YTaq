@@ -113,8 +113,12 @@
 	color: var(--ytaq-color-text);
 }
 
+.ytaq-popup-content {
+	--ytaq-popup-video-w: round(down, min(calc(100vw - 64px), 1280px, calc((90vh - 170px) * 16 / 9)), 64px);
+}
+
 .ytaq-popup-iframe-container {
-	width: round(down, min(calc(100vw - 64px), 1280px, calc((90vh - 170px) * 16 / 9)), 64px);
+	width: var(--ytaq-popup-video-w);
 	aspect-ratio: 16/9;
 	position: relative;
 	overflow: hidden;
@@ -518,13 +522,12 @@ html[data-ytaq-theme] .ytaq-popup-channel-row .ytaq-folder-btn {
 
 .ytaq-popup-content.ytaq-popup-with-comments {
 	display: grid;
-	grid-template-columns: auto 360px;
+	grid-template-columns: auto clamp(280px, calc(100vw - 64px - var(--ytaq-popup-video-w)), 360px);
 	grid-template-areas: "video side" "meta side";
 }
 
 .ytaq-popup-with-comments .ytaq-popup-iframe-container {
 	grid-area: video;
-	width: round(down, min(calc(100vw - 64px - 360px), 1280px, calc((90vh - 170px) * 16 / 9)), 64px);
 }
 
 .ytaq-popup-with-comments .ytaq-popup-meta {
@@ -766,21 +769,15 @@ html[data-ytaq-theme] .ytaq-popup-channel-row .ytaq-folder-btn {
 	font-size: var(--ytaq-fs-12);
 }
 
-@media (max-width: 960px) {
-	.ytaq-popup-content.ytaq-popup-with-comments {
-		grid-template-columns: auto;
-		grid-template-areas: "video" "meta";
-	}
+.ytaq-popup-content.ytaq-popup-with-comments.ytaq-popup-comments-over {
+	grid-template-columns: auto;
+	grid-template-areas: "video" "meta";
+}
 
-	.ytaq-popup-with-comments .ytaq-popup-iframe-container {
-		width: round(down, min(calc(100vw - 64px), 1280px, calc((90vh - 170px) * 16 / 9)), 64px);
-	}
-
-	.ytaq-popup-with-comments .ytaq-popup-comments {
-		grid-area: video;
-		justify-self: end;
-		z-index: 4;
-		width: min(360px, 100%);
-		background: var(--ytaq-color-panel);
-	}
+.ytaq-popup-comments-over .ytaq-popup-comments {
+	grid-area: video;
+	justify-self: end;
+	z-index: 4;
+	width: min(360px, 100%);
+	background: var(--ytaq-color-panel);
 }
