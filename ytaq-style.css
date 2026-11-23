@@ -34,6 +34,12 @@ html[data-ytaq-theme] .ytSearchboxComponentSearchButton {
   border-radius: 0 var(--ytaq-radius) var(--ytaq-radius) 0 !important;
 }
 
+html[data-ytaq-theme] .ytSearchboxComponentClearButton {
+  width: 32px !important;
+  height: 32px !important;
+  padding: 0 !important;
+}
+
 html[data-ytaq-theme] .ytSearchboxComponentInnerSearchIcon {
   display: none !important;
 }
