@@ -114,6 +114,7 @@
 }
 
 .ytaq-popup-content {
+	--popup-side-min: 240px;
 	--popup-video-w: round(down, min(calc(100vw - 64px), 1280px, calc((90vh - 170px) * 16 / 9)), 64px);
 }
 
@@ -522,7 +523,7 @@ html[data-ytaq-theme] .ytaq-popup-channel-row .ytaq-folder-btn {
 
 .ytaq-popup-content.ytaq-popup-with-comments {
 	display: grid;
-	grid-template-columns: auto clamp(280px, calc(100vw - 64px - var(--popup-video-w)), 360px);
+	grid-template-columns: auto clamp(var(--popup-side-min), calc(100vw - 64px - var(--popup-video-w)), 360px);
 	grid-template-areas: "video side" "meta side";
 }
 

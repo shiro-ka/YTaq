@@ -182,7 +182,7 @@
 			});
 			const placeComments = () => {
 				const video = content.querySelector('.ytaq-popup-iframe-container');
-				if (video) content.classList.toggle('ytaq-popup-comments-over', innerWidth - 64 - video.offsetWidth < 280);
+				if (video) content.classList.toggle('ytaq-popup-comments-over', innerWidth - 64 - video.offsetWidth < parseFloat(getComputedStyle(content).getPropertyValue('--popup-side-min')));
 			};
 			addEventListener('resize', placeComments);
 			closers.push(() => removeEventListener('resize', placeComments));
