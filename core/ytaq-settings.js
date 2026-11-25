@@ -7,7 +7,7 @@
 		musicNormalRate: { key: 'ytaq_music_normal_rate', value: true },
 		perf: {
 			key: 'ytaq_perf',
-			value: { hoverPreview: true, lazyOffscreen: false, ambient: true, animations: false }
+			value: { hoverPreview: true, lazyOffscreen: false, ambient: true, animations: false, avoid60fps: false, preferH264: false }
 		},
 		shortsHide: { key: 'ytaq_shorts_hide', value: { home: true, search: false, subs: false, channel: false, related: false, guide: false } },
 		click: { key: 'ytaq_click', value: 'popup' },

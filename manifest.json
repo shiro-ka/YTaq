@@ -44,6 +44,7 @@
       ],
       "js": [
         "core/ytaq-settings.js",
+        "perf/ytaq-codec.js",
         "core/ytaq-color.js",
         "theme/ytaq-theme.js",
         "core/ytaq-core.js",
@@ -86,6 +87,18 @@
         "mute/ytaq-mute.css"
       ],
       "all_frames": false,
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "https://www.youtube.com/embed/*",
+        "https://www.youtube-nocookie.com/embed/*"
+      ],
+      "js": [
+        "core/ytaq-settings.js",
+        "perf/ytaq-codec.js"
+      ],
+      "all_frames": true,
       "run_at": "document_start"
     }
   ],

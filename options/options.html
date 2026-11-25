@@ -440,6 +440,16 @@
           <button class="ytaq-info button button-icon" popovertarget="i-anim" aria-label="説明">ⓘ</button>
           <div popover id="i-anim" class="tray tray-popup ytaq-tip">ボタンを押したときの波紋や、切り替えの動きを止めます。読み込み中の丸は止めません。測ったときは差が出なかったので、好みで選んでください。</div>
         </div>
+        <div class="ytaq-opt row between middle">
+          <label><input type="checkbox" class="ytaq-perf-avoid60fps"> 60fps の動画を 30fps で再生する</label>
+          <button class="ytaq-info button button-icon" popovertarget="i-60fps" aria-label="説明">ⓘ</button>
+          <div popover id="i-60fps" class="tray tray-popup ytaq-tip">60fps の形式を選ばないようにします。60fps でしか配信されていない画質は選べなくなります（試した動画では 720p まで）。次に開いた動画から反映されます。</div>
+        </div>
+        <div class="ytaq-opt row between middle">
+          <label><input type="checkbox" class="ytaq-perf-preferH264"> H.264 の形式で再生する</label>
+          <button class="ytaq-info button button-icon" popovertarget="i-h264" aria-label="説明">ⓘ</button>
+          <div popover id="i-h264" class="tray tray-popup ytaq-tip">AV1 と VP9 を選ばないようにします。パソコンによっては、H.264 のほうが GPU で再生されて軽くなります。H.264 は 1080p までなので、1440p と 4K は選べなくなります。次に開いた動画から反映されます。</div>
+        </div>
       </div>
     </section>
 
