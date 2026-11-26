@@ -119,7 +119,9 @@
 		const upcoming = !!vd.isUpcoming;
 		const short = !live && seconds > 0 && seconds <= SHORTS_MAX_SECONDS ? await isShort(id) : false;
 		const start = mf.liveBroadcastDetails && mf.liveBroadcastDetails.startTimestamp;
+		const offer = json.playabilityStatus && json.playabilityStatus.errorScreen && json.playabilityStatus.errorScreen.playerLegacyDesktopYpcOfferRenderer;
 		return {
+			members: !!(offer && offer.offerId === 'sponsors_only_video'),
 			seconds,
 			live,
 			upcoming,
@@ -174,7 +176,7 @@
 	}
 
 	async function fillDetails(feed) {
-		const todo = Object.keys(feed.videos).filter(id => !feed.videos[id].detail).slice(0, DETAILS_PER_RUN);
+		const todo = Object.keys(feed.videos).filter(id => !feed.videos[id].detail || !('members' in feed.videos[id].detail)).slice(0, DETAILS_PER_RUN);
 		for (const id of todo) {
 			try {
 				const d = await details(id);
@@ -259,7 +261,7 @@
 			headers.push({ name: 'Origin', value: ORIGIN });
 			return { requestHeaders: headers };
 		},
-		{ urls: [ORIGIN + '/youtubei/v1/*'] },
+		{ urls: [ORIGIN + '/youtubei/v1/*'], tabId: -1 },
 		['blocking', 'requestHeaders']
 	);
 
