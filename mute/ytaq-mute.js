@@ -139,8 +139,7 @@
 				saveOwners();
 			}).finally(() => {
 				running--;
-				version++;
-				schedule();
+				recheckPending();
 				pump();
 			});
 		}
@@ -225,6 +224,7 @@
 	let joined = { ids: [], handles: [], at: 0 };
 	let members = { hide: false, ids: new Set(), handles: new Set() };
 	let membersFetching = false;
+	let joinedLoaded = false;
 
 	function membersOnly(el) {
 		if (el.dataset && el.dataset.members) return true;
@@ -268,7 +268,7 @@
 	}
 
 	async function fetchMemberships() {
-		if (membersFetching || !membersOpt.hide || !window.YTaqInnertube) return;
+		if (!joinedLoaded || membersFetching || !membersOpt.hide || !window.YTaqInnertube) return;
 		if (joined.at && Date.now() - joined.at < MEMBERS_TTL) return;
 		membersFetching = true;
 		try {
@@ -293,17 +293,40 @@
 		}
 	}
 
-	function scanAll() {
-		const onChannelPage = CHANNEL_PAGE.test(location.pathname);
-		const items = [];
-		for (const el of document.querySelectorAll(VIDEOS)) {
-			if (el.matches('yt-lockup-view-model, ytm-shorts-lockup-view-model, ytm-shorts-lockup-view-model-v2') && el.parentElement && el.parentElement.closest(OUTER)) continue;
-			items.push(el);
+	function outerItem(el) {
+		if (el.matches('yt-lockup-view-model, ytm-shorts-lockup-view-model, ytm-shorts-lockup-view-model-v2') && el.parentElement) return el.parentElement.closest(OUTER) || el;
+		return el;
+	}
+
+	function collect(roots) {
+		const items = new Set();
+		const comments = new Set();
+		for (const n of roots) {
+			if (!n.isConnected || !n.querySelectorAll) continue;
+			const item = n.closest(VIDEOS);
+			if (item) items.add(outerItem(item));
+			const comment = n.closest(COMMENTS);
+			if (comment) comments.add(comment);
+			for (const el of n.querySelectorAll(VIDEOS)) items.add(outerItem(el));
+			for (const el of n.querySelectorAll(COMMENTS)) comments.add(el);
 		}
-		watchedPass(items);
-		membersPass(items, onChannelPage);
+		return { items: [...items], comments: [...comments] };
+	}
+
+	function recheckPending() {
+		const items = [...document.querySelectorAll('[' + PENDING_ATTR + ']')];
+		for (const el of items) seen.delete(el);
+		if (items.length) scan(items, [], true);
+	}
+
+	function scan(items, comments, active) {
+		const onChannelPage = CHANNEL_PAGE.test(location.pathname);
+		if (active) {
+			watchedPass(items);
+			membersPass(items, onChannelPage);
+		}
 		const muting = rules.any || dirty;
-		if (muting) for (const el of items) {
+		if (active && muting) for (const el of items) {
 			if (onChannelPage && !el.classList.contains('ytaq-feed-item')) {
 				mark(el, false);
 				seen.delete(el);
@@ -311,9 +334,9 @@
 			}
 			check(el, videoMuted);
 		}
-		for (const el of document.querySelectorAll(COMMENTS)) {
+		for (const el of comments) {
 			commentButton(el);
-			if (!muting) continue;
+			if (!active || !muting) continue;
 			const thread = el.closest('ytd-comment-thread-renderer');
 			const top = thread && !el.closest('#replies') ? thread : null;
 			check(el, commentMuted, top || el);
@@ -486,15 +509,25 @@
 	}
 
 	let scheduled = false;
+	let full = true;
+	const roots = new Set();
 	let dirty = false;
 	let hideDirty = false;
-	function schedule() {
+	function schedule(added) {
+		if (Array.isArray(added)) for (const n of added) roots.add(n);
+		else full = true;
 		if (scheduled) return;
 		scheduled = true;
 		requestAnimationFrame(() => {
 			scheduled = false;
-			if (rules.any || dirty || hideOn || hideDirty || members.hide) scanAll();
-			else for (const el of document.querySelectorAll(COMMENTS)) commentButton(el);
+			const active = rules.any || dirty || hideOn || hideDirty || members.hide;
+			const all = full;
+			full = false;
+			const target = all
+				? { items: active ? [...new Set([...document.querySelectorAll(VIDEOS)].map(outerItem))] : [], comments: [...document.querySelectorAll(COMMENTS)] }
+				: collect(roots);
+			roots.clear();
+			scan(target.items, target.comments, active);
 			hideDirty = false;
 			dirty = rules.any;
 			channelNotice();
@@ -515,6 +548,7 @@
 	});
 	YTaq.getStorage(MEMBERS_KEY, null).then(v => {
 		if (v && Array.isArray(v.ids)) joined = v;
+		joinedLoaded = true;
 		rebuildMembers();
 		fetchMemberships();
 	});
@@ -536,7 +570,7 @@
 	});
 
 	YTaq.ready(() => {
-		YTaq.onMutation(schedule);
+		YTaq.onMutation(added => schedule(added));
 		YTaq.onNavigate(() => {
 			version++;
 			schedule();

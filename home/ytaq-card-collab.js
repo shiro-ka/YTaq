@@ -45,19 +45,39 @@
 		for (const meta of document.querySelectorAll(META + ':has(yt-avatar-stack-view-model), ' + META + '[data-ytaq-collab]')) update(meta);
 	}
 
+	function scanAdded(nodes) {
+		const metas = new Set();
+		for (const n of nodes) {
+			if (!n.isConnected || !n.querySelectorAll) continue;
+			const own = n.closest('yt-lockup-metadata-view-model');
+			if (own && own.matches(META)) metas.add(own);
+			for (const m of n.querySelectorAll('yt-lockup-metadata-view-model')) if (m.matches(META)) metas.add(m);
+		}
+		for (const meta of metas) update(meta);
+	}
+
 	let scheduled = false;
-	function schedule() {
+	let full = true;
+	const roots = new Set();
+	function schedule(added) {
+		if (Array.isArray(added)) {
+			if (!enabled()) return;
+			for (const n of added) roots.add(n);
+		} else full = true;
 		if (scheduled) return;
 		scheduled = true;
 		requestAnimationFrame(() => {
 			scheduled = false;
-			scan();
+			if (full) scan();
+			else scanAdded(roots);
+			full = false;
+			roots.clear();
 		});
 	}
 
 	YTaq.ready(() => {
-		scan();
-		YTaq.onMutation(schedule);
+		schedule();
+		YTaq.onMutation(added => schedule(added));
 	});
 	YTaqSettings.watch('cardHeader', () => setTimeout(schedule, 0));
 })();
