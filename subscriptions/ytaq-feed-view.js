@@ -304,29 +304,32 @@
 
 	const AGE_UNITS = { 秒: 1e3, 分: 6e4, 時間: 36e5, 日: 864e5, 週間: 6048e5, か月: 2592e6, ヶ月: 2592e6, 年: 31536e6 };
 
-	function ageOf(entry) {
+	function timeOf(entry, now) {
 		const known = feed && feed.videos[entry.id];
-		if (known && known.published) return Date.now() - known.published;
+		if (known && known.published) return known.published;
 		const d = entry.v.detail;
-		if (d.upcoming) return d.published ? Date.now() - d.published : -1;
-		if (d.liveNow) return -1;
+		if (d.upcoming) return d.published || now + 1;
+		if (d.liveNow) return now + 1;
 		const m = /(\d+)\s*(秒|分|時間|日|週間|か月|ヶ月|年)前/.exec(entry.v.agoText || '');
-		return m ? Number(m[1]) * AGE_UNITS[m[2]] : null;
+		return m ? now - Number(m[1]) * AGE_UNITS[m[2]] : null;
 	}
 
 	function newestFirst(entries) {
-		let last = -1;
-		const aged = entries.map((entry, index) => {
-			const age = ageOf(entry);
-			if (age !== null) last = age;
-			return { entry, index, age: age === null ? last : age };
+		let last = Infinity;
+		const timed = entries.map((entry, index) => {
+			if (entry.at !== undefined) last = entry.at === null ? last : entry.at;
+			const at = entry.at === undefined || entry.at === null ? last : entry.at;
+			return { entry, index, at };
 		});
-		aged.sort((a, b) => a.age - b.age || a.index - b.index);
-		return aged.map(a => a.entry);
+		timed.sort((a, b) => b.at - a.at || a.index - b.index);
+		return timed.map(t => t.entry);
 	}
 
 	function entriesOf(json) {
-		return [...collect(json, 'lockupViewModel', []).map(fromLockup), ...collect(json, 'shortsLockupViewModel', []).map(fromShort)].filter(Boolean);
+		const now = Date.now();
+		const entries = [...collect(json, 'lockupViewModel', []).map(fromLockup), ...collect(json, 'shortsLockupViewModel', []).map(fromShort)].filter(Boolean);
+		for (const e of entries) e.at = timeOf(e, now);
+		return entries;
 	}
 
 	function lastToken(json) {
@@ -339,14 +342,14 @@
 	}
 
 	function merge(old, added) {
-		const seenIds = new Set();
-		const out = [];
-		for (const entry of [...old, ...added]) {
+		const seenIds = new Set(old.map(e => e.id));
+		const fresh = [];
+		for (const entry of added) {
 			if (seenIds.has(entry.id)) continue;
 			seenIds.add(entry.id);
-			out.push(entry);
+			fresh.push(entry);
 		}
-		return newestFirst(out);
+		return [...old, ...newestFirst(fresh)];
 	}
 
 	async function loadAll() {
@@ -372,14 +375,26 @@
 		try {
 			const json = await window.YTaqInnertube.call('browse', { continuation: allNext });
 			if (run !== allRun) return;
-			allVideos = merge(allVideos || [], entriesOf(json));
+			const before = allVideos || [];
+			allVideos = merge(before, entriesOf(json));
 			allNext = lastToken(json);
-			render();
+			if (!appendAll(before)) render();
 		} catch (e) {
 			YTaq.warn('feed: subscriptions more', e.message);
 		} finally {
 			allMoreLoading = false;
 		}
+	}
+
+	function appendAll(before) {
+		const col = root.querySelector('.ytaq-feed-column[data-folder="' + ALL_ID + '"]');
+		if (!col || !before.length) return false;
+		for (let i = 0; i < before.length; i++) if (allVideos[i].id !== before[i].id) return false;
+		const list = col.querySelector('.ytaq-feed-list');
+		const added = allVideos.slice(before.length).filter(e => visible(e.v));
+		if (added.length) list.append(...added.map(e => item(e.id, e.v)));
+		col.querySelector('.ytaq-feed-column-count').textContent = allVideos.filter(e => visible(e.v)).length + ' 本';
+		return true;
 	}
 
 	function allColumn() {
@@ -427,6 +442,7 @@
 	}
 
 	let pending = false;
+	let stale = true;
 	let withShorts = YTaqSettings.defaults('feedShorts');
 
 	function visible(v) {
@@ -447,6 +463,11 @@
 	}
 
 	function render() {
+		if (!root.isConnected) {
+			stale = true;
+			return;
+		}
+		stale = false;
 		if (editing()) {
 			pending = true;
 			return;
@@ -493,6 +514,7 @@
 			return;
 		}
 		if (manager && root.parentElement !== manager) manager.appendChild(root);
+		if (stale) render();
 		if (toggle.parentElement !== document.body) document.body.appendChild(toggle);
 		toggle.textContent = native ? 'フォルダの新着に戻る' : 'YouTube の一覧を見る';
 		if (!native) {
