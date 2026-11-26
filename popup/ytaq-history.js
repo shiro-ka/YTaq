@@ -51,7 +51,7 @@
 	}
 
 	async function fetchTrackingFromInnertube(videoId) {
-		const json = await window.YTaqInnertube.call('player', { videoId, contentCheckOk: true, racyCheckOk: true });
+		const json = await window.YTaqInnertube.once('player', { videoId, contentCheckOk: true, racyCheckOk: true });
 		const ctx = json.responseContext && json.responseContext.mainAppWebResponseContext;
 		if (ctx && ctx.loggedOut) throw new Error('ログアウト扱いで返ってきた');
 
@@ -152,10 +152,8 @@
 
 	window.YTaqHistory = {
 		get enabled() { return enabled; },
-		begin: begin,
-
-		mark(videoId, seconds) {
-			return begin(videoId).report(seconds || 60, true);
-		}
+		MIN_SECONDS: MIN_SECONDS,
+		PING_INTERVAL_MS: PING_INTERVAL_MS,
+		begin: begin
 	};
 })();

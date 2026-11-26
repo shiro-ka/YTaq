@@ -133,5 +133,19 @@
 		if (cfg) chrome.storage.local.set({ [CLIENT_KEY]: { clientVersion: cfg.clientVersion, hl: cfg.hl, gl: cfg.gl } });
 	});
 
-	window.YTaqInnertube = { config, waitConfig, call };
+	const SHARED_MS = 5000;
+	const shared = new Map();
+
+	function once(path, body) {
+		const key = path + ' ' + JSON.stringify(body);
+		const hit = shared.get(key);
+		if (hit && performance.now() - hit.at < SHARED_MS) return hit.promise;
+		const promise = call(path, body);
+		shared.set(key, { at: performance.now(), promise });
+		promise.catch(() => shared.delete(key));
+		for (const [k, v] of shared) if (performance.now() - v.at >= SHARED_MS) shared.delete(k);
+		return promise;
+	}
+
+	window.YTaqInnertube = { config, waitConfig, call, once };
 })();

@@ -368,7 +368,6 @@
 		};
 		window.addEventListener('message', messageHandler);
 
-		const HISTORY_MIN_SECONDS = 5;
 		let lastTime = 0;
 		let lastState = -1;
 		let lastMuted = false;
@@ -387,13 +386,13 @@
 
 		function tickHistory() {
 			if (historySession) return reportHistory(false);
-			if (failed || playedSeconds() < HISTORY_MIN_SECONDS) return;
+			if (failed || !window.YTaqHistory || playedSeconds() < window.YTaqHistory.MIN_SECONDS) return;
 			if (!window.YTaqHistory || !window.YTaqHistory.enabled) return;
 
 			historySession = window.YTaqHistory.begin(videoId);
 			reportHistory(false);
 			clearInterval(historyTimer);
-			historyTimer = setInterval(() => reportHistory(false), 30000);
+			historyTimer = setInterval(() => reportHistory(false), window.YTaqHistory.PING_INTERVAL_MS);
 		}
 
 		historyStop = () => {

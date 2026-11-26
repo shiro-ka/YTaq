@@ -265,7 +265,7 @@
 			}
 		}
 
-		const playerDone = IT().call('player', { videoId, contentCheckOk: true, racyCheckOk: true }).then(json => {
+		const playerDone = IT().once('player', { videoId, contentCheckOk: true, racyCheckOk: true }).then(json => {
 			const vd = json.videoDetails || {};
 			const mf = (json.microformat && json.microformat.playerMicroformatRenderer) || {};
 			channelId = vd.channelId || null;
@@ -287,7 +287,7 @@
 			}
 		}).catch(e => YTaq.warn('popup info: player', e.message));
 
-		const nextDone = !NEEDS_NEXT.some(want) ? null : IT().call('next', { videoId }).then(json => {
+		const nextDone = !NEEDS_NEXT.some(want) ? null : IT().once('next', { videoId }).then(json => {
 			next = parseNext(json);
 			if (avatar && next.avatar) avatar.src = next.avatar;
 			for (const b of [likeBtn, dislikeBtn, subBtn]) if (b) b.disabled = false;

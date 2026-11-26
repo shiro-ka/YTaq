@@ -246,7 +246,7 @@
 			want = Object.assign(want, await YTaqSettings.get('popupInfo'));
 			note('読み込み中…');
 			try {
-				const json = await IT().call('next', { videoId });
+				const json = await IT().once('next', { videoId });
 				const section = find(json, o => o.itemSectionRenderer && o.itemSectionRenderer.sectionIdentifier === 'comment-item-section', [])[0];
 				const token = section && firstToken(section);
 				if (!token) return note('コメントはオフになっています');
