@@ -10,26 +10,62 @@
 	let wide = YTaqSettings.defaults('watchWide');
 	let loaded = false;
 
+	const pageWatchers = new Set();
+	let flexyEl = null;
+	let flexyObserver = null;
+	let notifyScheduled = false;
+
+	function attachFlexy() {
+		const page = document.querySelector('ytd-watch-flexy');
+		if (!page || page === flexyEl) return;
+		if (flexyObserver) flexyObserver.disconnect();
+		flexyEl = page;
+		flexyObserver = new MutationObserver(notifyPage);
+		flexyObserver.observe(page, { attributes: true, attributeFilter: ['theater', 'fixed-panels', 'is-two-columns_', 'fullscreen'] });
+	}
+
+	function notifyPage() {
+		if (notifyScheduled || !pageWatchers.size) return;
+		notifyScheduled = true;
+		requestAnimationFrame(() => {
+			notifyScheduled = false;
+			attachFlexy();
+			for (const fn of [...pageWatchers]) fn();
+		});
+	}
+
+	function onPageChange(fn) {
+		pageWatchers.add(fn);
+		attachFlexy();
+		notifyPage();
+		return () => pageWatchers.delete(fn);
+	}
+
+	YTaq.onMutation(notifyPage);
+
 	const BOOT_CLASS = 'ytaq-watch-boot';
-	const BOOT_POLL_MS = 100;
 	const BOOT_MAX_MS = 6000;
 	let booted = false;
-	let bootPoll = 0;
+	let bootOff = null;
 	let bootLimit = 0;
+
+	function bootStop() {
+		if (bootOff) bootOff();
+		bootOff = null;
+		clearTimeout(bootLimit);
+	}
 
 	function bootStart() {
 		if (booted || !wide || !location.pathname.startsWith('/watch')) return;
 		document.documentElement.classList.add(BOOT_CLASS);
-		clearInterval(bootPoll);
-		clearTimeout(bootLimit);
-		bootPoll = setInterval(bootCheck, BOOT_POLL_MS);
+		bootStop();
+		bootOff = onPageChange(bootCheck);
 		bootLimit = setTimeout(bootEnd, BOOT_MAX_MS);
 	}
 
 	function bootEnd() {
 		booted = true;
-		clearInterval(bootPoll);
-		clearTimeout(bootLimit);
+		bootStop();
 		document.documentElement.classList.remove(BOOT_CLASS);
 	}
 
@@ -39,7 +75,7 @@
 		if (!document.querySelector('ytd-masthead ytd-topbar-logo-renderer')) return;
 		if (!document.querySelector('ytd-watch-metadata #title-row') || !document.querySelector('ytd-watch-metadata #top-row')) return;
 		if (document.documentElement.scrollHeight <= window.innerHeight) return;
-		clearInterval(bootPoll);
+		bootStop();
 		measure();
 		requestAnimationFrame(() => requestAnimationFrame(bootEnd));
 	}
@@ -110,12 +146,12 @@
 		});
 	}
 
-	window.addEventListener('wheel', e => {
+	function onWheel(e) {
 		if (morphing) return e.preventDefault();
-		const classes = document.documentElement.classList;
-		const page = flexy();
 		if (hold || !e.deltaY || Math.abs(e.deltaX) > Math.abs(e.deltaY) || e.ctrlKey) return;
+		const classes = document.documentElement.classList;
 		if (!classes.contains(CLASS) || !classes.contains('ytaq-watch-side') || !document.startViewTransition || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+		const page = flexy();
 		if (!page || !page.matches('[theater][is-two-columns_]:not([fixed-panels]):not([fullscreen])')) return;
 		const player = document.querySelector('#full-bleed-container');
 		const comments = document.querySelector('ytd-comments');
@@ -128,7 +164,17 @@
 			e.preventDefault();
 			morph(false, player);
 		}
-	}, { passive: false, capture: true });
+	}
+
+	let wheelOn = false;
+	function syncWheel() {
+		const classes = document.documentElement.classList;
+		const want = location.pathname.startsWith('/watch') && classes.contains(CLASS) && classes.contains('ytaq-watch-side');
+		if (want === wheelOn) return;
+		wheelOn = want;
+		if (want) window.addEventListener('wheel', onWheel, { passive: false, capture: true });
+		else window.removeEventListener('wheel', onWheel, { capture: true });
+	}
 
 	const observer = new ResizeObserver(measure);
 	const observed = new Set();
@@ -275,11 +321,13 @@
 		else bootEnd();
 		if (wide) document.cookie = 'wide=1; domain=.youtube.com; path=/; max-age=31536000; secure';
 		if (turnedOff) setTheater(false);
+		syncWheel();
 		apply();
 	});
 
 	YTaqSettings.watch('watchSide', v => {
 		document.documentElement.classList.toggle('ytaq-watch-side', !!v);
+		syncWheel();
 		refit();
 	});
 
@@ -332,9 +380,8 @@
 	let closeReplay = false;
 	let replayRun = 0;
 
-	const REPLAY_POLL_MS = 50;
-	const REPLAY_MAX_POLLS = 400;
-	const REPLAY_RECLICK_POLLS = 20;
+	const REPLAY_MAX_MS = 20000;
+	const REPLAY_RECLICK_MS = 1000;
 	const REPLAY_HIDE_CLASS = 'ytaq-replay-hide';
 
 	function showReplayChat() {
@@ -363,30 +410,45 @@
 		}
 	}
 
+	let replayStop = null;
+
 	function closeReplayChat() {
 		const current = ++replayRun;
-		let polls = 0;
+		if (replayStop) replayStop();
 		let replay = null;
-		let clickedAt = -1;
+		let clickedAt = -Infinity;
+		let off = null;
+		let retry = 0;
+		const limit = setTimeout(() => finish(true), REPLAY_MAX_MS);
+		function finish(show) {
+			if (off) off();
+			off = null;
+			clearTimeout(limit);
+			clearTimeout(retry);
+			if (replayStop === finish) replayStop = null;
+			if (show && current === replayRun) showReplayChat();
+		}
+		replayStop = finish;
 		const step = () => {
-			if (current !== replayRun) return;
-			if (!closeReplay || !location.pathname.startsWith('/watch')) return showReplayChat();
+			if (current !== replayRun) return finish(false);
+			if (!closeReplay || !location.pathname.startsWith('/watch')) return finish(true);
 			if (replay === null) replay = replayFromPlayer();
-			if (replay === false) return showReplayChat();
+			if (replay === false) return finish(true);
 			if (replay) document.documentElement.classList.add(REPLAY_HIDE_CLASS);
 			const page = flexy();
 			const open = page && page.hasAttribute('fixed-panels');
-			if (clickedAt >= 0 && !open) return showReplayChat();
-			if (open && (replay || chatIsReplay()) && (clickedAt < 0 || polls - clickedAt >= REPLAY_RECLICK_POLLS)) {
+			if (clickedAt > -Infinity && !open) return finish(true);
+			if (open && (replay || chatIsReplay()) && performance.now() - clickedAt >= REPLAY_RECLICK_MS) {
 				const button = document.querySelector('#chat #show-hide-button button');
 				if (button) {
 					button.click();
-					clickedAt = polls;
+					clickedAt = performance.now();
+					clearTimeout(retry);
+					retry = setTimeout(step, REPLAY_RECLICK_MS);
 				}
 			}
-			if (++polls < REPLAY_MAX_POLLS) setTimeout(step, REPLAY_POLL_MS);
-			else showReplayChat();
 		};
+		off = onPageChange(step);
 		step();
 	}
 
@@ -438,6 +500,7 @@
 
 	YTaq.ready(apply);
 	YTaq.onNavigate(() => {
+		syncWheel();
 		document.documentElement.classList.remove(DESC_CLASS);
 		bootStart();
 		apply();

@@ -21,18 +21,33 @@
 		});
 	}
 
+	function fromPage(videoId) {
+		try {
+			const player = document.querySelector('#movie_player');
+			const r = player && player.wrappedJSObject && player.wrappedJSObject.getPlayerResponse();
+			const d = r && r.videoDetails;
+			if (!d || d.videoId !== videoId || !d.channelId) return null;
+			const mf = r.microformat && r.microformat.playerMicroformatRenderer;
+			return { videoDetails: { videoId: d.videoId, channelId: d.channelId, author: d.author }, microformat: { playerMicroformatRenderer: { category: mf && mf.category } } };
+		} catch {
+			return null;
+		}
+	}
+
 	async function applyWhenReady() {
 		const token = ++seq;
 		current = null;
 		const videoId = videoIdOfPage();
 		if (!videoId) return;
 
-		let json;
-		try {
-			json = await window.YTaqInnertube.call('player', { videoId, contentCheckOk: true, racyCheckOk: true });
-		} catch (e) {
-			YTaq.warn('rate: player', e.message);
-			return;
+		let json = fromPage(videoId);
+		if (!json) {
+			try {
+				json = await window.YTaqInnertube.call('player', { videoId, contentCheckOk: true, racyCheckOk: true });
+			} catch (e) {
+				YTaq.warn('rate: player', e.message);
+				return;
+			}
 		}
 		if (token !== seq) return;
 		const details = json.videoDetails || {};
