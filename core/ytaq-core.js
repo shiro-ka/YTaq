@@ -19,8 +19,13 @@
 	let lastHref = location.href;
 	let navScheduled = false;
 
+	let lastFlushAt = -Infinity;
+
 	function flushNav() {
 		navScheduled = false;
+		const now = performance.now();
+		if (location.href === lastHref && now - lastFlushAt < 1500) return;
+		lastFlushAt = now;
 		lastHref = location.href;
 		log('navigate:', lastHref);
 		navCallbacks.forEach(cb => safe(cb));
@@ -42,9 +47,21 @@
 	let pendingAdded = [];
 	let mutScheduled = false;
 
+	function outermost(nodes) {
+		const set = new Set();
+		for (const n of nodes) if (n.isConnected) set.add(n);
+		const out = [];
+		for (const n of set) {
+			let p = n.parentElement;
+			while (p && !set.has(p)) p = p.parentElement;
+			if (!p) out.push(n);
+		}
+		return out;
+	}
+
 	function flushMutations() {
 		mutScheduled = false;
-		const added = pendingAdded;
+		const added = outermost(pendingAdded);
 		pendingAdded = [];
 		if (!added.length) return;
 		mutCallbacks.forEach(cb => safe(cb, added));
@@ -108,16 +125,6 @@
 			return () => mutCallbacks.delete(cb);
 		},
 
-		eachNew(added, selector, fn) {
-			for (let i = 0; i < added.length; i++) {
-				const node = added[i];
-				if (node.matches && node.matches(selector)) fn(node);
-				if (!node.querySelectorAll) continue;
-				const hits = node.querySelectorAll(selector);
-				for (let j = 0; j < hits.length; j++) fn(hits[j]);
-			}
-		},
-
 		waitFor(selector, cb, tries) {
 			let left = typeof tries === 'number' ? tries : 180;
 			(function attempt() {
@@ -133,12 +140,6 @@
 				chrome.storage.local.get([key], result => {
 					resolve(result[key] === undefined ? fallback : result[key]);
 				});
-			});
-		},
-
-		setStorage(key, value) {
-			return new Promise(resolve => {
-				chrome.storage.local.set({ [key]: value }, resolve);
 			});
 		},
 
