@@ -69,11 +69,19 @@
 		return copy(entry(name).value);
 	}
 
+	function plain(v) {
+		return !!v && typeof v === 'object' && !Array.isArray(v);
+	}
+
+	function merge(base, stored) {
+		for (const k of Object.keys(stored)) base[k] = plain(base[k]) && plain(stored[k]) ? merge(base[k], stored[k]) : stored[k];
+		return base;
+	}
+
 	function resolve(name, stored) {
 		const d = defaults(name);
 		if (stored === undefined || stored === null) return d;
-		if (d && typeof d === 'object' && !Array.isArray(d)) return Object.assign(d, stored);
-		return stored;
+		return plain(d) && plain(stored) ? merge(d, stored) : stored;
 	}
 
 	function get(name) {
@@ -86,10 +94,17 @@
 		return new Promise(ok => chrome.storage.local.set({ [key]: value }, ok));
 	}
 
-	function reset(names) {
-		const values = {};
-		for (const n of names) values[entry(n).key] = defaults(n);
-		return new Promise(ok => chrome.storage.local.set(values, ok));
+	async function reset(paths) {
+		for (const path of paths) {
+			const [name, key] = path.split('.');
+			if (!key) {
+				await set(name, defaults(name));
+				continue;
+			}
+			const value = await get(name);
+			value[key] = defaults(name)[key];
+			await set(name, value);
+		}
 	}
 
 	function onChange(name, cb) {
@@ -104,15 +119,16 @@
 		onChange(name, cb);
 	}
 
-	chrome.storage.local.get(['ytaq_shorts_hide', 'ytaq_perf'], r => {
-		const perf = r.ytaq_perf;
-		if (r.ytaq_shorts_hide || !perf || !('hideShorts' in perf || 'hideHomeShorts' in perf)) return;
-		const all = !!perf.hideShorts;
-		const places = defaults('shortsHide');
-		for (const k in places) places[k] = all;
-		places.home = all || perf.hideHomeShorts !== false;
-		chrome.storage.local.set({ ytaq_shorts_hide: places });
-	});
+	const NOT_EXPORTED = new Set(['ytaq_feed', 'ytaq_short_owners', 'ytaq_subs', 'ytaq_channel_handles', 'ytaq_innertube', 'ytaq_channel_lists', 'ytaq_playbackrate', 'ytaq_memberships', 'ytaq_sync_on', 'ytaq_sync_meta', 'ytaq_sync_status']);
+	const NOT_SYNCED = new Set(['ytaq_custom_css']);
 
-	globalThis.YTaqSettings = Object.freeze({ defaults, resolve, get, set, reset, onChange, watch });
+	function exported(key) {
+		return key.startsWith('ytaq_') && !NOT_EXPORTED.has(key);
+	}
+
+	function synced(key) {
+		return exported(key) && !NOT_SYNCED.has(key);
+	}
+
+	globalThis.YTaqSettings = Object.freeze({ defaults, resolve, get, set, reset, onChange, watch, exported, synced });
 })();

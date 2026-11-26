@@ -418,17 +418,7 @@
 	}
 
 	async function resetPage(page) {
-		const paths = (page.dataset.reset || '').split(/\s+/).filter(Boolean);
-		for (const path of paths) {
-			const [name, key] = path.split('.');
-			if (!key) {
-				await S.set(name, S.defaults(name));
-				continue;
-			}
-			const value = await S.get(name);
-			value[key] = S.defaults(name)[key];
-			await S.set(name, value);
-		}
+		await S.reset((page.dataset.reset || '').split(/\s+/).filter(Boolean));
 		await loadAll();
 		toast('既定に戻しました', 'success');
 	}
@@ -614,10 +604,9 @@
 		});
 	});
 
-	const BACKUP_SKIP = new Set(['ytaq_feed', 'ytaq_short_owners', 'ytaq_subs', 'ytaq_channel_handles', 'ytaq_innertube', 'ytaq_channel_lists', 'ytaq_playbackrate', 'ytaq_memberships', 'ytaq_sync_on', 'ytaq_sync_meta', 'ytaq_sync_status']);
 
 	function backupKeys(all) {
-		return Object.keys(all).filter(k => k.startsWith('ytaq_') && !BACKUP_SKIP.has(k));
+		return Object.keys(all).filter(k => S.exported(k));
 	}
 
 	function initBackup() {
@@ -647,7 +636,7 @@
 			if (!parsed || parsed.app !== 'YTaq' || !parsed.data || typeof parsed.data !== 'object') {
 				return toast('YTaq の書き出したファイルではありません', 'error');
 			}
-			const incoming = Object.fromEntries(Object.entries(parsed.data).filter(([k]) => k.startsWith('ytaq_') && !BACKUP_SKIP.has(k)));
+			const incoming = Object.fromEntries(Object.entries(parsed.data).filter(([k]) => S.exported(k)));
 			if (!confirm('今の設定・フォルダ・ミュート・速度を、このファイルの中身に入れ替えます。')) return;
 			const all = await new Promise(ok => chrome.storage.local.get(null, ok));
 			await new Promise(ok => chrome.storage.local.remove(backupKeys(all), ok));

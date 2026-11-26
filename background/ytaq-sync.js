@@ -4,7 +4,6 @@
 	const ON = 'ytaq_sync_on';
 	const META = 'ytaq_sync_meta';
 	const STATUS = 'ytaq_sync_status';
-	const SKIP = new Set([ON, META, STATUS, 'ytaq_feed', 'ytaq_short_owners', 'ytaq_subs', 'ytaq_channel_handles', 'ytaq_innertube', 'ytaq_channel_lists', 'ytaq_playbackrate', 'ytaq_memberships', 'ytaq_custom_css']);
 	const PIECE = 2000;
 	const PUSH_DELAY = 2000;
 
@@ -17,7 +16,7 @@
 	let chain = Promise.resolve();
 
 	function syncable(key) {
-		return key.startsWith('ytaq_') && !SKIP.has(key) && !key.includes('#');
+		return YTaqSettings.synced(key) && !key.includes('#');
 	}
 
 	function queue(job) {
